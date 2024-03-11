@@ -7,14 +7,13 @@ jobs:
     steps:
       - name: Generate token
         id: generate-token
+        uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PEM }}
-        run: |
-          echo $app-id
-        uses: actions/create-github-app-token@v1
       - name: Use API
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
+          echo $app-id $app_id $vars.APP_ID vars.APP_id
           gh api https://api.github.com/repos/Start-Out/todo-or-not/issues
