@@ -15,10 +15,5 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          gh api \
-          --method POST \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          /repos/start-out/todo-or-not/issues \
-          -f title='Found a bug' \
-          -f body='I am having a problem with this.'
+          echo testing
+          gh api --method POST -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/start-out/todo-or-not/issues -f title='Found a bug' -f body='I am having a problem with this.'
