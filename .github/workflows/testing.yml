@@ -3,6 +3,7 @@ on:
 jobs:
   track_pr:
     runs-on: ubuntu-latest
+    environment: todo-or-not-1
     steps:
       - name: Generate token
         id: generate-token
