@@ -184,6 +184,23 @@ def update_todo_ignore(other_file_names, target_file):
             target_file.writelines(file.read())
 
 
+def get_issues():
+    owner, repo = "owner", "repository"
+
+    if not DEBUG:
+        owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
+
+    output = subprocess.check_output(
+        [
+            "gh", "api",
+            "-H", "Accept: application/vnd.github+json",
+            "-H", "X-GitHub-Api-Version: 2022-11-28",
+            f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not"
+        ]
+    )
+
+    return output
+
 def main(
         mode: str = "print",
         silent: bool = False,
@@ -274,6 +291,9 @@ def main(
     #############################################
     # Handle output
     #############################################
+
+    if mode.lower() == "issue":
+        print(get_issues())
 
     fail = False
     hits = 0
