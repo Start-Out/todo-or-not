@@ -10,7 +10,7 @@ _project_dir = _script_dir
 _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
 
 
-def find_lines(filename: str, *args) -> list[tuple[str, int, [str]]]:
+def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [str]]]:
     """
     Finds and returns each line of a file that contains a key
     :param filename: File to open() read-only
@@ -26,7 +26,7 @@ def find_lines(filename: str, *args) -> list[tuple[str, int, [str]]]:
         for _line in lines:
             _found_keys = []
             for key in args:
-                if key.lower() in _line.lower():
+                if key.lower() in _line.lower() and ignore_flag.lower() not in _line.lower():
                     _found_keys.append(key)
 
             if len(_found_keys) > 0:
@@ -148,7 +148,7 @@ def main(ni: typing_extensions.Annotated[typing.Optional[typing.List[str]], type
 
     fail = False
     for target in targets:
-        hits = find_lines(target, "todo", "fixme")
+        hits = find_lines(target, "@todoon", "todo", "fixme")
 
         if len(hits) > 0:
             fail = True
