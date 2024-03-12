@@ -70,12 +70,22 @@ def update_todo_ignore(other_file_names, target_file):
 
 def _generate_issues(printables: tuple[str, str, str]):
     output = []
-    owner = "Start-Out"
-    repo = "todo-or-not"
 
     for printable in printables:
-        title = f"{printable[0]} - {printable[2]}"
-        body = f"{printable[0]} - {printable[1]} - {printable[2]}"
+        title = f"{printable[0]} - {printable[1]}"
+
+        repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
+        github_ref = os.environ.get('GITHUB_REF').split("/")
+        reference = printable[1].split(":")[0]
+
+        reference_uri = f"{repo_uri}/blob/{github_ref[1:]}/{reference}"
+
+        triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
+
+        body = (f"Reference: <a href=\"{reference_uri}\">{printable[1]}</a>\n\n"
+                f"{printable[1]}")
+
+        owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
         _output = subprocess.check_output(
             [
@@ -85,8 +95,9 @@ def _generate_issues(printables: tuple[str, str, str]):
                 "-H", "X-GitHub-Api-Version: 2022-11-28",
                 f"/repos/{owner}/{repo}/issues",
                 "-f", f"title={title}",
-                "-f", f"body={body}"
-            ]
+                "-f", f"body={body}",
+                "-f", f"assignees[]={triggered_by}"
+                ]
         )
 
         output.append(_output)
@@ -192,7 +203,7 @@ def main(
         if len(hits) > 0:
             fail = True
 
-            # Print the hits if issue is not specified, if it is then be silent and generate issues
+            # Print the hits if the issue option is not specified, if it is then be silent and generate issues
             _printable_hits = _print_todo_found(target, hits, mode.lower() == "issue")
 
             if mode.lower() == "issue":
@@ -207,11 +218,4 @@ def main(
 
 
 if __name__ == "__main__":
-
-    # DEBUGGING
-    with open("_action_env.txt", "w+") as tmp:
-        for name, value in os.environ.items():
-            tmp.write(f"{name}: {value}\n")
-            print(f"{name}: {value}\n", file=sys.stderr)
-
     run(main)
