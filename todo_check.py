@@ -10,10 +10,22 @@ _script_dir = os.path.dirname(os.path.abspath(__file__))
 _project_dir = _script_dir
 _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
 
+PERTINENT_LINE_LIMIT = 8
+
+class Hit:
+    def __init__(self, source_file: str, source_line: int, found_keys: list[str], pertinent_lines: list[str],
+                 trigger_line_index: int):
+        self.found_keys = found_keys
+        self.source_file = source_file
+        self.source_line = source_line
+        self.pertinent_lines = pertinent_lines
+        self.trigger_line_index = trigger_line_index
+
 
 def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [str]]]:
     """
     Finds and returns each line of a file that contains a key
+    :param ignore_flag: The flag which, when detected on a triggering line, will ignore that line
     :param filename: File to open() read-only
     :param args: Keys to check each line for
     :return: List of lines of text and their line number that contain at least one key and the keys each contains
@@ -31,8 +43,35 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
                     _found_keys.append(key)
 
             if len(_found_keys) > 0:
-                _hit = (_line, line_number, _found_keys)
-                output.append(_hit)
+                x = (_line, line_number, _found_keys)
+
+                # Collect surrounding lines that may be pertinent
+                _pertinent_lines = []
+
+                # Look at lines before the pertinent line
+                _i = line_number - 1
+                while abs(_i) <= PERTINENT_LINE_LIMIT:
+                    _i -= 1
+                    if len(lines[_i].strip()) > 0:
+                        _pertinent_lines.append(lines[_i])
+                    else:
+                        break
+
+                # Push the triggering line to the pertinent lines and note its index
+                _trigger_line = len(_pertinent_lines)
+                _pertinent_lines.append(lines[line_number - 1])
+
+                # Look at lines after the pertinent line
+                _i = line_number
+                while abs(_i) <= PERTINENT_LINE_LIMIT:
+                    if len(lines[_i].strip()) > 0:
+                        _pertinent_lines.append(lines[_i])
+                    else:
+                        break
+                    _i += 1
+
+                _hit = Hit(filename, line_number, _found_keys, _pertinent_lines, _trigger_line)
+                output.append(x)
 
             line_number += 1
 
@@ -83,9 +122,9 @@ def _generate_issues(printables: tuple[str, str, str]):
         triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
 
         body = (
-                f"{printable[0]} - {printable[1]} - {printable[2]}\n\n"
-                f"Reference: <a href=\"{reference_uri}\">{printable[1]}</a>"
-                )
+            f"{printable[0]} - {printable[1]} - {printable[2]}\n\n"
+            f"Reference: <a href=\"{reference_uri}\">{printable[1]}</a>"
+        )
 
         owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
@@ -99,7 +138,7 @@ def _generate_issues(printables: tuple[str, str, str]):
                 "-f", f"title={title}",
                 "-f", f"body={body}",
                 "-f", f"assignees[]={triggered_by}"
-                ]
+            ]
         )
 
         output.append(_output)
