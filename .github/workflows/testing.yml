@@ -5,6 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: todo-or-not-1
     steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11.7
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11.7"
       - name: Generate token
         id: generate-token
         uses: actions/create-github-app-token@v1
@@ -15,9 +20,4 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          gh api --method POST \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          /repos/start-out/todo-or-not/issues \
-          -f title='So far...' \
-          -f body='...so good! We can generate issues from a workflow. Now we just need to make them not hardcoded'
+          python generate_issues.py
