@@ -27,8 +27,7 @@ class Hit:
         _line_number = self.get_line_number()
         _found_keys = self.get_found_keys()
 
-        header = ", ".join(_found_keys)
-        header = f"[{header}]".upper()
+        header = f"[{self.get_found_keys()}]"
         _pad = 16 - len(header)
         padding = " " * _pad
         header = header + padding
@@ -48,7 +47,7 @@ class Hit:
         return self.source_line
 
     def get_found_keys(self):
-        return self.found_keys
+        return ", ".join(self.found_keys).upper()
 
     def get_file_extension(self):
         return self.source_file.split(".")[-1:][0]
@@ -77,10 +76,11 @@ class Hit:
         return output
 
     def generate_issue(self):
-        title = f"{self.found_keys} - {self.get_triggering_line()}"
+        title = f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
-        github_ref = os.environ.get('GITHUB_REF').split("/")
+        # github_ref = os.environ.get('GITHUB_REF').split("/")
+        github_ref = "a"
         reference = self.source_file.split(":")[0]
 
         reference_uri = f"{repo_uri}/blob/{'/'.join(github_ref[2:])}/{reference}"
@@ -88,12 +88,13 @@ class Hit:
         triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
 
         body = (
-            f"{self.found_keys} - {self.source_file} - {self.get_triggering_line()}\n"
+            f"## {self}\n\n"
             f"{self.get_pertinent_lines()}\n\n"
             f"Reference: <a href=\"{reference_uri}\">{self.source_file}</a>"
         )
 
-        owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
+        # owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
+        owner, repo = "a", "b"
 
         _output = subprocess.check_output(
             [
