@@ -10,7 +10,9 @@ _script_dir = os.path.dirname(os.path.abspath(__file__))
 _project_dir = _script_dir
 _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
 
-PERTINENT_LINE_LIMIT = 8
+DEBUG = os.environ.get("DEBUG", False)
+MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", 8)
+PERTINENT_LINE_LIMIT = os.environ.get("PERTINENT_LINE_LIMIT", 8)
 
 
 class Hit:
@@ -79,13 +81,19 @@ class Hit:
         title = f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
-        github_ref = os.environ.get('GITHUB_REF').split("/")
-        # github_ref = "a"
+
+        github_ref = "owner/repository"
+        triggered_by = "octocat"
+        owner, repo = "owner", "repository"
+
+        if not DEBUG:
+            github_ref = os.environ.get('GITHUB_REF').split("/")
+            triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
+            owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
+
         reference = self.source_file.split(":")[0]
 
         reference_uri = f"{repo_uri}/blob/{'/'.join(github_ref[2:])}/{reference}"
-
-        triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
 
         body = (
             f"## {self}\n\n"
@@ -93,21 +101,22 @@ class Hit:
             f"Reference: <a href=\"{reference_uri}\">{self.source_file}</a>"
         )
 
-        owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
-        # owner, repo = "a", "b"
+        api_call = [
+            "gh", "api",
+            "--method", "POST",
+            "-H", "Accept: application/vnd.github+json",
+            "-H", "X-GitHub-Api-Version: 2022-11-28",
+            f"/repos/{owner}/{repo}/issues",
+            "-f", f"title={title}",
+            "-f", f"body={body}",
+            "-f", f"assignees[]={triggered_by}"
+        ]
 
-        _output = subprocess.check_output(
-            [
-                "gh", "api",
-                "--method", "POST",
-                "-H", "Accept: application/vnd.github+json",
-                "-H", "X-GitHub-Api-Version: 2022-11-28",
-                f"/repos/{owner}/{repo}/issues",
-                "-f", f"title={title}",
-                "-f", f"body={body}",
-                "-f", f"assignees[]={triggered_by}"
-            ]
-        )
+        if not DEBUG:
+            _output = subprocess.check_output(api_call)
+        else:
+            _output = "DEBUGGING"
+            print(api_call)
 
         return _output
 
@@ -267,6 +276,7 @@ def main(
     #############################################
 
     fail = False
+    hits = 0
     for target in targets:
         # Generate the hits for each target collected
         hits = find_lines(target, "#todoon", "todo", "fixme")
@@ -279,7 +289,13 @@ def main(
 
             for hit in hits:
                 if mode.lower() == "issue":
-                    hit.generate_issue()
+                    hits += 1
+
+                    if hits < MAXIMUM_ISSUES_GENERATED:
+                        hit.generate_issue()
+                    else:
+                        print("FATAL: Exceeded maximum number of issues for this run, exiting now", file=sys.stderr)
+                        exit(1)
                 else:
                     print(hit, file=sys.stderr)
 
