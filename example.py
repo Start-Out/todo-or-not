@@ -13,4 +13,4 @@ def a_broken_function():
 
 def a_skipping_example():
     # Since the line below has @todoon in it, the checker will give it a pass even though it has the magic words!
-    print("Sometimes you really have to write TODO or FIXME, like this!")  # @todoon
+    print("Sometimes you really have to write TODO or FIXME, like this!")  # #todoon
