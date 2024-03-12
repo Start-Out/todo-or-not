@@ -24,4 +24,4 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          python todo_check.py --mode issue
+          python todo_check.py --mode issue --silent
