@@ -12,6 +12,7 @@ _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
 
 PERTINENT_LINE_LIMIT = 8
 
+
 class Hit:
     def __init__(self, source_file: str, source_line: int, found_keys: list[str], pertinent_lines: list[str],
                  trigger_line_index: int):
@@ -20,6 +21,15 @@ class Hit:
         self.source_line = source_line
         self.pertinent_lines = pertinent_lines
         self.trigger_line_index = trigger_line_index
+
+    def get_line(self):
+        return self.pertinent_lines[self.trigger_line_index]
+
+    def get_line_number(self):
+        return self.source_line
+
+    def get_found_keys(self):
+        return self.found_keys
 
 
 def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [str]]]:
@@ -43,8 +53,6 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
                     _found_keys.append(key)
 
             if len(_found_keys) > 0:
-                x = (_line, line_number, _found_keys)
-
                 # Collect surrounding lines that may be pertinent
                 _pertinent_lines = []
 
@@ -73,7 +81,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
                     _i += 1
 
                 _hit = Hit(filename, line_number, _found_keys, _pertinent_lines, _trigger_line)
-                output.append(x)
+                output.append(_hit)
 
             line_number += 1
 
@@ -83,21 +91,25 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
 def _print_todo_found(target, hits, silent=False):
     _output = []
     for hit in hits:
-        header = ", ".join(hit[2])
+        _line = hit.get_line()
+        _line_number = hit.get_line_number()
+        _found_keys = hit.get_found_keys()
+
+        header = ", ".join(_found_keys)
         header = f"[{header}]".upper()
         _pad = 16 - len(header)
         padding = " " * _pad
         header = header + padding
 
         location = os.path.relpath(target, _project_dir)
-        location = f"{location}:{hit[1]}"
+        location = f"{location}:{_line_number}"
         _pad = 16 - len(location)
         padding = " " * _pad
         location = location + padding
 
         if not silent:
-            print(f"{header} - {location} - {hit[0].strip()}", file=sys.stderr)
-        _printable_hit = (header, location, hit[0].strip())
+            print(f"{header} - {location} - {_line.strip()}", file=sys.stderr)
+        _printable_hit = (header, location, _line.strip())
         _output.append(_printable_hit)
     return _output
 
@@ -241,6 +253,7 @@ def main(
 
     fail = False
     for target in targets:
+        # Generate the hits for each target collected
         hits = find_lines(target, "#todoon", "todo", "fixme")
 
         if len(hits) > 0:
@@ -253,11 +266,12 @@ def main(
                 _generate_issues(_printable_hits)
 
     if fail:
-        print("\n######\nTODO and FIXME check failed, please address the above and try again.\n######\n")
+        print(
+            f"\n######\nTODO and FIXME check failed, please address the issues and try again. (mode is {mode.upper()})\n######\n")
         if not silent:
             exit(1)
     else:
-        print("\n######\nTODO and FIXME check passed!\n######\n")
+        print("\n######\nTODO and FIXME check complete.\n######\n")
 
 
 if __name__ == "__main__":
