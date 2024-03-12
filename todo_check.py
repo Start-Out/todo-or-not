@@ -50,10 +50,10 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
 
                 # Look at lines before the pertinent line
                 _i = line_number - 1
-                while abs(_i) <= PERTINENT_LINE_LIMIT:
+                while abs(line_number - _i) <= PERTINENT_LINE_LIMIT:
                     _i -= 1
                     if len(lines[_i].strip()) > 0:
-                        _pertinent_lines.append(lines[_i])
+                        _pertinent_lines.insert(0, lines[_i])
                     else:
                         # Stop when you reach a line break
                         break
@@ -64,7 +64,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
 
                 # Look at lines after the pertinent line
                 _i = line_number
-                while abs(_i) <= PERTINENT_LINE_LIMIT:
+                while abs(_i - line_number) <= PERTINENT_LINE_LIMIT:
                     if len(lines[_i].strip()) > 0:
                         _pertinent_lines.append(lines[_i])
                     else:

@@ -14,7 +14,6 @@ def an_unfinished_function():
 def a_broken_function():
     # This line might not show up in the generated issue because it's too far away
     #  from the line that triggered the issue.
-    #
     # The search for pertinent lines will stop when it hits a line break or the
     #  maximum number of lines, set by PERTINENT_LINE_LIMIT
     a = [
