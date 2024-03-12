@@ -18,5 +18,5 @@ def generate_issue(owner: str, repo: str, title: str, body: str):
 
 
 if __name__ == "__main__":
-    generate_issue("start-out", "todo-or-not", "python did this", "and I for one am stoked about it")  # @todoon
-    generate_issue("start-out", "todo-or-not", "Let's see about apostrophes", "If you're reading this, bully!")
+    generate_issue("start-out", "todo-or-not", "python did this", "and I for one am stoked about it")
+    generate_issue("start-out", "todo-or-not", "Let's see about apostrophes", "If you're reading this, bully!")  # @todoon

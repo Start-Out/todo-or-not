@@ -1,9 +1,10 @@
 import os
+import subprocess
 import sys
 
-import typer
-import typing
-import typing_extensions
+from typer import Option, run
+from typing import List, Optional
+from typing_extensions import Annotated
 
 _script_dir = os.path.dirname(os.path.abspath(__file__))
 _project_dir = _script_dir
@@ -38,7 +39,8 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
     return output
 
 
-def _print_todo_found(target, hits):
+def _print_todo_found(target, hits, silent=False):
+    _output = []
     for hit in hits:
         header = ", ".join(hit[2])
         header = f"[{header}]".upper()
@@ -52,7 +54,11 @@ def _print_todo_found(target, hits):
         padding = " " * _pad
         location = location + padding
 
-        print(f"{header} - {location} - {hit[0].strip()}", file=sys.stderr)
+        if not silent:
+            print(f"{header} - {location} - {hit[0].strip()}", file=sys.stderr)
+        _printable_hit = (header, location, hit[0].strip())
+        _output.append(_printable_hit)
+    return _output
 
 
 def update_todo_ignore(other_file_names, target_file):
@@ -62,12 +68,41 @@ def update_todo_ignore(other_file_names, target_file):
             target_file.writelines(file.read())
 
 
-def main(ni: typing_extensions.Annotated[typing.Optional[typing.List[str]], typer.Option(
-    help="Copy the contents of other files into a new .todo-ignore")] = None,
-         xi: typing_extensions.Annotated[typing.Optional[typing.List[str]], typer.Option(
-             help="Copy the contents of other files into an existing .todo-ignore")] = None
-         , force: bool = False):
+def _generate_issues(printables: tuple[str, str, str]):
+    output = []
+    owner = "Start-Out"
+    repo = "todo-or-not"
 
+    for printable in printables:
+        title = f"{printable[0]} - {printable[2]}"
+        body = f"{printable[0]} - {printable[1]} - {printable[2]}"
+
+        _output = subprocess.check_output(
+            [
+                "gh", "api",
+                "--method", "POST",
+                "-H", "Accept: application/vnd.github+json",
+                "-H", "X-GitHub-Api-Version: 2022-11-28",
+                f"/repos/{owner}/{repo}/issues",
+                "-f", f"title={title}",
+                "-f", f"body={body}"
+            ]
+        )
+
+        output.append(_output)
+
+    return output
+
+
+def main(
+        mode: str = "print",
+        silent: bool = False,
+        force: bool = False,
+        ni: Annotated[
+            Optional[List[str]], Option(help="Copy the contents of other files into a new .todo-ignore")] = None,
+        xi: Annotated[
+            Optional[List[str]], Option(help="Copy the contents of other files into an existing .todo-ignore")] = None
+):
     targets = []
     ignored_files = []
     ignored_dirs = []
@@ -146,20 +181,30 @@ def main(ni: typing_extensions.Annotated[typing.Optional[typing.List[str]], type
             if current is not None:
                 targets.append(current)
 
+    #############################################
+    # Handle output
+    #############################################
+
     fail = False
     for target in targets:
         hits = find_lines(target, "@todoon", "todo", "fixme")
 
         if len(hits) > 0:
             fail = True
-            _print_todo_found(target, hits)
+
+            # Print the hits if issue is not specified, if it is then be silent and generate issues
+            _printable_hits = _print_todo_found(target, hits, mode.lower() == "issue")
+
+            if mode.lower() == "issue":
+                _generate_issues(_printable_hits)
 
     if fail:
         print("\n######\nTODO and FIXME check failed, please address the above and try again.\n######\n")
-        exit(1)
+        if not silent:
+            exit(1)
     else:
         print("\n######\nTODO and FIXME check passed!\n######\n")
 
 
 if __name__ == "__main__":
-    typer.run(main)
+    run(main)
