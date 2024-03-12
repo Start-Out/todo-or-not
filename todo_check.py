@@ -21,7 +21,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
     output = []
 
     with open(filename, 'r', encoding="UTF-8") as file:
-        line_number = 0
+        line_number = 1
         lines = file.readlines()
 
         for _line in lines:
