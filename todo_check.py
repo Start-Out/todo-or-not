@@ -10,10 +10,111 @@ _script_dir = os.path.dirname(os.path.abspath(__file__))
 _project_dir = _script_dir
 _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
 
+PERTINENT_LINE_LIMIT = 8
 
-def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [str]]]:
+
+class Hit:
+    def __init__(self, source_file: str, source_line: int, found_keys: list[str], pertinent_lines: list[str],
+                 trigger_line_index: int):
+        self.found_keys = found_keys
+        self.source_file = source_file
+        self.source_line = source_line
+        self.pertinent_lines = pertinent_lines
+        self.trigger_line_index = trigger_line_index
+
+    def __repr__(self):
+        _line = self.get_triggering_line()
+        _line_number = self.get_line_number()
+        _found_keys = self.get_found_keys()
+
+        header = ", ".join(_found_keys)
+        header = f"[{header}]".upper()
+        _pad = 16 - len(header)
+        padding = " " * _pad
+        header = header + padding
+
+        location = os.path.relpath(self.source_file, _project_dir)
+        location = f"{location}:{_line_number}"
+        _pad = 16 - len(location)
+        padding = " " * _pad
+        location = location + padding
+
+        return f"{header} - {location} - {_line.strip()}"
+
+    def get_triggering_line(self):
+        return self.pertinent_lines[self.trigger_line_index]
+
+    def get_line_number(self):
+        return self.source_line
+
+    def get_found_keys(self):
+        return self.found_keys
+
+    def get_file_extension(self):
+        return self.source_file.split(".")[-1:][0]
+
+    def get_pertinent_lines(self):
+        starting_line_number = self.source_line - self.trigger_line_index
+        _max_line = self.source_line + (len(self.pertinent_lines) - self.trigger_line_index)
+
+        def _parse_line_number(_l: int, star: bool = False) -> str:
+            _padding = len(str(_max_line))
+            _padding += 3
+
+            _decoration = "* " if star else "  "
+
+            return f"{_decoration}{str(_l)}:".rjust(_padding, " ")
+
+        output = f"```{self.get_file_extension()}\n"
+
+        for pertinent_line in self.pertinent_lines:
+            output += (f"{_parse_line_number(starting_line_number, starting_line_number == self.source_line)}\t"
+                       f"{pertinent_line}")
+            starting_line_number += 1
+
+        output += "```"
+
+        return output
+
+    def generate_issue(self):
+        title = f"{self.found_keys} - {self.get_triggering_line()}"
+
+        repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
+        github_ref = os.environ.get('GITHUB_REF').split("/")
+        reference = self.source_file.split(":")[0]
+
+        reference_uri = f"{repo_uri}/blob/{'/'.join(github_ref[2:])}/{reference}"
+
+        triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
+
+        body = (
+            f"{self.found_keys} - {self.source_file} - {self.get_triggering_line()}\n"
+            f"{self.get_pertinent_lines()}\n\n"
+            f"Reference: <a href=\"{reference_uri}\">{self.source_file}</a>"
+        )
+
+        owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
+
+        _output = subprocess.check_output(
+            [
+                "gh", "api",
+                "--method", "POST",
+                "-H", "Accept: application/vnd.github+json",
+                "-H", "X-GitHub-Api-Version: 2022-11-28",
+                f"/repos/{owner}/{repo}/issues",
+                "-f", f"title={title}",
+                "-f", f"body={body}",
+                "-f", f"assignees[]={triggered_by}"
+            ]
+        )
+
+        return _output
+
+
+def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
     """
     Finds and returns each line of a file that contains a key
+    :param ignore_flag: The flag which, when detected on a triggering line, will ignore that line
     :param filename: File to open() read-only
     :param args: Keys to check each line for
     :return: List of lines of text and their line number that contain at least one key and the keys each contains
@@ -31,7 +132,34 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
                     _found_keys.append(key)
 
             if len(_found_keys) > 0:
-                _hit = (_line, line_number, _found_keys)
+                # Collect surrounding lines that may be pertinent
+                _pertinent_lines = []
+
+                # Look at lines before the pertinent line
+                _i = line_number - 1
+                while abs(line_number - _i) <= PERTINENT_LINE_LIMIT:
+                    _i -= 1
+                    if len(lines[_i].strip()) > 0:
+                        _pertinent_lines.insert(0, lines[_i])
+                    else:
+                        # Stop when you reach a line break
+                        break
+
+                # Push the triggering line to the pertinent lines and note its index
+                _trigger_line = len(_pertinent_lines)
+                _pertinent_lines.append(lines[line_number - 1])
+
+                # Look at lines after the pertinent line
+                _i = line_number
+                while abs(_i - line_number) <= PERTINENT_LINE_LIMIT:
+                    if len(lines[_i].strip()) > 0:
+                        _pertinent_lines.append(lines[_i])
+                    else:
+                        # Stop when you reach a line break
+                        break
+                    _i += 1
+
+                _hit = Hit(filename, line_number, _found_keys, _pertinent_lines, _trigger_line)
                 output.append(_hit)
 
             line_number += 1
@@ -39,72 +167,11 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
     return output
 
 
-def _print_todo_found(target, hits, silent=False):
-    _output = []
-    for hit in hits:
-        header = ", ".join(hit[2])
-        header = f"[{header}]".upper()
-        _pad = 16 - len(header)
-        padding = " " * _pad
-        header = header + padding
-
-        location = os.path.relpath(target, _project_dir)
-        location = f"{location}:{hit[1]}"
-        _pad = 16 - len(location)
-        padding = " " * _pad
-        location = location + padding
-
-        if not silent:
-            print(f"{header} - {location} - {hit[0].strip()}", file=sys.stderr)
-        _printable_hit = (header, location, hit[0].strip())
-        _output.append(_printable_hit)
-    return _output
-
-
 def update_todo_ignore(other_file_names, target_file):
     target_file.write('\n')
     for file_name in other_file_names:
         with open(file_name, "r") as file:
             target_file.writelines(file.read())
-
-
-def _generate_issues(printables: tuple[str, str, str]):
-    output = []
-
-    for printable in printables:
-        title = f"{printable[0]} - {printable[2]}"
-
-        repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
-        github_ref = os.environ.get('GITHUB_REF').split("/")
-        reference = printable[1].split(":")[0]
-
-        reference_uri = f"{repo_uri}/blob/{'/'.join(github_ref[2:])}/{reference}"
-
-        triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
-
-        body = (
-                f"{printable[0]} - {printable[1]} - {printable[2]}\n\n"
-                f"Reference: <a href=\"{reference_uri}\">{printable[1]}</a>"
-                )
-
-        owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
-
-        _output = subprocess.check_output(
-            [
-                "gh", "api",
-                "--method", "POST",
-                "-H", "Accept: application/vnd.github+json",
-                "-H", "X-GitHub-Api-Version: 2022-11-28",
-                f"/repos/{owner}/{repo}/issues",
-                "-f", f"title={title}",
-                "-f", f"body={body}",
-                "-f", f"assignees[]={triggered_by}"
-                ]
-        )
-
-        output.append(_output)
-
-    return output
 
 
 def main(
@@ -200,23 +267,29 @@ def main(
 
     fail = False
     for target in targets:
+        # Generate the hits for each target collected
         hits = find_lines(target, "#todoon", "todo", "fixme")
 
         if len(hits) > 0:
             fail = True
 
             # Print the hits if the issue option is not specified, if it is then be silent and generate issues
-            _printable_hits = _print_todo_found(target, hits, mode.lower() == "issue")
+            # _printable_hits = _print_todo_found(target, hits, mode.lower() == "issue")
 
-            if mode.lower() == "issue":
-                _generate_issues(_printable_hits)
+            for hit in hits:
+                if mode.lower() == "issue":
+                    hit.generate_issue()
+                else:
+                    print(hit, file=sys.stderr)
 
     if fail:
-        print("\n######\nTODO and FIXME check failed, please address the above and try again.\n######\n")
+        print(
+            f"\n######\nTODO and FIXME check failed, please address the issues and try again. "
+            f"(mode is {mode.upper()})\n######\n")
         if not silent:
             exit(1)
     else:
-        print("\n######\nTODO and FIXME check passed!\n######\n")
+        print("\n######\nTODO and FIXME check complete.\n######\n")
 
 
 if __name__ == "__main__":
