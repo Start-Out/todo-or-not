@@ -5,10 +5,27 @@
 def an_unfinished_function():
     # TODO Finish documenting todo-or-not
     print("Hello, I'm not quite done, there's more to do!")
+    print("Look at all these things I have to do!")
+    a = 1 + 1
+    b = a * 2
+    print("Okay I'm done!")
 
 
 def a_broken_function():
-    return 42 / 0  # FIXME I don't know why this doesn't work!
+    # This line might not show up in the generated issue because it's too far away
+    #  from the line that triggered the issue.
+    #
+    # The search for pertinent lines will stop when it hits a line break or the
+    #  maximum number of lines, set by PERTINENT_LINE_LIMIT
+    a = [
+        1, 1, 2, 3
+    ]
+    b = sum(a)
+    c = b * len(a)
+    return c / 0  # FIXME I just don't know why this doesn't work!
+    # Notice that this line will be collected
+
+    # But this one won't!
 
 
 def a_skipping_example():

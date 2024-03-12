@@ -55,6 +55,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
                     if len(lines[_i].strip()) > 0:
                         _pertinent_lines.append(lines[_i])
                     else:
+                        # Stop when you reach a line break
                         break
 
                 # Push the triggering line to the pertinent lines and note its index
@@ -67,6 +68,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[tuple[str, int, [
                     if len(lines[_i].strip()) > 0:
                         _pertinent_lines.append(lines[_i])
                     else:
+                        # Stop when you reach a line break
                         break
                     _i += 1
 
