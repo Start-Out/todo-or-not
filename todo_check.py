@@ -200,7 +200,7 @@ def main(
 
     fail = False
     for target in targets:
-        hits = find_lines(target, "@todoon", "todo", "fixme")
+        hits = find_lines(target, "#todoon", "todo", "fixme")
 
         if len(hits) > 0:
             fail = True
