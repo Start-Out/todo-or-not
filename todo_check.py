@@ -78,12 +78,12 @@ def _generate_issues(printables: tuple[str, str, str]):
         github_ref = os.environ.get('GITHUB_REF').split("/")
         reference = printable[1].split(":")[0]
 
-        reference_uri = f"{repo_uri}/blob/{github_ref[1:]}/{reference}"
+        reference_uri = f"{repo_uri}/blob/{'/'.join(github_ref[1:])}/{reference}"
 
         triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
 
         body = (f"Reference: <a href=\"{reference_uri}\">{printable[1]}</a>\n\n"
-                f"{printable[1]}")
+                f"{printable[2]}")
 
         owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
