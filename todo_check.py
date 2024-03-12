@@ -207,4 +207,11 @@ def main(
 
 
 if __name__ == "__main__":
+
+    # DEBUGGING
+    with open("_action_env.txt", "w+") as tmp:
+        for name, value in os.environ.items():
+            tmp.write(f"{name}: {value}\n")
+            print(f"{name}: {value}\n", file=sys.stderr)
+
     run(main)
