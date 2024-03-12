@@ -24,7 +24,5 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-######### Check for TODOs, fail if any are found
-#          python todo_check.py
-######### Check for TODOs, pass regardless and generate new issues
+          echo "Check for TODOs, pass regardless and generate new issues"
           python todo_check.py --mode issue --silent
