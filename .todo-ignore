@@ -1,4 +1,6 @@
-.git
+.git/
+.github/
+.idea/
 
 package-lock.json
 package.json
