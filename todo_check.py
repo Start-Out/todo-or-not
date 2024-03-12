@@ -79,8 +79,8 @@ class Hit:
         title = f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
-        # github_ref = os.environ.get('GITHUB_REF').split("/")
-        github_ref = "a"
+        github_ref = os.environ.get('GITHUB_REF').split("/")
+        # github_ref = "a"
         reference = self.source_file.split(":")[0]
 
         reference_uri = f"{repo_uri}/blob/{'/'.join(github_ref[2:])}/{reference}"
@@ -93,8 +93,8 @@ class Hit:
             f"Reference: <a href=\"{reference_uri}\">{self.source_file}</a>"
         )
 
-        # owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
-        owner, repo = "a", "b"
+        owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
+        # owner, repo = "a", "b"
 
         _output = subprocess.check_output(
             [
