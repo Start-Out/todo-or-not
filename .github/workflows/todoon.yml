@@ -18,7 +18,7 @@ jobs:
         id: generate-token
         uses: actions/create-github-app-token@v1
         with:
-          app-id: ${{ vars.APP_ID }}
+          app-id: 853479
           private-key: ${{ secrets.APP_PEM }}
       - name: Run TODO-or-not
         env:
