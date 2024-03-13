@@ -1,7 +1,7 @@
 on:
   workflow_dispatch:
 jobs:
-  track_pr:
+  run_todoon:
     runs-on: ubuntu-latest
     environment: todo-or-not-1
     steps:

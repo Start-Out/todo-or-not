@@ -296,7 +296,7 @@ def main(
         print(get_issues())
 
     fail = False
-    hits = 0
+    number_of_hits = 0
     for target in targets:
         # Generate the hits for each target collected
         hits = find_lines(target, "#todoon", "todo", "fixme")
@@ -309,9 +309,9 @@ def main(
 
             for hit in hits:
                 if mode.lower() == "issue":
-                    hits += 1
+                    number_of_hits += 1
 
-                    if hits < MAXIMUM_ISSUES_GENERATED:
+                    if number_of_hits < MAXIMUM_ISSUES_GENERATED:
                         hit.generate_issue()
                     else:
                         print("FATAL: Exceeded maximum number of issues for this run, exiting now", file=sys.stderr)
