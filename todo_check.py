@@ -203,9 +203,9 @@ def get_issues():
     _str = response.decode("utf-8")
     _str.replace("\"", '\\\"')
     # _str.replace("'", '"')
-    return _str
+    # return _str
 
-    # return json.loads(_str)
+    return json.loads(_str)
 
 def main(
         mode: str = "print",
@@ -299,7 +299,7 @@ def main(
     #############################################
 
     if mode.lower() == "issue":
-        print(str(get_issues()))
+        print(get_issues())
 
     fail = False
     number_of_hits = 0
