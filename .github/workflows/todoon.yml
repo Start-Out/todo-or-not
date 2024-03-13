@@ -14,13 +14,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install typer
-      - name: Generate token
+      - name: Generate Token
         id: generate-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ vars.APP_ID }}
           private-key: ${{ secrets.APP_PEM }}
-      - name: Use API
+      - name: Run TODO-or-not
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |

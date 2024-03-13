@@ -1,4 +1,5 @@
 import os
+import json
 import subprocess
 import sys
 
@@ -190,7 +191,7 @@ def get_issues():
     if not DEBUG:
         owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
-    output = subprocess.check_output(
+    response = subprocess.check_output(
         [
             "gh", "api",
             "-H", "Accept: application/vnd.github+json",
@@ -199,7 +200,9 @@ def get_issues():
         ]
     )
 
-    return output
+    _str = response.decode("utf-8")
+
+    return json.loads(_str)
 
 def main(
         mode: str = "print",
