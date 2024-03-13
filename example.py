@@ -33,5 +33,5 @@ def a_skipping_example():
 
 
 def a_very_pretty_example():
-    # TODO Titled Issue! | In this format, you can define a title and a body! Also labels like #example
+    # TODO Titled Issue! | In this format, you can define a title and a body! Also labels like #example or #enhancement
     print("Check this out!")
