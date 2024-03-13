@@ -24,7 +24,7 @@ def a_broken_function():
     return c / 0  # FIXME I just don't know why this doesn't work!
     # Notice that this line will be collected
 
-    # But this one won't!
+    # But this one won't, because there's some whitespace between it and the trigger!
 
 
 def a_skipping_example():
