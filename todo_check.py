@@ -16,6 +16,11 @@ DEBUG = os.environ.get("DEBUG", False)
 MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", 8)
 PERTINENT_LINE_LIMIT = os.environ.get("PERTINENT_LINE_LIMIT", 8)
 
+# Localize
+with open(os.path.join(_project_dir, "localize.json")) as _localize_file:
+    LOCALIZE = json.load(_localize_file)
+REGION = "en_us"
+
 
 class Hit:
     def __init__(self, source_file: str, source_line: int, found_keys: list[str], pertinent_lines: list[str],
@@ -101,7 +106,7 @@ class Hit:
         body = (
             f"## {self}\n\n"
             f"{self.get_pertinent_lines()}\n\n"
-            f"Reference: <a href=\"{reference_uri}\">{self.source_file}</a>"
+            f"{LOCALIZE[REGION]['reference_link']}: <a href=\"{reference_uri}\">{self.source_file}</a>"
         )
 
         api_call = [
@@ -171,7 +176,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
                 # Look at lines after the pertinent line
                 _i = line_number
                 while abs(_i - line_number) <= PERTINENT_LINE_LIMIT:
-                    if len(lines[_i].strip()) > 0:
+                    if _i < len(lines) and len(lines[_i].strip()) > 0:
                         _pertinent_lines.append(lines[_i])
                     else:
                         # Stop when you reach a line break
@@ -194,7 +199,7 @@ def update_todo_ignore(other_file_names, target_file):
 
 
 def get_issues():
-    owner, repo = "start-out", "todo-or-not"
+    owner, repo = "owner", "repository"
 
     if not DEBUG:
         owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
@@ -215,6 +220,7 @@ def get_issues():
 
     return json.loads(_str)
 
+
 def main(
         mode: str = "print",
         silent: bool = False,
@@ -224,17 +230,23 @@ def main(
         xi: Annotated[
             Optional[List[str]], Option(help="Copy the contents of other files into an existing .todo-ignore")] = None
 ):
+    mode = mode.lower()
+
     targets = []
     ignored_files = []
     ignored_dirs = []
 
+    #############################################
+    # Handle settings
+    #############################################
+
     if (len(ni) > 0) and (len(xi) > 0):
-        print("FATAL: Cannot specify both --ni and --ci.", file=sys.stderr)
+        print(LOCALIZE[REGION]['error_cannot_specify_ni_ci'], file=sys.stderr)
         exit(1)
     elif (len(ni) > 0) or (len(xi) > 0):
         if force:
             _option = "--ni" if (len(ni) > len(xi)) else "--ci"
-            print("WARNING: --force will ignore the contents of the .todo-ignore generated when you specified",
+            print(LOCALIZE[REGION]['warning_force_overrides_ignore'],
                   _option,
                   file=sys.stderr)
 
@@ -244,15 +256,16 @@ def main(
         with open(os.path.join(_project_dir, ".todo-ignore"), mode, encoding="UTF-8") as new_todo_ignore_file:
             update_todo_ignore(_list, new_todo_ignore_file)
 
+    #############################################
+    # Parse .todo-ignore
+    #############################################
+
     if not force:
         try:
             with open(_todo_ignore_file, 'r'):
                 pass
         except FileNotFoundError:
-            print(
-                "FATAL: .todo-ignore NOT FOUND! use -i to copy another .ignore OR "
-                "--force to run without a .todo-ignore (NOT RECOMMENDED)",
-                file=sys.stderr)
+            print(LOCALIZE[REGION]['error_todo_ignore_not_found'], file=sys.stderr)
             exit(1)
 
         with open(_todo_ignore_file, 'r') as _ignore:
@@ -274,7 +287,12 @@ def main(
             # Ignore the .todo-ignore itself
             ignored_files.append(os.path.abspath(_ignore.name))
     else:
-        print("WARNING: Running without a .todo-ignore (NOT RECOMMENDED), [Ctrl + C] to cancel", file=sys.stderr)
+        print(f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE['windows']['shell_sigint']}]",
+              file=sys.stderr)
+
+    #############################################
+    # Collect files to scan
+    #############################################
 
     # Ignore this script
     ignored_files.append(__file__)
@@ -306,48 +324,68 @@ def main(
     # Handle output
     #############################################
 
+    # When pinging for all queries, their titles are hashed and saved here. This is for checking for duplicate issues
     existing_issues_hashed = []
 
-    if mode.lower() == "issue":
+    if mode == "issue":
         todoon_created_issues = get_issues()
 
         for issue in todoon_created_issues:
             existing_issues_hashed.append(_hash(issue["title"]))
 
-    fail = False
-    number_of_hits = 0
+    number_of_hits = 0  # Tracks the number of targets found
+    number_of_issues = 0  # Tracks the number of issues generated
+
+    # Used for summary
+    number_of_todo, number_of_fixme = 0, 0
+
+    # For each target file discovered
     for target in targets:
         # Generate the hits for each target collected
         hits = find_lines(target, "#todoon", "todo", "fixme")
 
+        # If any hits were detected...
         if len(hits) > 0:
-            fail = True
 
-            # Print the hits if the issue option is not specified, if it is then be silent and generate issues
-            # _printable_hits = _print_todo_found(target, hits, mode.lower() == "issue")
-
+            # Handle each hit that was detected
             for hit in hits:
-                _this_hit_hashed = _hash(hit.get_title())
+                number_of_hits += 1
+                number_of_todo += 1 if "todo" in hit.found_keys else 0
+                number_of_fixme += 1 if "fixme" in hit.found_keys else 0
 
-                if mode.lower() == "issue" and _this_hit_hashed not in existing_issues_hashed:
-                    number_of_hits += 1
+                # Special handling for the ISSUE mode
+                if mode == "issue":
+                    _this_hit_hashed = _hash(hit.get_title())
 
-                    if number_of_hits < MAXIMUM_ISSUES_GENERATED:
-                        hit.generate_issue()
+                    # Check if this hit's title is already created by the app
+                    if _this_hit_hashed not in existing_issues_hashed:
+
+                        # Limit the number of issues created in one run
+                        if number_of_issues < MAXIMUM_ISSUES_GENERATED:
+                            hit.generate_issue()
+                            number_of_issues += 1
+                        else:
+                            print(LOCALIZE[REGION]['error_todo_ignore_not_found'], file=sys.stderr)
+                            exit(1)
+                    # If this title already exists, notify but do not halt
                     else:
-                        print("FATAL: Exceeded maximum number of issues for this run, exiting now", file=sys.stderr)
-                        exit(1)
+                        print(f"{LOCALIZE[REGION]['info_duplicate_issue_avoided']}: {hit}", file=sys.stderr)
+
+                # If not in ISSUE mode, print hit to stderr
                 else:
                     print(hit, file=sys.stderr)
 
-    if fail:
-        print(
-            f"\n######\nTODO and FIXME check failed, please address the issues and try again. "
-            f"(mode is {mode.upper()})\n######\n")
-        if not silent:
-            exit(1)
-    else:
-        print("\n######\nTODO and FIXME check complete.\n######\n")
+    # Generate and print a summary of the run
+    summary = f"\n##########################\n# {LOCALIZE[REGION]['summary']}\n"
+    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
+    summary += f"# ({mode.upper()} MODE)\n"
+    summary += "##########################\n"
+
+    print(summary, file=sys.stderr)
+
+    # Fail if any hits were found and we are not in silent mode
+    if number_of_hits > 0 and not silent:
+        exit(1)
 
 
 if __name__ == "__main__":
