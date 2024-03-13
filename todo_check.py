@@ -31,6 +31,34 @@ class Hit:
         self.pertinent_lines = pertinent_lines
         self.trigger_line_index = trigger_line_index
 
+        self.structured_title = None
+        self.structured_body = None
+        self.structured_labels = None
+
+        # If this is a structured comment, parse out the title, body, and labels
+        if "|" in self.pertinent_lines[trigger_line_index]:
+            head, body = self.pertinent_lines[trigger_line_index].split("|", 1)
+
+            self.structured_title = head.strip()
+            self.structured_body = body.strip()
+
+            # If there is an # in the body, there may be labels to find
+            if "#" in self.structured_body:
+                self.structured_labels = []
+
+                _potential_tags = self.structured_body.split("#")
+
+                # Skip the first item in this list, because the labels will come after the #
+                for _potential in _potential_tags[1:]:
+                    _label = _potential.split(" ", 1)[0]
+
+                    if len(_label) > 0:
+                        self.structured_labels.append(_label)
+
+                if len(self.structured_labels) == 0:
+                    self.structured_labels = None
+
+
     def __repr__(self):
         _line = self.get_triggering_line()
         _line_number = self.get_line_number()
@@ -85,6 +113,9 @@ class Hit:
         return output
 
     def get_title(self):
+        return self.generic_title() if self.structured_title is None else self.structured_title
+
+    def generic_title(self):
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
     def generate_issue(self):
@@ -99,14 +130,12 @@ class Hit:
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
             owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
-# "https://github.com/Start-Out/todo-or-not/blob/fix/ref-resolution//home/runner/work/todo-or-not/todo-or-not/example.py"
-
         reference_file = self.source_file.split(":")[0]
 
         reference_uri = f"{repo_uri}/blob/{github_ref}/{reference_file}"
 
         body = (
-            f"## {self}\n\n"
+            f"## {self if self.structured_body is None else self.structured_body}\n\n"
             f"{self.get_pertinent_lines()}\n\n"
             f"{LOCALIZE[REGION]['reference_link']}: <a href=\"{reference_uri}\">{self.source_file}</a>"
         )
@@ -121,6 +150,11 @@ class Hit:
             "-f", f"body={body}",
             "-f", f"assignees[]={triggered_by}"
         ]
+
+        if self.structured_labels is not None:
+            for label in self.structured_labels:
+                api_call.append("-f")
+                api_call.append(f"labels[]={label}")
 
         if not DEBUG:
             _output = subprocess.check_output(api_call)
@@ -217,8 +251,6 @@ def get_issues():
 
     _str = response.decode("utf-8")
     _str.replace("\"", '\\\"')
-    # _str.replace("'", '"')
-    # return _str
 
     return json.loads(_str)
 
