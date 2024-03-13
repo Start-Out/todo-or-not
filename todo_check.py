@@ -200,7 +200,9 @@ def get_issues():
         ]
     )
 
-    _str = response.decode("utf-8").replace("'", '"')
+    _str = response.decode("utf-8")
+    _str.replace("\"", '\\\"')
+    _str.replace("'", '"')
 
     return json.loads(_str)
 
