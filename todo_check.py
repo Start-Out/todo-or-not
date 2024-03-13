@@ -90,18 +90,20 @@ class Hit:
     def generate_issue(self):
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
-        github_ref = "owner/repository"
+        github_ref = "reference"
         triggered_by = "octocat"
         owner, repo = "owner", "repository"
 
         if not DEBUG:
-            github_ref = os.environ.get('GITHUB_REF').split("/")
+            github_ref = os.environ.get("GITHUB_REF_NAME")
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
             owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
-        reference = self.source_file.split(":")[0]
+# "https://github.com/Start-Out/todo-or-not/blob/fix/ref-resolution//home/runner/work/todo-or-not/todo-or-not/example.py"
 
-        reference_uri = f"{repo_uri}/blob/{'/'.join(github_ref[2:])}/{reference}"
+        reference_file = self.source_file.split(":")[0]
+
+        reference_uri = f"{repo_uri}/blob/{github_ref}/{reference_file}"
 
         body = (
             f"## {self}\n\n"
@@ -183,7 +185,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
                         break
                     _i += 1
 
-                _hit = Hit(filename, line_number, _found_keys, _pertinent_lines, _trigger_line)
+                _hit = Hit(os.path.relpath(filename, _project_dir), line_number, _found_keys, _pertinent_lines, _trigger_line)
                 output.append(_hit)
 
             line_number += 1
