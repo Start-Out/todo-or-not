@@ -7,19 +7,20 @@ import sys
 from typer import Option, run
 from typing import List, Optional
 from typing_extensions import Annotated
+from localize import LOCALIZE
 
-_script_dir = os.path.dirname(os.path.abspath(__file__))
-_project_dir = _script_dir
+_project_dir = os.getcwd()
 _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
 
 DEBUG = os.environ.get("DEBUG", False)
 MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", 8)
 PERTINENT_LINE_LIMIT = os.environ.get("PERTINENT_LINE_LIMIT", 8)
+REGION = os.environ.get("REGION", "en_us")
 
-# Localize
-with open(os.path.join(_project_dir, "localize.json")) as _localize_file:
-    LOCALIZE = json.load(_localize_file)
-REGION = "en_us"
+# Validate that we support the region, otherwise default to something we have
+if REGION not in LOCALIZE:
+    print(F"WARNING: REGION {REGION} not recognized, defaulting to en_us (sorry, reach out to us!)\n", file=sys.stderr)
+    REGION = "en_us"
 
 
 class Hit:
@@ -57,7 +58,6 @@ class Hit:
 
                 if len(self.structured_labels) == 0:
                     self.structured_labels = None
-
 
     def __repr__(self):
         _line = self.get_triggering_line()
@@ -219,7 +219,8 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
                         break
                     _i += 1
 
-                _hit = Hit(os.path.relpath(filename, _project_dir), line_number, _found_keys, _pertinent_lines, _trigger_line)
+                _hit = Hit(os.path.relpath(filename, _project_dir), line_number, _found_keys, _pertinent_lines,
+                           _trigger_line)
                 output.append(_hit)
 
             line_number += 1
