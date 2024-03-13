@@ -90,18 +90,18 @@ class Hit:
     def generate_issue(self):
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
-        github_ref = "owner/repository"
+        github_ref = "reference"
         triggered_by = "octocat"
         owner, repo = "owner", "repository"
 
         if not DEBUG:
-            github_ref = os.environ.get('GITHUB_REF').split("/")
+            github_ref = os.environ.get("GITHUB_REF_NAME")
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
             owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
-        reference = self.source_file.split(":")[0]
+        reference_file = self.source_file.split(":")[0]
 
-        reference_uri = f"{repo_uri}/blob/{'/'.join(github_ref[2:])}/{reference}"
+        reference_uri = f"{repo_uri}/blob/{github_ref}/{reference_file}"
 
         body = (
             f"## {self}\n\n"

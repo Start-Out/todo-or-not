@@ -64,6 +64,6 @@ Issues are generated up to a limit (see [Environment Variables](#environment-var
 
 Issue generation is best supported from GitHub actions, the YAML included in this repository generates the necessary credentials and keeps them safe for you, so it's the most recommended option. However, if you wish to run this elsewhere, you must supply valid values to each of the following environment variables:
 
+- GITHUB_REF_NAME
 - GITHUB_REPOSITORY
-- GITHUB_REF
 - GITHUB_TRIGGERING_ACTOR
