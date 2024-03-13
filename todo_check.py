@@ -293,8 +293,7 @@ def main(
     #############################################
 
     if mode.lower() == "issue":
-        with open("testoutput.json", "a") as outfile:
-            outfile.write(str(get_issues()))
+        print(str(get_issues()))
 
     fail = False
     number_of_hits = 0
