@@ -1,4 +1,4 @@
-# TODO-or-not
+[![TODO-or-not Logo](https://i.postimg.cc/BZHkShHz/todoon.png)](https://postimg.cc/23j2T7Hd)
 
 ![Static Badge](https://img.shields.io/badge/Start-Out-blue)
 
