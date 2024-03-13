@@ -79,9 +79,10 @@ class Hit:
 
         return output
 
-    def generate_issue(self):
-        title = f"{self.get_found_keys()} - {self.get_triggering_line()}"
+    def get_title(self):
+        return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
+    def generate_issue(self):
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
         github_ref = "owner/repository"
@@ -109,7 +110,7 @@ class Hit:
             "-H", "Accept: application/vnd.github+json",
             "-H", "X-GitHub-Api-Version: 2022-11-28",
             f"/repos/{owner}/{repo}/issues",
-            "-f", f"title={title}",
+            "-f", f"title={self.get_title()}",
             "-f", f"body={body}",
             "-f", f"assignees[]={triggered_by}"
         ]
@@ -313,8 +314,6 @@ def main(
         for issue in todoon_created_issues:
             existing_issues_hashed.append(_hash(issue["title"]))
 
-        print(existing_issues_hashed)
-
     fail = False
     number_of_hits = 0
     for target in targets:
@@ -328,7 +327,9 @@ def main(
             # _printable_hits = _print_todo_found(target, hits, mode.lower() == "issue")
 
             for hit in hits:
-                if mode.lower() == "issue":
+                _this_hit_hashed = _hash(hit.get_title())
+
+                if mode.lower() == "issue" and _this_hit_hashed not in existing_issues_hashed:
                     number_of_hits += 1
 
                     if number_of_hits < MAXIMUM_ISSUES_GENERATED:
