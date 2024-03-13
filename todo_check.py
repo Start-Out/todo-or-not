@@ -155,7 +155,7 @@ class Hit:
             labels = ",".join(self.structured_labels)
 
             api_call.append("-f")
-            api_call.append(f"labels={labels}")
+            api_call.append(f"labels[]={labels}")
 
         if not DEBUG:
             _output = subprocess.check_output(api_call)
