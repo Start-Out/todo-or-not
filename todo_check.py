@@ -1,5 +1,6 @@
 import os
 import json
+import hashlib
 import subprocess
 import sys
 
@@ -120,6 +121,12 @@ class Hit:
             print(api_call)
 
         return _output
+
+
+def _hash(hit_str: str):
+    m = hashlib.sha1()
+    m.update(bytes(hit_str, "utf-8"))
+    return m.hexdigest()
 
 
 def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
@@ -298,8 +305,15 @@ def main(
     # Handle output
     #############################################
 
+    existing_issues_hashed = []
+
     if mode.lower() == "issue":
-        print(get_issues())
+        todoon_created_issues = get_issues()
+
+        for issue in todoon_created_issues:
+            existing_issues_hashed.append(_hash(issue["title"]))
+
+        print(existing_issues_hashed)
 
     fail = False
     number_of_hits = 0
