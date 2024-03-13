@@ -99,6 +99,8 @@ class Hit:
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
             owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
+# "https://github.com/Start-Out/todo-or-not/blob/fix/ref-resolution//home/runner/work/todo-or-not/todo-or-not/example.py"
+
         reference_file = self.source_file.split(":")[0]
 
         reference_uri = f"{repo_uri}/blob/{github_ref}/{reference_file}"
@@ -183,7 +185,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
                         break
                     _i += 1
 
-                _hit = Hit(filename, line_number, _found_keys, _pertinent_lines, _trigger_line)
+                _hit = Hit(os.path.relpath(filename, _project_dir), line_number, _found_keys, _pertinent_lines, _trigger_line)
                 output.append(_hit)
 
             line_number += 1
