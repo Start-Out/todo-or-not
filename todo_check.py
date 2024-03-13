@@ -186,7 +186,7 @@ def update_todo_ignore(other_file_names, target_file):
 
 
 def get_issues():
-    owner, repo = "owner", "repository"
+    owner, repo = "start-out", "todo-or-not"
 
     if not DEBUG:
         owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
@@ -202,9 +202,10 @@ def get_issues():
 
     _str = response.decode("utf-8")
     _str.replace("\"", '\\\"')
-    _str.replace("'", '"')
+    # _str.replace("'", '"')
+    return _str
 
-    return json.loads(_str)
+    # return json.loads(_str)
 
 def main(
         mode: str = "print",
