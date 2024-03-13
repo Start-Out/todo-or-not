@@ -1,3 +1,5 @@
+name: Run TODO-or-not
+
 on:
   workflow_dispatch:
 jobs:
