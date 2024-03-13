@@ -19,6 +19,7 @@ jobs:
   deploy:
 
     runs-on: ubuntu-latest
+    environment: todo-or-not-1
 
     steps:
     - uses: actions/checkout@v3
