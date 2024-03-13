@@ -99,8 +99,6 @@ class Hit:
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
             owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
-# "https://github.com/Start-Out/todo-or-not/blob/fix/ref-resolution//home/runner/work/todo-or-not/todo-or-not/example.py"
-
         reference_file = self.source_file.split(":")[0]
 
         reference_uri = f"{repo_uri}/blob/{github_ref}/{reference_file}"
@@ -217,8 +215,6 @@ def get_issues():
 
     _str = response.decode("utf-8")
     _str.replace("\"", '\\\"')
-    # _str.replace("'", '"')
-    # return _str
 
     return json.loads(_str)
 
