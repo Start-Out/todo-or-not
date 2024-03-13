@@ -30,3 +30,8 @@ def a_broken_function():
 def a_skipping_example():
     # Since the line below has #todoon in it, the checker will give it a pass even though it has the magic words!
     print("Sometimes you really have to write TODO or FIXME, like this!")  # #todoon
+
+
+def a_very_pretty_example():
+    # TODO Titled Issue! | In this format, you can define a title and a body! Also labels like #example
+    print("Check this out!")
