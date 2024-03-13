@@ -20,6 +20,8 @@ jobs:
 
     runs-on: ubuntu-latest
     environment: todo-or-not-1
+    permissions:
+      id-token: write
 
     steps:
     - uses: actions/checkout@v3
