@@ -38,21 +38,25 @@ Options:
 : Do not exit with a non-zero exit code, even if TODOs and/or FIXMEs are found
 
 --force
-: Run todo-check without a .todo-ignore. NOT RECOMMENDED! There could be a lot of files in there.
+: Run todo_check without a .todo-ignore. NOT RECOMMENDED! There could be a lot of files in there.
 
 --ni FILENAME
-: Copy the contents of other files into a **N**EW .todo-ignore, this option must be specified for each. e.g. `--ni .gitignore --ni .prettierignore`
+: Copy the contents of other files into a **N**EW [.todo-ignore](#todo-ignore), this option must be specified for each. e.g. `--ni .gitignore --ni .prettierignore`
 
 --xi FILENAME
-: Copy the contents of other files into a E**X**ISTING .todo-ignore (appending), this option must be specified for each. e.g. `--ni .gitignore --xi .prettierignore`
+: Copy the contents of other files into a E**X**ISTING [.todo-ignore](#todo-ignore), this option must be specified for each. e.g. `--ni .gitignore --xi .prettierignore`
 
 ### Environment Variables
 
 MAXIMUM_ISSUES_GENERATED
-: _default: 8_ <br> If in ISSUE mode, will exit the todo-check after a certain number of issues have been generated.
+: _default: 8_ <br> If in ISSUE mode, will exit the todo_check after a certain number of issues have been generated.
 
 PERTINENT_LINE_LIMIT
 : _default: 8_ <br> The greatest number of surrounding lines (in each direction) that will be collected in the body of an issue generated in ISSUE mode (fewer may be gathered if they are broken up by blank lines)
+
+### .todo-ignore
+
+This file specifies which files and directories that todo_check doesn't need to walk through or analyze. It follows the same syntax as a .gitignore file.
 
 ### Issues
 
