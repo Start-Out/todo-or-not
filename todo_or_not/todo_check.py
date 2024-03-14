@@ -140,7 +140,7 @@ class Hit:
         body = (
             f"## {self if self.structured_body is None else self.structured_body}\n\n"
             f"{self.get_pertinent_lines()}\n\n"
-            f"{LOCALIZE[REGION]['reference_link']}: <a href=\"{reference_uri}\">{self.source_file}</a>"
+            f"{LOCALIZE[REGION]['issue_body_reference_link']}: <a href=\"{reference_uri}\">{self.source_file}</a>"
         )
 
         api_call = [
@@ -489,13 +489,13 @@ def main(
     # Summarize the run of todo-check
     #############################################
 
-    summary = f"\n##########################\n# {LOCALIZE[REGION]['summary']}\n"
+    summary = f"\n##########################\n# {LOCALIZE[REGION]['summary_title']}\n"
     summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
 
     if number_of_encoding_failures > 1:
-        summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['encoding_failure_plural']}\n"
+        summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['summary_encoding_unsupported_plural']}\n"
     elif number_of_encoding_failures == 1:
-        summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['encoding_failure_singular']}\n"
+        summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['summary_encoding_unsupported_singular']}\n"
 
     summary += f"# ({mode.upper()} MODE)\n"
     summary += "##########################\n"
