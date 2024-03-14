@@ -9,9 +9,11 @@
 name: Publish to PyPi (Test)
 
 on:
-  release:
-    types: [published]
   pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
     branches:
       - main
 
