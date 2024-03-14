@@ -6,6 +6,8 @@
 
 TODO Or Not (#todoon) is, in essence, a simple tool that checks your project for TODO's and FIXME's. You can also integrate this tool into your GitHub workflow via actions, and automate generating issues from the discovered TODO's and FIXME's.
 
+[Get the GitHub App](https://github.com/apps/todo-or-not)
+
 [Try it out! (see on PyPi)](https://pypi.org/project/todo-or-not/)
 
 ```bash
