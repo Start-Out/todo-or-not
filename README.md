@@ -109,6 +109,9 @@ Options:
 --xi FILENAME
 : Copy the contents of other files into a E**X**ISTING [.todo-ignore](#todo-ignore), this option must be specified for each. e.g. `--ni .gitignore --xi .prettierignore`
 
+If a file discovered by `todoon` is not of a supported encoding [see [SUPPORTED_ENCODINGS_TODO_CHECK](todo_or_not/localize.py) for most up-to-date list] it will be skipped.
+The number of skipped files is summarized at the end of the run.
+
 ### Environment Variables
 
 MAXIMUM_ISSUES_GENERATED
@@ -119,7 +122,17 @@ PERTINENT_LINE_LIMIT
 
 ### .todo-ignore
 
-This file specifies which files and directories that todo_check doesn't need to walk through or analyze. It follows the same syntax as a .gitignore file.
+A plaintext file in a supported encoding.
+This file specifies which files and directories that todo_check doesn't need to walk through or analyze.
+It follows the same syntax as a .gitignore file. 
+
+Supported encodings:
+
+* UTF-8
+* UTF-16
+
+[see [SUPPORTED_ENCODINGS_TODOIGNORE](todo_or_not/localize.py) for most up-to-date list]
+
 
 ### Issues
 

@@ -1,32 +1,24 @@
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[project]
-name = "todo_or_not"
-
-version = "v0.6.3-alpha"
-
-dependencies = [
-    "typer",
-    "typing_extensions"
-]
-authors = [
-  { name="Trenton Young", email="askstartout@gmail.com" },
-]
+[tool.poetry]
+name = "todo-or-not"
+version = "0.7.1-alpha"
 description = "#todoon integrates the TODOs in your codebase with your GitHub repository"
-keywords = ["todo", "github"]
+authors = ["TrentonYo <trentonyo@gmail.com>"]
+license = "GPL-3.0-only"
 readme = "README.md"
-requires-python = ">=3.11"
-classifiers = [
-    "Programming Language :: Python :: 3.11",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
-    "Operating System :: OS Independent",
-]
+keywords = ["todo", "github"]
+homepage = "https://github.com/apps/todo-or-not"
+repository = "https://github.com/Start-Out/todo-or-not"
+documentation = "https://github.com/Start-Out/todo-or-not/blob/main/README.md"
 
-[project.urls]
-Homepage = "https://github.com/Start-Out/todo-or-not"
-Issues = "https://github.com/Start-Out/todo-or-not/issues"
+[tool.poetry.dependencies]
+python = "^3.11"
+typer = "^0.9.0"
+typing-extensions = "^4.10.0"
 
-[project.scripts]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
 todoon = "todo_or_not:todo_check.typer_main"
