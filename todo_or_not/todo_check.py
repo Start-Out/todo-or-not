@@ -393,17 +393,22 @@ def main(
                 targets.append(current)
 
     #############################################
-    # Handle output
+    # Preventing duplicate issues
     #############################################
 
     # When pinging for all queries, their titles are hashed and saved here. This is for checking for duplicate issues
     existing_issues_hashed = []
 
+    # Collect all the issues that the bot has so far submitted to check for duplicates
     if mode == "issue":
         todoon_created_issues = get_bot_submitted_issues()
 
         for issue in todoon_created_issues:
             existing_issues_hashed.append(_hash(issue["title"]))
+
+    #############################################
+    # Run todo-check
+    #############################################
 
     number_of_hits = 0  # Tracks the number of targets found
     number_of_issues = 0  # Tracks the number of issues generated
@@ -425,11 +430,13 @@ def main(
                 number_of_todo += 1 if "todo" in hit.found_keys else 0
                 number_of_fixme += 1 if "fixme" in hit.found_keys else 0
 
+                #############################################
                 # Special handling for the ISSUE mode
+
                 if mode == "issue":
                     _this_hit_hashed = _hash(hit.get_title())
 
-                    # Check if this hit's title is already created by the app
+                    # Check if the app already created this hit's title
                     if _this_hit_hashed not in existing_issues_hashed:
 
                         # Limit the number of issues created in one run
@@ -443,11 +450,16 @@ def main(
                     else:
                         print(f"{LOCALIZE[REGION]['info_duplicate_issue_avoided']}: {hit}", file=sys.stderr)
 
+                #############################################
                 # If not in ISSUE mode, print hit to stderr
+
                 else:
                     print(hit, file=sys.stderr)
 
-    # Generate and print a summary of the run
+    #############################################
+    # Summarize the run of todo-check
+    #############################################
+
     summary = f"\n##########################\n# {LOCALIZE[REGION]['summary']}\n"
     summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
     summary += f"# ({mode.upper()} MODE)\n"
