@@ -174,13 +174,15 @@ def _hash(hit_str: str):
     return m.hexdigest()
 
 
-def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
+def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
     :param ignore_flag: The flag which, when detected on a triggering line, will ignore that line
     :param filename: File to open() read-only
     :param args: Keys to check each line for
-    :return: List of lines of text and their line number that contain at least one key and the keys each contains
+    :return:
+     | List of lines of text and their line number that contain at least one key and the keys each contains
+     | The detected encoding of the file or none if not found
     """
     output = []
 
@@ -233,7 +235,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
     else:
         print(LOCALIZE[REGION]["warning_encoding_not_supported"], "\n * ", filename, file=sys.stderr)
 
-    return output
+    return output, use_encoding
 
 
 def paste_contents_into_file(other_file_names: list[str], target_file: str):
@@ -435,6 +437,7 @@ def main(
 
     number_of_hits = 0  # Tracks the number of targets found
     number_of_issues = 0  # Tracks the number of issues generated
+    number_of_encoding_failures = 0  # Tracks the files unread due to encoding error
 
     # Used for summary
     number_of_todo, number_of_fixme = 0, 0
@@ -442,7 +445,10 @@ def main(
     # For each target file discovered
     for target in targets:
         # Generate the hits for each target collected
-        hits = find_lines(target, "#todoon", "todo", "fixme")
+        hits, _enc = find_lines(target, "#todoon", "todo", "fixme")
+
+        if _enc is None:
+            number_of_encoding_failures += 1
 
         # If any hits were detected...
         if len(hits) > 0:
@@ -485,6 +491,10 @@ def main(
 
     summary = f"\n##########################\n# {LOCALIZE[REGION]['summary']}\n"
     summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
+
+    if number_of_encoding_failures > 0:
+        summary += f"# {number_of_encoding_failures} Encoding Failures\n"
+
     summary += f"# ({mode.upper()} MODE)\n"
     summary += "##########################\n"
 
