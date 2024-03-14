@@ -1,6 +1,6 @@
 [![TODO-or-not Logo](https://i.postimg.cc/BZHkShHz/todoon.png)](https://postimg.cc/23j2T7Hd)
 
-![Static Badge](https://img.shields.io/badge/Start-Out-blue)
+![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not) ![PyPI - License](https://img.shields.io/pypi/l/todo-or-not) ![Static Badge](https://img.shields.io/badge/Start-Out-blue)
 
 > TODO or not to do, that is the question
 
