@@ -285,7 +285,11 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
     :param _supported_encodings: A list of supported encodings e.g. `['utf-8', 'iso-8859-1', 'iso']`
     :return: The encoding of the target file if found, None if no supported encoding could be found
     """
-    assert os.path.isfile(_target_path)
+    try:
+        assert os.path.isfile(_target_path)
+    except AssertionError:
+        print(f"{LOCALIZE[REGION]['error_is_not_file']}: {_target_path}", file=sys.stderr)
+        return None
 
     # Try to read the file in a supported encoding
     _use_encoding = None
