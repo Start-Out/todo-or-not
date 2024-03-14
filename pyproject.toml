@@ -5,8 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "todo_or_not_startout"
 
-version = "v0.5.0-alpha"
-#dynamic = ["version"]
+version = "v0.5.12-alpha"
 
 dependencies = [
     "typer",
@@ -30,4 +29,4 @@ Homepage = "https://github.com/Start-Out/todo-or-not"
 Issues = "https://github.com/Start-Out/todo-or-not/issues"
 
 [project.scripts]
-todoon = "todo_check:typer_main"
+todoon = "todo_or_not_startout:todo_check.typer_main"

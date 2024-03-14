@@ -7,7 +7,8 @@ import sys
 from typer import Option, run
 from typing import List, Optional
 from typing_extensions import Annotated
-from localize import LOCALIZE
+
+from .localize import LOCALIZE
 
 _project_dir = os.getcwd()
 _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
