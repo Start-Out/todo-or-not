@@ -119,7 +119,17 @@ PERTINENT_LINE_LIMIT
 
 ### .todo-ignore
 
-This file specifies which files and directories that todo_check doesn't need to walk through or analyze. It follows the same syntax as a .gitignore file.
+A plaintext file in a supported encoding.
+This file specifies which files and directories that todo_check doesn't need to walk through or analyze.
+It follows the same syntax as a .gitignore file. 
+
+Supported encodings:
+
+* UTF-8
+* UTF-16
+
+[see [SUPPORTED_ENCODINGS_TODOIGNORE](todo_or_not/localize.py) for most up-to-date list]
+
 
 ### Issues
 

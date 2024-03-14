@@ -8,7 +8,8 @@ from typer import Option, run
 from typing import List, Optional
 from typing_extensions import Annotated
 
-from .localize import LOCALIZE
+from todo_or_not.localize import LOCALIZE
+from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE
 
 _project_dir = os.getcwd()
 _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
@@ -229,14 +230,27 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
     return output
 
 
-def update_todo_ignore(other_file_names, target_file):
+def paste_contents_into_file(other_file_names: list[str], target_file: str):
+    """
+    Writes the contents of other files to the target file
+    :param other_file_names: a list of path-likes pointing to source files
+    :param target_file: path-like pointing to the destination file
+    """
+
     target_file.write('\n')
     for file_name in other_file_names:
         with open(file_name, "r") as file:
             target_file.writelines(file.read())
 
+    target_file.write('\n')
 
-def get_issues():
+
+def get_bot_submitted_issues() -> list[dict]:
+    """
+    Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a
+    list of dicts
+    :return: List of issues as dicts
+    """
     owner, repo = "owner", "repository"
 
     if not DEBUG:
@@ -276,35 +290,57 @@ def main(
     # Handle settings
     #############################################
 
+    # Don't allow the use of ni and ci at the same time
     if (len(ni) > 0) and (len(xi) > 0):
-        print(LOCALIZE[REGION]['error_cannot_specify_ni_ci'], file=sys.stderr)
+        print(LOCALIZE[REGION]['error_cannot_specify_ni_xi'], file=sys.stderr)
         exit(1)
+    # If using either ni or ci...
     elif (len(ni) > 0) or (len(xi) > 0):
+        # ...check if force is used and warn the user if so
         if force:
-            _option = "--ni" if (len(ni) > len(xi)) else "--ci"
+            # Check which mode is being used
+            _option = "--ni" if (len(ni) > len(xi)) else "--xi"
             print(LOCALIZE[REGION]['warning_force_overrides_ignore'],
                   _option,
                   file=sys.stderr)
 
-        mode = "a+" if (len(ni) > len(xi)) else "w"
+        # Update .todo-ignore appropriately by mode
+        mode = "w" if (len(ni) > len(xi)) else "a+"
         _list = ni if (len(ni) > len(xi)) else xi
 
         with open(os.path.join(_project_dir, ".todo-ignore"), mode, encoding="UTF-8") as new_todo_ignore_file:
-            update_todo_ignore(_list, new_todo_ignore_file)
+            paste_contents_into_file(_list, new_todo_ignore_file)
 
     #############################################
     # Parse .todo-ignore
     #############################################
 
+    # As long as we aren't foregoing the .todo-ignore...
     if not force:
-        try:
-            with open(_todo_ignore_file, 'r'):
-                pass
-        except FileNotFoundError:
-            print(LOCALIZE[REGION]['error_todo_ignore_not_found'], file=sys.stderr)
+        # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
+        assert os.path.isfile(_todo_ignore_file)
+
+        # Try to read .todo-ignore in a supported encoding
+        _use_encoding = None
+        for encoding in SUPPORTED_ENCODINGS_TODOIGNORE:
+            try:
+                with open(_todo_ignore_file, 'r', encoding=encoding) as _ignore:
+                    _ignore.readline()
+            except UnicodeDecodeError:
+                # Try the next encoding without setting the used encoding
+                continue
+
+            # If able to open, use this encoding and just exit the search for valid encoding
+            _use_encoding = encoding
+            break
+
+        # If we weren't able to find a .todo-ignore in a supported encoding, must exit
+        if _use_encoding is None:
+            print(LOCALIZE[REGION]['error_todo_ignore_not_supported'], file=sys.stderr)
             exit(1)
 
-        with open(_todo_ignore_file, 'r') as _ignore:
+        # ... actually do the reading of the .todo-ignore
+        with open(_todo_ignore_file, 'r', encoding=_use_encoding) as _ignore:
             for line in _ignore.readlines():
                 if not line.startswith("#") and len(line) > 1:
                     if line.endswith('\n'):
@@ -364,7 +400,7 @@ def main(
     existing_issues_hashed = []
 
     if mode == "issue":
-        todoon_created_issues = get_issues()
+        todoon_created_issues = get_bot_submitted_issues()
 
         for issue in todoon_created_issues:
             existing_issues_hashed.append(_hash(issue["title"]))
