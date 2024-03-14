@@ -5,6 +5,8 @@ LOCALIZE = {
     "en_us": {
         "reference_link": "Reference",
         "summary": "Summary",
+        "encoding_failure_singular": "File skipped due to Encoding Failure",
+        "encoding_failure_plural": "Files skipped due to Encoding Failures",
         "info_duplicate_issue_avoided": "INFO: Duplicate issue avoided",
         "error_cannot_specify_ni_xi": "ERROR: Cannot specify both --ni and --xi",
         "error_todo_ignore_not_found": "ERROR: .todo-ignore NOT FOUND! use -i to copy another .ignore OR --force to run without a .todo-ignore (NOT RECOMMENDED)",

@@ -492,8 +492,10 @@ def main(
     summary = f"\n##########################\n# {LOCALIZE[REGION]['summary']}\n"
     summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
 
-    if number_of_encoding_failures > 0:
-        summary += f"# {number_of_encoding_failures} Encoding Failures\n"
+    if number_of_encoding_failures > 1:
+        summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['encoding_failure_plural']}\n"
+    elif number_of_encoding_failures == 1:
+        summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['encoding_failure_singular']}\n"
 
     summary += f"# ({mode.upper()} MODE)\n"
     summary += "##########################\n"
