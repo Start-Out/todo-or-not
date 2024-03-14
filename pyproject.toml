@@ -7,13 +7,12 @@ license = "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPL
 readme = "README.md"
 keywords = ["todo", "github"]
 homepage = "https://github.com/Start-Out/todo-or-not"
-issues = "https://github.com/Start-Out/todo-or-not/issues"
 documentation = "https://github.com/Start-Out/todo-or-not/blob/main/README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
 typer = "^0.9.0"
-typing-extensions = "^4.10.0"
+typing-extensions = {url = "https://files.pythonhosted.org/packages/16/3a/0d26ce356c7465a19c9ea8814b960f8a36c3b0d07c323176620b7b483e44/typing_extensions-4.10.0.tar.gz"}
 
 
 [build-system]
