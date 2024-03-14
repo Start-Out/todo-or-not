@@ -5,11 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "todo_or_not"
 
-version = "v0.6.4-alpha"
+version = "v0.6.5-alpha"
 
 dependencies = [
-    "typer",
-    "typing_extensions"
+    "typer==0.9.0",
+    "typing_extensions==4.10.0"
 ]
 authors = [
   { name="Trenton Young", email="askstartout@gmail.com" },
