@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "todo_or_not_startout"
+name = "todo_or_not"
 
-version = "v0.5.20-alpha"
+version = "v0.6.1-alpha"
 
 dependencies = [
     "typer",
