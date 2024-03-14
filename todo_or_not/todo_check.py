@@ -10,6 +10,7 @@ from typing_extensions import Annotated
 
 from todo_or_not.localize import LOCALIZE
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE
+from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK
 
 _project_dir = os.getcwd()
 _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
@@ -183,49 +184,54 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
     """
     output = []
 
-    with open(filename, 'r', encoding="UTF-8") as file:
-        line_number = 1
-        lines = file.readlines()
+    use_encoding = get_encoding(filename, SUPPORTED_ENCODINGS_TODO_CHECK)
 
-        for _line in lines:
-            _found_keys = []
-            for key in args:
-                if key.lower() in _line.lower() and ignore_flag.lower() not in _line.lower():
-                    _found_keys.append(key)
+    if use_encoding is not None:
+        with open(filename, 'r', encoding=use_encoding) as file:
+            line_number = 1
+            lines = file.readlines()
 
-            if len(_found_keys) > 0:
-                # Collect surrounding lines that may be pertinent
-                _pertinent_lines = []
+            for _line in lines:
+                _found_keys = []
+                for key in args:
+                    if key.lower() in _line.lower() and ignore_flag.lower() not in _line.lower():
+                        _found_keys.append(key)
 
-                # Look at lines before the pertinent line
-                _i = line_number - 1
-                while abs(line_number - _i) <= PERTINENT_LINE_LIMIT:
-                    _i -= 1
-                    if len(lines[_i].strip()) > 0:
-                        _pertinent_lines.insert(0, lines[_i])
-                    else:
-                        # Stop when you reach a line break
-                        break
+                if len(_found_keys) > 0:
+                    # Collect surrounding lines that may be pertinent
+                    _pertinent_lines = []
 
-                # Push the triggering line to the pertinent lines and note its index
-                _trigger_line = len(_pertinent_lines)
-                _pertinent_lines.append(lines[line_number - 1])
+                    # Look at lines before the pertinent line
+                    _i = line_number - 1
+                    while abs(line_number - _i) <= PERTINENT_LINE_LIMIT:
+                        _i -= 1
+                        if len(lines[_i].strip()) > 0:
+                            _pertinent_lines.insert(0, lines[_i])
+                        else:
+                            # Stop when you reach a line break
+                            break
 
-                # Look at lines after the pertinent line
-                _i = line_number
-                while abs(_i - line_number) <= PERTINENT_LINE_LIMIT:
-                    if _i < len(lines) and len(lines[_i].strip()) > 0:
-                        _pertinent_lines.append(lines[_i])
-                    else:
-                        # Stop when you reach a line break
-                        break
-                    _i += 1
+                    # Push the triggering line to the pertinent lines and note its index
+                    _trigger_line = len(_pertinent_lines)
+                    _pertinent_lines.append(lines[line_number - 1])
 
-                _hit = Hit(os.path.relpath(filename, _project_dir), line_number, _found_keys, _pertinent_lines,
-                           _trigger_line)
-                output.append(_hit)
+                    # Look at lines after the pertinent line
+                    _i = line_number
+                    while abs(_i - line_number) <= PERTINENT_LINE_LIMIT:
+                        if _i < len(lines) and len(lines[_i].strip()) > 0:
+                            _pertinent_lines.append(lines[_i])
+                        else:
+                            # Stop when you reach a line break
+                            break
+                        _i += 1
 
-            line_number += 1
+                    _hit = Hit(os.path.relpath(filename, _project_dir), line_number, _found_keys, _pertinent_lines,
+                               _trigger_line)
+                    output.append(_hit)
+
+                line_number += 1
+    else:
+        print(LOCALIZE[REGION]["warning_encoding_not_supported"], "\n * ", filename, file=sys.stderr)
 
     return output
 
@@ -269,6 +275,31 @@ def get_bot_submitted_issues() -> list[dict]:
     _str.replace("\"", '\\\"')
 
     return json.loads(_str)
+
+
+def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or None:
+    """
+    :param _target_path: A path-like string pointing to the file for which we want to get a valid encoding
+    :param _supported_encodings: A list of supported encodings e.g. `['utf-8', 'iso-8859-1', 'iso']`
+    :return: The encoding of the target file if found, None if no supported encoding could be found
+    """
+    assert os.path.isfile(_target_path)
+
+    # Try to read the file in a supported encoding
+    _use_encoding = None
+    for encoding in _supported_encodings:
+        try:
+            with open(_target_path, 'r', encoding=encoding) as _ignore:
+                _ignore.readline()
+        except UnicodeDecodeError:
+            # Try the next encoding without setting the used encoding
+            continue
+
+        # If able to open, use this encoding and exit the search for valid encoding
+        _use_encoding = encoding
+        break
+
+    return _use_encoding
 
 
 def main(
@@ -318,29 +349,15 @@ def main(
     # As long as we aren't foregoing the .todo-ignore...
     if not force:
         # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
-        assert os.path.isfile(_todo_ignore_file)
+        use_encoding = get_encoding(_todo_ignore_file, SUPPORTED_ENCODINGS_TODOIGNORE)
 
-        # Try to read .todo-ignore in a supported encoding
-        _use_encoding = None
-        for encoding in SUPPORTED_ENCODINGS_TODOIGNORE:
-            try:
-                with open(_todo_ignore_file, 'r', encoding=encoding) as _ignore:
-                    _ignore.readline()
-            except UnicodeDecodeError:
-                # Try the next encoding without setting the used encoding
-                continue
-
-            # If able to open, use this encoding and just exit the search for valid encoding
-            _use_encoding = encoding
-            break
-
-        # If we weren't able to find a .todo-ignore in a supported encoding, must exit
-        if _use_encoding is None:
+        # If we weren't able to find a file in a supported encoding, program must exit
+        if use_encoding is None:
             print(LOCALIZE[REGION]['error_todo_ignore_not_supported'], file=sys.stderr)
             exit(1)
 
         # ... actually do the reading of the .todo-ignore
-        with open(_todo_ignore_file, 'r', encoding=_use_encoding) as _ignore:
+        with open(_todo_ignore_file, 'r', encoding=use_encoding) as _ignore:
             for line in _ignore.readlines():
                 if not line.startswith("#") and len(line) > 1:
                     if line.endswith('\n'):

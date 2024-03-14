@@ -1,5 +1,5 @@
 SUPPORTED_ENCODINGS_TODOIGNORE = ['utf-8', 'utf-16']
-SUPPORTED_ENCODINGS_TODO_CHECK = ['utf-8']
+SUPPORTED_ENCODINGS_TODO_CHECK = ['utf-8', 'utf-16']
 
 LOCALIZE = {
     "en_us": {
@@ -11,7 +11,8 @@ LOCALIZE = {
         "error_todo_ignore_not_supported": f"ERROR: .todo-ignore uses unsupported encoding! Supported encodings: {SUPPORTED_ENCODINGS_TODOIGNORE}",
         "error_exceeded_maximum_issues": "ERROR: Exceeded maximum number of issues for this run, exiting now",
         "warning_force_overrides_ignore": "WARNING: --force will ignore the contents of the .todo-ignore generated when you specified (.todo-ignore will still be changed, just not used)",
-        "warning_run_without_todo_ignore": "WARNING: Running without a .todo-ignore, to cancel use "
+        "warning_run_without_todo_ignore": "WARNING: Running without a .todo-ignore, to cancel use ",
+        "warning_encoding_not_supported": f"WARNING: File uses unsupported encoding, we will skip it but consider adding to .todo-ignore (Supported encodings: {SUPPORTED_ENCODINGS_TODO_CHECK})",
     },
     "windows": {
         "shell_sigint": "CTRL + C"
