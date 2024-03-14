@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "todo_or_not"
 
-version = "v0.6.1-alpha"
+version = "v0.6.2-alpha"
 
 dependencies = [
     "typer",
