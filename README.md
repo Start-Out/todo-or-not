@@ -1,4 +1,4 @@
-[![TODO-or-not Logo](https://i.postimg.cc/BZHkShHz/todoon.png)](https://postimg.cc/23j2T7Hd)
+[![image.png](https://i.postimg.cc/W3HvnfNj/image.png)](https://postimg.cc/dkrpQ6ZS)
 
 ![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not) ![PyPI - License](https://img.shields.io/pypi/l/todo-or-not) ![Static Badge](https://img.shields.io/badge/Start-Out-blue)
 
