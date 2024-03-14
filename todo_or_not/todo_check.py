@@ -203,7 +203,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> list[Hit]:
 
                     # Look at lines before the pertinent line
                     _i = line_number - 1
-                    while abs(line_number - _i) <= PERTINENT_LINE_LIMIT:
+                    while abs(line_number - _i) <= PERTINENT_LINE_LIMIT and _i >= 0:
                         _i -= 1
                         if len(lines[_i].strip()) > 0:
                             _pertinent_lines.insert(0, lines[_i])
@@ -294,6 +294,9 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
         except UnicodeDecodeError:
             # Try the next encoding without setting the used encoding
             continue
+        except UnicodeError:
+            # Try the next encoding without setting the used encoding
+            continue
 
         # If able to open, use this encoding and exit the search for valid encoding
         _use_encoding = encoding
@@ -372,6 +375,9 @@ def main(
 
                     if os.path.isdir(cur_path):
                         ignored_dirs.append(cur_path)
+
+            if len(ignored_files) == 0 and len(ignored_dirs) == 0:
+                print(LOCALIZE[REGION]['warning_run_with_empty_todo_ignore'], file=sys.stderr)
 
             # Ignore the .todo-ignore itself
             ignored_files.append(os.path.abspath(_ignore.name))
