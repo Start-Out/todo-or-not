@@ -109,6 +109,9 @@ Options:
 --xi FILENAME
 : Copy the contents of other files into a E**X**ISTING [.todo-ignore](#todo-ignore), this option must be specified for each. e.g. `--ni .gitignore --xi .prettierignore`
 
+If a file discovered by `todoon` is not of a supported encoding [see [SUPPORTED_ENCODINGS_TODO_CHECK](todo_or_not/localize.py) for most up-to-date list] it will be skipped.
+The number of skipped files is summarized at the end of the run.
+
 ### Environment Variables
 
 MAXIMUM_ISSUES_GENERATED
