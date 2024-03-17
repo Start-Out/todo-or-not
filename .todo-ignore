@@ -2,9 +2,14 @@
 .github/
 .idea/
 
+dist/
+node_modules/
+
 package-lock.json
 package.json
 
 README.md
-localize.json
 pyproject.toml
+
+todo_or_not/__pycache__/
+todo_or_not/localize.py
