@@ -27,5 +27,5 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           echo "Check for TODOs, pass regardless and generate new issues"
-          pwd && ls -a
-          todoon --mode issue --silent
+          cat .todo-ignore
+          todoon --silent
