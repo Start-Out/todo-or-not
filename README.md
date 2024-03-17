@@ -1,6 +1,7 @@
 [![image.png](https://i.postimg.cc/W3HvnfNj/image.png)](https://postimg.cc/dkrpQ6ZS)
 
-![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not) ![PyPI - License](https://img.shields.io/pypi/l/todo-or-not) ![Static Badge](https://img.shields.io/badge/Start-Out-blue)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/todo-or-not) ![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not) ![PyPI - License](https://img.shields.io/pypi/l/todo-or-not)
+
 
 > TODO or not to do, that is the question
 
