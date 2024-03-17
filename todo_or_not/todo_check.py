@@ -143,6 +143,9 @@ class Hit:
             f"{LOCALIZE[REGION]['issue_body_reference_link']}: <a href=\"{reference_uri}\">{self.source_file}</a>"
         )
 
+        # Sanitize @ to prevent abuse
+        body.replace("@", "@<!-- -->")
+
         api_call = [
             "gh", "api",
             "--method", "POST",
