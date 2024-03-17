@@ -395,8 +395,9 @@ def main(
     # Collect files to scan
     #############################################
 
-    # Ignore this script
-    ignored_files.append(__file__)
+    # Ignore this script if in DEBUG
+    if DEBUG:
+        ignored_files.append(__file__)
 
     _walk = os.walk(_project_dir, topdown=True)
 
