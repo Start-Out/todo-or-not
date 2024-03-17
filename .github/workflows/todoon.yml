@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install typer
+          python -m pip install todoon
       - name: Generate Token
         id: generate-token
         uses: actions/create-github-app-token@v1
@@ -27,4 +27,4 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           echo "Check for TODOs, pass regardless and generate new issues"
-          python todo_check.py --mode issue --silent
+          todoon --mode issue --silent
