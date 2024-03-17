@@ -398,17 +398,23 @@ def main(
     # Ignore this script
     ignored_files.append(__file__)
 
-    _walk = os.walk(_project_dir)
+    _walk = os.walk(_project_dir, topdown=True)
 
     for (dirpath, dirnames, filenames) in _walk:
-        # Break if an ignored dir
-        _ignore_this_dir = False
+        _to_remove = []
 
-        for _dir in ignored_dirs:
-            if os.path.samefile(dirpath, _dir):
-                _ignore_this_dir = True
-        if _ignore_this_dir:
-            break
+        # Find all ignored dirs from this step of the walk
+        for dirname in dirnames:
+            for _dir in ignored_dirs:
+                _dirname = os.path.join(dirpath, dirname)
+                if os.path.samefile(_dirname, _dir):
+                    # Found this directory in the ignored directories, mark for removal and move to the next
+                    _to_remove.append(dirname)
+                    break
+
+        # Remove those directories (can't do in place because indexing)
+        for remove in _to_remove:
+            dirnames.remove(remove)
 
         for _file in filenames:
             current = os.path.join(dirpath, _file)
