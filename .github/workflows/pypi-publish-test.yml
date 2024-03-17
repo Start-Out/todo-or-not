@@ -15,7 +15,7 @@ on:
       - edited
       - reopened
     branches:
-      - main
+      - dev/staging
 
 permissions:
   contents: read
