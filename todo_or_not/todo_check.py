@@ -370,6 +370,7 @@ def main(
 
         # ... actually do the reading of the .todo-ignore
         with open(_todo_ignore_file, 'r', encoding=use_encoding) as _ignore:
+            print("** DEBUG: GOT THIS FAR!", file=sys.stderr)
             for line in _ignore.readlines():
                 if not line.startswith("#") and len(line) > 1:
                     if line.endswith('\n'):
@@ -403,6 +404,8 @@ def main(
         ignored_files.append(__file__)
 
     _walk = os.walk(_project_dir, topdown=True)
+
+    print("** DEBUG: ABOUT TO START THE WALK...\n   HERE'S THE IGNORE DIR:", ignored_dirs, "\n   AND THE IGNORE FILES:", ignored_files, file=sys.stderr)
 
     for (dirpath, dirnames, filenames) in _walk:
         _to_remove = []
@@ -455,6 +458,8 @@ def main(
 
     # Used for summary
     number_of_todo, number_of_fixme = 0, 0
+
+    print("** DEBUG: ABOUT TO START THE CHECK...\n   HERE'S THE TARGETS:", targets, file=sys.stderr)
 
     # For each target file discovered
     for target in targets:
