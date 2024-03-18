@@ -1,4 +1,4 @@
-name: Generate issues with TODO-or-not
+name: Assert No TODO/FIXMEs with TODO-or-not
 
 on:
   workflow_dispatch:
