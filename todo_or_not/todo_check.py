@@ -367,6 +367,8 @@ def main(
         # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
         use_encoding = get_encoding(_todo_ignore_file, SUPPORTED_ENCODINGS_TODOIGNORE)
 
+        print("** DEBUG:", use_encoding, "IS THE TODO IGNORED ENCODING", file=sys.stderr)
+
         # If we weren't able to find a file in a supported encoding, program must exit
         if use_encoding is None:
             print(LOCALIZE[REGION]['error_todo_ignore_not_supported'], file=sys.stderr)
@@ -375,6 +377,7 @@ def main(
         # ... actually do the reading of the .todo-ignore
         with open(_todo_ignore_file, 'r', encoding=use_encoding) as _ignore:
             for line in _ignore.readlines():
+                print("** DEBUG:", line, "IS A LINE FROM TODO IGNORED", file=sys.stderr)
                 if not line.startswith("#") and len(line) > 1:
                     if line.endswith('\n'):
                         cur_name = line[:-1]
