@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 from typer import Option, run
-from typing import List, Optional
+from typing import List, Optional, TextIO
 from typing_extensions import Annotated
 
 from todo_or_not.localize import LOCALIZE
@@ -241,7 +241,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
     return output, use_encoding
 
 
-def paste_contents_into_file(other_file_names: list[str], target_file: str):
+def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     """
     Writes the contents of other files to the target file
     :param other_file_names: a list of path-likes pointing to source files
@@ -348,7 +348,7 @@ def main(
                   file=sys.stderr)
 
         # Update .todo-ignore appropriately by mode
-        mode = "w" if (len(ni) > len(xi)) else "a+"
+        mode = "x" if (len(ni) > len(xi)) else "a+"
         _list = ni if (len(ni) > len(xi)) else xi
 
         with open(os.path.join(_project_dir, ".todo-ignore"), mode, encoding="UTF-8") as new_todo_ignore_file:
