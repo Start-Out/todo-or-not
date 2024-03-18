@@ -34,6 +34,22 @@ LOCALIZE = {
         "warning_run_without_todo_ignore": "경고: .todo-ignore 을 제외하고 실행합니다, 해당 실행을 취소하고 싶다면 다음을 사용하세요 -  ",
         "warning_encoding_not_supported": f"경고: 파일이 지원되지 않는 인코딩(문자)을 사용하고 있습니다, .todo-ignore 에 이 파일이 있다고 가정하고 해당 파일을 건너 뛸 것입니다 (지원되는 인코딩: {SUPPORTED_ENCODINGS_TODOIGNORE})",
     },
+    "bu_mm": {
+        "issue_body_reference_link": "အညွှန်း",
+        "summary_title": "အနှစ်ချုပ် ခေါင်းစဉ်",
+        "summary_encoding_unsupported_singular": "ကုဒ်ပြောင်းခြင်းကို ပံ့ပိုးမထားသောကြောင့် ဖိုင်ကို ကျော်သွားသည်",
+        "summary_encoding_unsupported_plural": "ကုဒ်ပြောင်းခြင်းကို ပံ့ပိုးမထားသောကြောင့် ဖိုင်များကို ကျော်သွားခဲ့သည်",
+        "info_duplicate_issue_avoided": "အချက်အလက်- မိတ္တူပွားခြင်းပြဿနာကို ရှောင်ကြဉ်ပါ",
+        "error_cannot_specify_ni_xi": "အမှား- _ni နှင့် _xi နှစ်မျိုးလုံးကို သတ်မှတ်၍မရပါ",
+        "error_is_not_file": "အမှား- သတ်မှတ်ထားသောလမ်းကြောင်းသည် ဖိုင် မဟုတ်ပါ",
+        "error_todo_ignore_not_found": "အမှား- .todo-ignore မတွေ့ပါ။ အခြား .ignore ကိုကူးယူရန် -i ကိုသုံးပါ သို့မဟုတ် .todo-ignore မပါဘဲ run ရန် --force (အကြံပြုမထားပါ)",
+        "error_todo_ignore_not_supported": f"အမှား- .todo-ignore သည် ပံ့ပိုးမထားသော ကုဒ်နံပါတ်ကို အသုံးပြုသည် သို့မဟုတ် မရှိပါ။ ပံ့ပိုးထားသော ကုဒ်နံပါတ်များ- {SUPPORTED_ENCODINGS_TODOIGNORE}",
+        "error_exceeded_maximum_issues": "အမှား- ဤလုပ်ဆောင်မှုအတွက် ပြဿနာအများဆုံးအရေအတွက်ကို ကျော်သွားသည်၊ ယခုထွက်နေပါသည်",
+        "warning_force_overrides_ignore": "သတိပေးချက်- --force သည် သင်သတ်မှတ်လိုက်သောအခါတွင် ထုတ်ပေးသည့် .todo-ignore ၏ အကြောင်းအရာများကို လျစ်လျူရှုလိမ့်မည် (.todo-ignore သည် ပြောင်းလဲနေသေးသည်၊ အသုံးသာမပြုဘဲ)",
+        "warning_run_with_empty_todo_ignore": "သတိပေးချက်- .todo-ignore သည် ဗလာဖြစ်သည် (ဖိုင်ဗလာမဟုတ်ပါက ၎င်း၏ကုဒ်နံပါတ်ကို စစ်ဆေးပါ) မည်သို့ပင်ဖြစ်စေ လုပ်ဆောင်နေပါသည်။ အသုံးပြုမှုကို ပယ်ဖျက်ရန် -",
+        "warning_run_without_todo_ignore": "သတိပေးချက်- .todo-ignore မပါဘဲ လုပ်ဆောင်နေသည်။ အသုံးပြုမှုကို ပယ်ဖျက်ရန် -",
+        "warning_encoding_not_supported": f"သတိပေးချက်- ဖိုင်သည် ပံ့ပိုးမထားသော ကုဒ်နံပါတ်ကို အသုံးပြုသည်၊ ၎င်းကို ကျော်သွားပါမည်၊ သို့သော် .todo-ignore တွင် ထည့်ရန်စဉ်းစားသည် (ပံ့ပိုးပေးထားသော ကုဒ်နံပါတ်များ- {SUPPORTED_ENCODINGS_TODO_CHECK})",
+    },
     "windows": {
         "shell_sigint": "CTRL + C"
     }
