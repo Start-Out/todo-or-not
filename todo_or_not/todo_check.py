@@ -359,6 +359,7 @@ def main(
     #############################################
 
     # TODO debugging in the GitHub Actions space
+    print("** DEBUG:", _project_dir, "IS THE PROJECT DIRECTORY", file=sys.stderr)
     print("** DEBUG:", _todo_ignore_file, "IS THE TODO IGNORED FILE", file=sys.stderr)
 
     # As long as we aren't foregoing the .todo-ignore...
