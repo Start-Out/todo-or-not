@@ -15,7 +15,7 @@ jobs:
       - name: Install TODO-or-not
         run: |
           python -m pip install --upgrade pip
-          python -m pip install todo-or-not
+          python -m pip install -i https://test.pypi.org/simple/ todo-or-not==0.7.12b0
       - name: Generate GH Token
         id: generate-token
         uses: actions/create-github-app-token@v1
@@ -30,4 +30,4 @@ jobs:
           pwd
           echo "** LS -A:"
           ls -a
-          python todo_or_not/todo_check.py --silent
+          todoon --silent
