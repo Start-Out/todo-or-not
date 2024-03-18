@@ -459,6 +459,8 @@ def main(
     # Used for summary
     number_of_todo, number_of_fixme = 0, 0
 
+    print("** DEBUG: ABOUT TO START THE CHECK...\n   HERE'S THE TARGETS:", targets, file=sys.stderr)
+
     # For each target file discovered
     for target in targets:
         # Generate the hits for each target collected
