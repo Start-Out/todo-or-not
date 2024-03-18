@@ -155,6 +155,7 @@ Try out your #todoon in your language! In the environment that you're running `t
 
 Currently supported:
 
+* bu_mm - Burmese
 * en_us - English (US)
 * ko_kr - Korean
 

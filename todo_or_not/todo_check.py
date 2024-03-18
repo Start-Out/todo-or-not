@@ -5,7 +5,7 @@ import subprocess
 import sys
 
 from typer import Option, run
-from typing import List, Optional
+from typing import List, Optional, TextIO
 from typing_extensions import Annotated
 
 from todo_or_not.localize import LOCALIZE
@@ -122,6 +122,8 @@ class Hit:
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
     def generate_issue(self):
+        DEBUG = os.environ.get("DEBUG", False)
+
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
         github_ref = "reference"
@@ -165,7 +167,7 @@ class Hit:
         if not DEBUG:
             _output = subprocess.check_output(api_call)
         else:
-            _output = "DEBUGGING"
+            _output = api_call
             print(api_call)
 
         return _output
@@ -241,7 +243,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
     return output, use_encoding
 
 
-def paste_contents_into_file(other_file_names: list[str], target_file: str):
+def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     """
     Writes the contents of other files to the target file
     :param other_file_names: a list of path-likes pointing to source files
@@ -251,7 +253,11 @@ def paste_contents_into_file(other_file_names: list[str], target_file: str):
     target_file.write('\n')
     for file_name in other_file_names:
         with open(file_name, "r") as file:
-            target_file.writelines(file.read())
+            lines = file.readlines()
+
+            for line in lines:
+                line = f"{line}\n"
+                target_file.write(line)
 
     target_file.write('\n')
 
@@ -348,7 +354,7 @@ def main(
                   file=sys.stderr)
 
         # Update .todo-ignore appropriately by mode
-        mode = "w" if (len(ni) > len(xi)) else "a+"
+        mode = "x" if (len(ni) > len(xi)) else "a+"
         _list = ni if (len(ni) > len(xi)) else xi
 
         with open(os.path.join(_project_dir, ".todo-ignore"), mode, encoding="UTF-8") as new_todo_ignore_file:

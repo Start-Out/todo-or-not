@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "todo-or-not"
-version = "0.7.18-beta"
+version = "0.7.19-beta"
 description = "#todoon integrates the TODOs in your codebase with your GitHub repository"
 authors = ["TrentonYo <trentonyo@gmail.com>"]
 license = "GPL-3.0-only"
@@ -12,6 +12,7 @@ documentation = "https://github.com/Start-Out/todo-or-not/blob/main/README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+pytest = "^8.1.1"
 typer = "^0.9.0"
 typing-extensions = "^4.10.0"
 
