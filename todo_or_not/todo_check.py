@@ -251,7 +251,11 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     target_file.write('\n')
     for file_name in other_file_names:
         with open(file_name, "r") as file:
-            target_file.writelines(file.read())
+            lines = file.readlines()
+
+            for line in lines:
+                line = f"{line}\n"
+                target_file.write(line)
 
     target_file.write('\n')
 
