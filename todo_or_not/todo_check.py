@@ -122,6 +122,8 @@ class Hit:
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
     def generate_issue(self):
+        DEBUG = os.environ.get("DEBUG", False)
+
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
         github_ref = "reference"
@@ -165,7 +167,7 @@ class Hit:
         if not DEBUG:
             _output = subprocess.check_output(api_call)
         else:
-            _output = "DEBUGGING"
+            _output = api_call
             print(api_call)
 
         return _output
