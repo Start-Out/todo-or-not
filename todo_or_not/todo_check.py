@@ -358,6 +358,9 @@ def main(
     # Parse .todo-ignore
     #############################################
 
+    # TODO debugging in the GitHub Actions space
+    print("** DEBUG:", _todo_ignore_file, "IS THE TODO IGNORED FILE", file=sys.stderr)
+
     # As long as we aren't foregoing the .todo-ignore...
     if not force:
         # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
