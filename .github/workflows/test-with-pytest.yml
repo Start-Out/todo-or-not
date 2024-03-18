@@ -10,6 +10,13 @@ name: Test with PyTest
 
 on:
   workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+    branches:
+      - dev/staging
 jobs:
   run_todoon:
     runs-on: ubuntu-latest
