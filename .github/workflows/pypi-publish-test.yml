@@ -16,7 +16,6 @@ on:
       - reopened
     branches:
       - dev/staging
-      - dev/contribute
 
 permissions:
   contents: read
