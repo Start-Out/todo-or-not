@@ -1,4 +1,4 @@
-name: Run TODO-or-not
+name: Generate issues with TODO-or-not
 
 on:
   workflow_dispatch:
@@ -26,4 +26,5 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          todoon --silent
+          echo "Generate GitHub issues for each problem found, but don't fail the workflow"
+          todoon --mode issue --silent
