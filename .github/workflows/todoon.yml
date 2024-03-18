@@ -16,7 +16,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install typer
-          python -m pip install -i https://test.pypi.org/simple/ todo-or-not==0.7.13b0
+          python -m pip install -i https://test.pypi.org/simple/ todo-or-not==0.7.14b0
       - name: Generate GH Token
         id: generate-token
         uses: actions/create-github-app-token@v1

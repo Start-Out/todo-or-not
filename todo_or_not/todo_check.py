@@ -358,16 +358,10 @@ def main(
     # Parse .todo-ignore
     #############################################
 
-    # TODO debugging in the GitHub Actions space
-    print("** DEBUG:", _project_dir, "IS THE PROJECT DIRECTORY", file=sys.stderr)
-    print("** DEBUG:", _todo_ignore_file, "IS THE TODO IGNORED FILE", file=sys.stderr)
-
     # As long as we aren't foregoing the .todo-ignore...
     if not force:
         # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
         use_encoding = get_encoding(_todo_ignore_file, SUPPORTED_ENCODINGS_TODOIGNORE)
-
-        print("** DEBUG:", use_encoding, "IS THE TODO IGNORED ENCODING", file=sys.stderr)
 
         # If we weren't able to find a file in a supported encoding, program must exit
         if use_encoding is None:
@@ -376,8 +370,8 @@ def main(
 
         # ... actually do the reading of the .todo-ignore
         with open(_todo_ignore_file, 'r', encoding=use_encoding) as _ignore:
+            print("** DEBUG: GOT THIS FAR!", file=sys.stderr)
             for line in _ignore.readlines():
-                print("** DEBUG:", line, "IS A LINE FROM TODO IGNORED", file=sys.stderr)
                 if not line.startswith("#") and len(line) > 1:
                     if line.endswith('\n'):
                         cur_name = line[:-1]
@@ -410,6 +404,8 @@ def main(
         ignored_files.append(__file__)
 
     _walk = os.walk(_project_dir, topdown=True)
+
+    print("** DEBUG: ABOUT TO START THE WALK...\n   HERE'S THE IGNORE DIR:", ignored_dirs, "\n   AND THE IGNORE FILES:", ignored_files, file=sys.stderr)
 
     for (dirpath, dirnames, filenames) in _walk:
         _to_remove = []
