@@ -15,6 +15,7 @@ jobs:
       - name: Install TODO-or-not
         run: |
           python -m pip install --upgrade pip
+          python -m pip install typer
           python -m pip install -i https://test.pypi.org/simple/ todo-or-not==0.7.12b0
       - name: Generate GH Token
         id: generate-token
