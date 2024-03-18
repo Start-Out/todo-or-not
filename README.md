@@ -25,6 +25,8 @@ pip install todo-or-not
    * [Environment Variables](#environment-variables)
    * [.todo-ignore](#todo-ignore)
    * [Issues](#issues)
+- [Settings](#settings)
+   * [Localization](#localization)
 
 <!-- TOC end -->
 
@@ -144,3 +146,16 @@ Issue generation is best supported from GitHub actions, the YAML included in thi
 - GITHUB_REF_NAME
 - GITHUB_REPOSITORY
 - GITHUB_TRIGGERING_ACTOR
+
+## Settings
+
+### Localization
+
+Try out your #todoon in your language! In the environment that you're running `todoon` in, set the environment variable "REGION" to your ISO code (see below). For example, on Windows (PowerShell): `$env:REGION="ko_kr"`
+
+Currently supported:
+
+* en_us - English (US)
+* ko_kr - Korean
+
+Don't see your language? Want to do a quick localization? Please feel free to contribute!
