@@ -26,8 +26,9 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          echo "**.todo-ignore"
-          cat .todo-ignore
-          echo "**ls -a"
-          ls -a
-          todoon --silent
+#          echo "**.todo-ignore"
+#          cat .todo-ignore
+#          echo "**ls -a"
+#          ls -a
+#          todoon --silent
+          python todo_or_not/todo_check.py --silent
