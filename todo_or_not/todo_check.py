@@ -261,7 +261,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     :param target_file: path-like pointing to the destination file
     """
 
-    target_file.write(b'\n')
+    target_file.write('\n')
     for file_name in other_file_names:
         with open(file_name, "r") as file:
             lines = file.readlines()
