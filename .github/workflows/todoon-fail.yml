@@ -5,7 +5,7 @@ on:
 jobs:
   run_todoon:
     runs-on: ubuntu-latest
-    environment: todo-or-not-1
+    environment: testing
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.11.7
@@ -21,7 +21,7 @@ jobs:
         uses: actions/create-github-app-token@v1
         with:
           app-id: 853479
-          private-key: ${{ secrets.APP_PEM }}
+          private-key: ${{ secrets.TODOON_CLIENT_SECRET }}
       - name: Run TODO-or-not
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
