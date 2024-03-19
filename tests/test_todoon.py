@@ -83,9 +83,15 @@ class TestTodoon(unittest.TestCase):
         self.assertEqual(new_result, example_result)
 
     def test_todoon_runs_when_forced(self):
+        with open(".todo-ignore", "r") as _before:
+            before = _before.read()
+
         os.remove(".todo-ignore")
 
         td.main(silent=True, force=True)
+
+        with open(".todo-ignore", "x") as _after:
+            _after.write(before)
 
 
 if __name__ == '__main__':
