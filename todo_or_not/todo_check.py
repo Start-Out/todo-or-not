@@ -121,8 +121,7 @@ class Hit:
     def generic_title(self):
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
-    def generate_issue(self):
-        DEBUG = os.environ.get("DEBUG", False)
+    def generate_issue(self, _test: bool = False) -> str:
 
         repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
@@ -164,7 +163,7 @@ class Hit:
                 api_call.append("-f")
                 api_call.append(f"labels[]={label}")
 
-        if not DEBUG:
+        if not DEBUG or _test:
             _output = subprocess.check_output(api_call)
         else:
             _output = api_call
@@ -262,7 +261,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     target_file.write('\n')
 
 
-def get_bot_submitted_issues() -> list[dict]:
+def get_bot_submitted_issues(_test:bool = False) -> list[dict]:
     """
     Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a
     list of dicts
@@ -270,7 +269,7 @@ def get_bot_submitted_issues() -> list[dict]:
     """
     owner, repo = "owner", "repository"
 
-    if not DEBUG:
+    if not DEBUG or _test:
         owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
     query = [
@@ -289,7 +288,6 @@ def get_bot_submitted_issues() -> list[dict]:
         return json.loads(_str)
     else:
         return query
-
 
 def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or None:
     """
