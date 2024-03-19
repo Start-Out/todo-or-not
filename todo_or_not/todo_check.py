@@ -123,7 +123,7 @@ class Hit:
 
     def generate_issue(self, _test: bool = False) -> str:
 
-        repo_uri = f"https://github.com/none"
+        repo_uri = f"https://github.com/None"
 
         github_ref = "reference"
         triggered_by = "octocat"
