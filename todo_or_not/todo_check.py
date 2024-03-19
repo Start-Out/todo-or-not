@@ -353,26 +353,34 @@ def main(
     # Handle settings
     #############################################
 
-    # Don't allow the use of ni and ci at the same time
-    if (len(ni) > 0) and (len(xi) > 0):
-        print(LOCALIZE[REGION]['error_cannot_specify_ni_xi'], file=sys.stderr)
-        exit(1)
-    # If using either ni or ci...
-    elif (len(ni) > 0) or (len(xi) > 0):
+    # Don't worry about it if both ni and xi are none
+    if (ni is None) and (xi is None):
+        pass
+    # If using EITHER ni or ci...
+    elif xi is None and len(ni) > 0:
+        # ...check if force is used and warn the user if so
+        if force:
+            print(LOCALIZE[REGION]['warning_force_overrides_ignore'], "--ni",  file=sys.stderr)
+
+        # Create new .todo-ignore
+        with open(os.path.join(_project_dir, ".todo-ignore"), 'x', encoding="UTF-8") as new_todo_ignore_file:
+            paste_contents_into_file(ni, new_todo_ignore_file)
+
+    elif ni is None and len(xi) > 0:
         # ...check if force is used and warn the user if so
         if force:
             # Check which mode is being used
             _option = "--ni" if (len(ni) > len(xi)) else "--xi"
-            print(LOCALIZE[REGION]['warning_force_overrides_ignore'],
-                  _option,
-                  file=sys.stderr)
+            print(LOCALIZE[REGION]['warning_force_overrides_ignore'], "--xi", file=sys.stderr)
 
-        # Update .todo-ignore appropriately by mode
-        mode = "x" if (len(ni) > len(xi)) else "a+"
-        _list = ni if (len(ni) > len(xi)) else xi
+        # Update append to the existing .todo-ignore
+        with open(os.path.join(_project_dir, ".todo-ignore"), 'a+', encoding="UTF-8") as new_todo_ignore_file:
+            paste_contents_into_file(xi, new_todo_ignore_file)
 
-        with open(os.path.join(_project_dir, ".todo-ignore"), mode, encoding="UTF-8") as new_todo_ignore_file:
-            paste_contents_into_file(_list, new_todo_ignore_file)
+    # Don't allow the use of ni and ci at the same time
+    elif (len(ni) > 0) and (len(xi) > 0):
+        print(LOCALIZE[REGION]['error_cannot_specify_ni_xi'], file=sys.stderr)
+        exit(1)
 
     #############################################
     # Parse .todo-ignore
@@ -390,7 +398,6 @@ def main(
 
         # ... actually do the reading of the .todo-ignore
         with open(_todo_ignore_file, 'r', encoding=use_encoding) as _ignore:
-            print("** DEBUG: GOT THIS FAR!", file=sys.stderr)
             for line in _ignore.readlines():
                 if not line.startswith("#") and len(line) > 1:
                     if line.endswith('\n'):
@@ -424,9 +431,6 @@ def main(
         ignored_files.append(__file__)
 
     _walk = os.walk(_project_dir, topdown=True)
-
-    print("** DEBUG: ABOUT TO START THE WALK...\n   HERE'S THE IGNORE DIR:", ignored_dirs, "\n   AND THE IGNORE FILES:",
-          ignored_files, file=sys.stderr)
 
     for (dirpath, dirnames, filenames) in _walk:
         _to_remove = []
@@ -479,8 +483,6 @@ def main(
 
     # Used for summary
     number_of_todo, number_of_fixme = 0, 0
-
-    print("** DEBUG: ABOUT TO START THE CHECK...\n   HERE'S THE TARGETS:", targets, file=sys.stderr)
 
     # For each target file discovered
     for target in targets:
