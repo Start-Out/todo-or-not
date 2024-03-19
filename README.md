@@ -29,6 +29,8 @@ pip install todo-or-not
       + [Usage](#usage-1)
          - [Arguments](#arguments)
          - [Options](#options)
+         - [Feedback](#feedback)
+   * [Examples](#examples-1)
    * [Environment Variables](#environment-variables)
    * [.todo-ignore](#todo-ignore)
    * [Issues](#issues)
