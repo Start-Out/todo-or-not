@@ -4,6 +4,8 @@ import hashlib
 import subprocess
 import sys
 
+from pathlib import Path
+import typer
 from typer import Option, run
 from typing import List, Optional, TextIO
 from typing_extensions import Annotated
@@ -397,18 +399,19 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
 
 
 def main(
+    files: Annotated[Optional[List[str]], typer.Argument()] = None,
     mode: str = "print",
     silent: bool = False,
     force: bool = False,
     verbose: bool = False,
     ni: Annotated[
         Optional[List[str]],
-        Option(help="Copy the contents of other files into a new .todo-ignore"),
+        Option(help="Copy the contents of another file into a new .todo-ignore"),
     ] = None,
     xi: Annotated[
         Optional[List[str]],
-        Option(help="Copy the contents of other files into an existing .todo-ignore"),
-    ] = None,
+        Option(help="Copy the contents of another file into an existing .todo-ignore"),
+    ] = None
 ):
     mode = mode.lower()
 
@@ -416,137 +419,163 @@ def main(
     ignored_files = []
     ignored_dirs = []
 
+    use_specified_files = len(files) > 0
+
     #############################################
     # Handle settings
     #############################################
 
-    os.environ["TODOON_STATUS"] = "starting"
-    # Don't worry about it if both ni and xi are none
-    if (ni is None) and (xi is None):
-        pass
-    # If using EITHER ni or ci...
-    elif xi is None and len(ni) > 0:
-        # ...check if force is used and warn the user if so
-        if force:
-            print(
-                LOCALIZE[REGION]["warning_force_overrides_ignore"],
-                "--ni",
-                file=sys.stderr,
-            )
+    # If using specific files, no todo-ignore utils are necessary
+    if not use_specified_files:
+        os.environ["TODOON_STATUS"] = "starting"
+        # Don't worry about it if both ni and xi are none
+        if (ni is None) and (xi is None):
+            pass
+        # If using EITHER ni or ci...
+        elif xi is None and len(ni) > 0:
+            # ...check if force is used and warn the user if so
+            if force:
+                print(
+                    LOCALIZE[REGION]["warning_force_overrides_ignore"],
+                    "--ni",
+                    file=sys.stderr,
+                )
 
-        # Create new .todo-ignore
-        with open(
-            os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"
-        ) as new_todo_ignore_file:
-            paste_contents_into_file(ni, new_todo_ignore_file)
+            # Create new .todo-ignore
+            with open(
+                os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"
+            ) as new_todo_ignore_file:
+                paste_contents_into_file(ni, new_todo_ignore_file)
 
-    elif ni is None and len(xi) > 0:
-        # ...check if force is used and warn the user if so
-        if force:
-            # Check which mode is being used
-            _option = "--ni" if (len(ni) > len(xi)) else "--xi"
-            print(
-                LOCALIZE[REGION]["warning_force_overrides_ignore"],
-                "--xi",
-                file=sys.stderr,
-            )
+        elif ni is None and len(xi) > 0:
+            # ...check if force is used and warn the user if so
+            if force:
+                # Check which mode is being used
+                _option = "--ni" if (len(ni) > len(xi)) else "--xi"
+                print(
+                    LOCALIZE[REGION]["warning_force_overrides_ignore"],
+                    "--xi",
+                    file=sys.stderr,
+                )
 
-        # Update append to the existing .todo-ignore
-        with open(
-            os.path.join(get_project_dir(), ".todo-ignore"), "a+", encoding="UTF-8"
-        ) as new_todo_ignore_file:
-            paste_contents_into_file(xi, new_todo_ignore_file)
+            # Update append to the existing .todo-ignore
+            with open(
+                os.path.join(get_project_dir(), ".todo-ignore"), "a+", encoding="UTF-8"
+            ) as new_todo_ignore_file:
+                paste_contents_into_file(xi, new_todo_ignore_file)
 
-    # Don't allow the use of ni and ci at the same time
-    elif (len(ni) > 0) and (len(xi) > 0):
-        print(LOCALIZE[REGION]["error_cannot_specify_ni_xi"], file=sys.stderr)
-        exit(1)
+        # Don't allow the use of ni and ci at the same time
+        elif (len(ni) > 0) and (len(xi) > 0):
+            print(LOCALIZE[REGION]["error_cannot_specify_ni_xi"], file=sys.stderr)
+            exit(1)
 
     #############################################
     # Parse .todo-ignore
     #############################################
 
-    os.environ["TODOON_STATUS"] = "parsing-todo-ignore"
-    # As long as we aren't foregoing the .todo-ignore...
-    if not force:
-        # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
-        use_encoding = get_encoding(
-            get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE
-        )
+    # If using specific files, no todo-ignore parsing is necessary
+    if not use_specified_files:
+        os.environ["TODOON_STATUS"] = "parsing-todo-ignore"
+        # As long as we aren't foregoing the .todo-ignore...
+        if not force:
+            # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
+            use_encoding = get_encoding(
+                get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE
+            )
 
-        # If we weren't able to find a file in a supported encoding, program must exit
-        if use_encoding is None:
-            print(LOCALIZE[REGION]["error_todo_ignore_not_supported"], file=sys.stderr)
-            exit(1)
+            # If we weren't able to find a file in a supported encoding, program must exit
+            if use_encoding is None:
+                print(LOCALIZE[REGION]["error_todo_ignore_not_supported"], file=sys.stderr)
+                exit(1)
 
-        # ... actually do the reading of the .todo-ignore
-        with open(get_todo_ignore_path(), "r", encoding=use_encoding) as _ignore:
-            for line in _ignore.readlines():
-                if not line.startswith("#") and len(line) > 1:
-                    if line.endswith("\n"):
-                        cur_name = line[:-1]
-                    else:
-                        cur_name = line
+            # ... actually do the reading of the .todo-ignore
+            with open(get_todo_ignore_path(), "r", encoding=use_encoding) as _ignore:
+                for line in _ignore.readlines():
+                    if not line.startswith("#") and len(line) > 1:
+                        if line.endswith("\n"):
+                            cur_name = line[:-1]
+                        else:
+                            cur_name = line
 
-                    cur_path = os.path.join(get_project_dir(), cur_name)
+                        cur_path = os.path.join(get_project_dir(), cur_name)
 
-                    if os.path.isfile(cur_path):
-                        ignored_files.append(cur_path)
+                        if os.path.isfile(cur_path):
+                            ignored_files.append(cur_path)
 
-                    if os.path.isdir(cur_path):
-                        ignored_dirs.append(cur_path)
+                        if os.path.isdir(cur_path):
+                            ignored_dirs.append(cur_path)
 
-            if len(ignored_files) == 0 and len(ignored_dirs) == 0:
-                print(
-                    LOCALIZE[REGION]["warning_run_with_empty_todo_ignore"],
-                    file=sys.stderr,
-                )
+                if len(ignored_files) == 0 and len(ignored_dirs) == 0:
+                    print(
+                        LOCALIZE[REGION]["warning_run_with_empty_todo_ignore"],
+                        file=sys.stderr,
+                    )
 
-            # Ignore the .todo-ignore itself
-            ignored_files.append(os.path.abspath(_ignore.name))
-    else:
-        print(
-            f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE[get_os()]['shell_sigint']}]",
-            file=sys.stderr,
-        )
+                # Ignore the .todo-ignore itself
+                ignored_files.append(os.path.abspath(_ignore.name))
+        else:
+            print(
+                f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE[get_os()]['shell_sigint']}]",
+                file=sys.stderr,
+            )
 
     #############################################
     # Collect files to scan
     #############################################
 
-    os.environ["TODOON_STATUS"] = "collecting-targets"
-    # Ignore this script if in DEBUG
-    if DEBUG:
-        ignored_files.append(__file__)
+    # If using specific files, we will just parse them instead of walking
+    if not use_specified_files:
+        os.environ["TODOON_STATUS"] = "collecting-targets"
+        # Ignore this script if in DEBUG
+        if DEBUG:
+            ignored_files.append(__file__)
 
-    _walk = os.walk(get_project_dir(), topdown=True)
+        _walk = os.walk(get_project_dir(), topdown=True)
 
-    for dirpath, dirnames, filenames in _walk:
-        _to_remove = []
+        for dirpath, dirnames, filenames in _walk:
+            _to_remove = []
 
-        # Find all ignored dirs from this step of the walk
-        for dirname in dirnames:
-            for _dir in ignored_dirs:
-                _dirname = os.path.join(dirpath, dirname)
-                if os.path.samefile(_dirname, _dir):
-                    # Found this directory in the ignored directories, mark for removal and move to the next
-                    _to_remove.append(dirname)
-                    break
+            # Find all ignored dirs from this step of the walk
+            for dirname in dirnames:
+                for _dir in ignored_dirs:
+                    _dirname = os.path.join(dirpath, dirname)
+                    if os.path.samefile(_dirname, _dir):
+                        # Found this directory in the ignored directories, mark for removal and move to the next
+                        _to_remove.append(dirname)
+                        break
 
-        # Remove those directories (can't do in place because indexing)
-        for remove in _to_remove:
-            dirnames.remove(remove)
+            # Remove those directories (can't do in place because indexing)
+            for remove in _to_remove:
+                dirnames.remove(remove)
 
-        for _file in filenames:
-            current = os.path.join(dirpath, _file)
+            for _file in filenames:
+                current = os.path.join(dirpath, _file)
 
-            for i in ignored_files:
-                if os.path.samefile(i, current):
-                    current = None
-                    break
+                for i in ignored_files:
+                    if os.path.samefile(i, current):
+                        current = None
+                        break
 
-            if current is not None:
-                targets.append(current)
+                if current is not None:
+                    targets.append(current)
+    else:
+        # Collect specified files
+        for file in files:
+            current_path = os.path.join(get_project_dir(), file)
+
+            # If the specified path is a file, simply add it
+            if os.path.isfile(current_path):
+                targets.append(current_path)
+                continue
+
+            # If the specified path is a directory, add its children
+            elif os.path.isdir(current_path):
+                _walk = os.walk(current_path, topdown=True)
+
+                for dirpath, dirnames, filenames in _walk:
+                    for _filename in filenames:
+                        filename = os.path.join(dirpath, _filename)
+                        targets.append(filename)
 
     #############################################
     # Preventing duplicate issues

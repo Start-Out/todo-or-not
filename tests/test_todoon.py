@@ -115,6 +115,15 @@ class TestTodoon(unittest.TestCase):
         with open(".todo-ignore", "x") as _after:
             _after.write(before)
 
+    def test_todoon_takes_individual_targets(self):
+        test_files = self.other_files_list
+
+        test_files.append(os.path.join("tests", "resources", "specific_files"))
+
+        td.main(silent=True, files=self.other_files_list)
+
+        self.assertEqual(os.environ.get("TODOON_FILES_SCANNED"), '5')
+
 
 if __name__ == '__main__':
     unittest.main()
