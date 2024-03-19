@@ -60,7 +60,7 @@ class TestTodoIgnoreHelpers(unittest.TestCase):
         with open(dest, "r") as result:
             _result = result.read()
 
-            self.assertEqual("\na\n\nb\n\nc\n\n\n", _result)
+            self.assertEqual("\na\nb\nc\n\n", _result)
 
         os.remove(dest)
 
@@ -76,7 +76,7 @@ class TestTodoIgnoreHelpers(unittest.TestCase):
         with open(dest, "r") as result:
             _result = result.read()
 
-            self.assertEqual("\na\n\nb\n\nc\n\n\n", _result)
+            self.assertEqual("\na\nb\nc\n\n", _result)
 
         os.remove(dest)
 
