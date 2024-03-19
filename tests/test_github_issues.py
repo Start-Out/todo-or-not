@@ -70,11 +70,14 @@ class TestLiveIssueFeatures(unittest.TestCase):
 
 def test_live_submit_test_issue(example_hit_todo):
     api_call = example_hit_todo.generate_issue(_test=True)
-    assert api_call == ['gh', 'api', '--method', 'POST', '-H', 'Accept: application/vnd.github+json', '-H',
-                        'X-GitHub-Api-Version: 2022-11-28', '/repos/owner/repository/issues', '-f',
-                        'title=TODO -     # TODO Finish documenting todo-or-not\n', '-f',
-                        'body=## [TODO]           - tests\\resources\\example.txt:6 - # TODO Finish documenting todo-or-not\n\n```txt\n   5:\tdef an_unfinished_function():\n * 6:\t    # TODO Finish documenting todo-or-not\n   7:\t    print("Hello, I\'m not quite done, there\'s more to do!")\n   8:\t    print("Look at all these things I have to do!")\n   9:\t    a = 1 + 1\n  10:\t    b = a * 2\n  11:\t    print("Okay I\'m done!")\n```\n\nReference: <a href="https://github.com/Start-Out/todo-or-not/blob/reference/tests\\resources\\example.txt">tests\\resources\\example.txt</a>',
-                        '-f', 'assignees[]=octocat']
+
+    expected = ['gh', 'api', '--method', 'POST', '-H', 'Accept: application/vnd.github+json', '-H',
+                'X-GitHub-Api-Version: 2022-11-28', '/repos/owner/repository/issues', '-f',
+                'title=TODO -     # TODO Finish documenting todo-or-not\n', '-f',
+                'body=## [TODO]           - tests\\resources\\example.txt:6 - # TODO Finish documenting todo-or-not\n\n```txt\n   5:\tdef an_unfinished_function():\n * 6:\t    # TODO Finish documenting todo-or-not\n   7:\t    print("Hello, I\'m not quite done, there\'s more to do!")\n   8:\t    print("Look at all these things I have to do!")\n   9:\t    a = 1 + 1\n  10:\t    b = a * 2\n  11:\t    print("Okay I\'m done!")\n```\n\nReference: <a href="https://github.com/None/blob/reference/tests\\resources\\example.txt">tests\\resources\\example.txt</a>',
+                '-f', 'assignees[]=octocat']
+
+    assert api_call == expected
 
 
 if __name__ == '__main__':

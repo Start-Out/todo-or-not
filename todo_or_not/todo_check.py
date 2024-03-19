@@ -129,7 +129,7 @@ class Hit:
         triggered_by = "octocat"
         owner, repo = "owner", "repository"
 
-        if not DEBUG:
+        if not (DEBUG or _test):
             github_ref = os.environ.get("GITHUB_REF_NAME")
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
             owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
@@ -163,7 +163,7 @@ class Hit:
                 api_call.append("-f")
                 api_call.append(f"labels[]={label}")
 
-        if not DEBUG or _test:
+        if not (DEBUG or _test):
             _output = subprocess.check_output(api_call)
         else:
             _output = api_call
@@ -269,7 +269,7 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
     """
     owner, repo = "owner", "repository"
 
-    if not DEBUG or _test:
+    if not (DEBUG or _test):
         owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
     query = [
@@ -279,7 +279,7 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
             f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not"
         ]
 
-    if not DEBUG:
+    if not (DEBUG or _test):
         response = subprocess.check_output(query)
 
         _str = response.decode("utf-8")
