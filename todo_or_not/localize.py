@@ -7,6 +7,8 @@ LOCALIZE = {
         "summary_title": "Summary",
         "summary_encoding_unsupported_singular": "File skipped due to unsupported encoding",
         "summary_encoding_unsupported_plural": "Files skipped due to unsupported encodings",
+        "summary_files_scanned_singular": "File scanned",
+        "summary_files_scanned_plural": "Files scanned",
         "info_duplicate_issue_avoided": "INFO: Duplicate issue avoided",
         "error_cannot_specify_ni_xi": "ERROR: Cannot specify both --ni and --xi",
         "error_is_not_file": "ERROR: Specified path is not a file",
@@ -17,6 +19,8 @@ LOCALIZE = {
         "warning_run_with_empty_todo_ignore": "WARNING: .todo-ignore was empty (if the file isn't empty, check its encoding), running anyway. To cancel use ",
         "warning_run_without_todo_ignore": "WARNING: Running without a .todo-ignore, to cancel use ",
         "warning_encoding_not_supported": f"WARNING: File uses unsupported encoding, we will skip it but consider adding to .todo-ignore (Supported encodings: {SUPPORTED_ENCODINGS_TODO_CHECK})",
+        "warning_using_default_region": f"WARNING: Unsupported region detected, defaulting to en_us. Detected region:",
+        "warning_using_default_os": f"WARNING: Unsupported OS detected, using default tips. Detected OS:",
     },
     "ko_kr": {
         "issue_body_reference_link": "참조",

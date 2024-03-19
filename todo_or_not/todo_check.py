@@ -31,7 +31,7 @@ def get_region():
     # Validate that we support the region, otherwise default to something we have
     if region not in LOCALIZE:
         print(
-            f"WARNING: REGION {region} not recognized, defaulting to en_us (sorry, reach out to us if you would like to do a localization!)\n",
+            LOCALIZE[REGION]["warning_using_default_region"], region,  # TODO Localization | New target for localization
             file=sys.stderr,
         )
         region = "en_us"
@@ -46,7 +46,7 @@ def get_os():
     # Validate that we support the region, otherwise default to something we have
     if _os not in LOCALIZE:
         print(
-            f"WARNING: REGION {_os} not recognized, using default (generic) tips\n",
+            LOCALIZE[REGION]["warning_using_default_os"], _os,  # TODO Localization | New target for localization
             file=sys.stderr,
         )
         _os = "default"
@@ -563,6 +563,7 @@ def main(
     number_of_hits = 0  # Tracks the number of targets found
     number_of_issues = 0  # Tracks the number of issues generated
     number_of_encoding_failures = 0  # Tracks the files unread due to encoding error
+    number_of_files_scanned = len(targets)  # Tracks the files attempted to be read, regardless of errors
 
     # Used for summary
     number_of_todo, number_of_fixme = 0, 0
@@ -621,14 +622,24 @@ def main(
     #############################################
 
     summary = f"\n##########################\n# {LOCALIZE[REGION]['summary_title']}\n"
+    # Mode the tool was run in
+    summary += f"# ({mode.upper()} MODE)\n"
+
+    # Number of TODOs and FIXMEs found
     summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
 
+    # Number of encoding failures
     if number_of_encoding_failures > 1:
         summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['summary_encoding_unsupported_plural']}\n"
     elif number_of_encoding_failures == 1:
         summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['summary_encoding_unsupported_singular']}\n"
 
-    summary += f"# ({mode.upper()} MODE)\n"
+    # Total number of files scanned
+    if number_of_files_scanned > 1:
+        summary += f"# {number_of_files_scanned} {LOCALIZE[REGION]['summary_files_scanned_plural']}\n"  # TODO Localization | New target for localization
+    elif number_of_files_scanned == 1:
+        summary += f"# {number_of_files_scanned} {LOCALIZE[REGION]['summary_files_scanned_singular']}\n"  # TODO Localization | New target for localization
+
     summary += "##########################\n"
 
     print(summary, file=sys.stderr)
