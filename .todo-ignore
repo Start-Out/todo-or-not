@@ -1,6 +1,7 @@
 .git/
 .github/
 .idea/
+.pytest_cache/
 tests/
 scripts/
 
@@ -11,11 +12,13 @@ node_modules/
 
 package-lock.json
 package.json
+cov.json
 
 README.md
 pyproject.toml
 poetry.lock
 LICENSE
+.coverage
 
 todo_or_not/__pycache__/
 todo_or_not/__init__.py/
