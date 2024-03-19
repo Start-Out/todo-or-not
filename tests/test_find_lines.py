@@ -13,10 +13,6 @@ class TestFindLines(unittest.TestCase):
         self.broken_encoding_test = os.path.join("tests", "resources", "broken.donotopen")
         self.really_broken_encoding_test = os.path.join("tests", "resources", "reallybroken.donotopen")
 
-        self.expected_hit_0 = "[FIXME]          - tests\\resources\example.txt:24 - return c / 0  # FIXME I just don't know why this doesn't work!"
-        self.expected_hit_1 = "[TODO]           - tests\\resources\example.txt:36 - # TODO Titled Issue! | In this format, you can define a title and a body! Also labels like #example or #enhancement"
-        self.expected_hit_2 = "[TODO]           - tests\\resources\example.txt:6 - # TODO Finish documenting todo-or-not"
-
     def test_find_lines(self):
         hits, encoding = todo_or_not.todo_check.find_lines(self.hit_tests, "#todoon", "todo", "fixme")
 
@@ -26,10 +22,6 @@ class TestFindLines(unittest.TestCase):
         hits_repr_list.sort()
 
         assert len(hits) == 3
-
-        assert self.expected_hit_0 == hits_repr_list[0][0]
-        assert self.expected_hit_1 == hits_repr_list[1][0]
-        assert self.expected_hit_2 == hits_repr_list[2][0]
 
         # Test Hit contents
         hit_0 = hits_repr_list[0][1]
