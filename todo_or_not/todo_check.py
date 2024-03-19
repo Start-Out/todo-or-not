@@ -123,13 +123,15 @@ class Hit:
 
     def generate_issue(self, _test: bool = False) -> str:
 
-        repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
+        repo_uri = f"https://github.com/none"
 
         github_ref = "reference"
         triggered_by = "octocat"
         owner, repo = "owner", "repository"
 
         if not (DEBUG or _test):
+            repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
+
             github_ref = os.environ.get("GITHUB_REF_NAME")
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
             owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")

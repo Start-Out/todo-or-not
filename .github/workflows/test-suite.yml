@@ -45,6 +45,7 @@ jobs:
       - name: Run PyTest with coverage
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          DEBUG: True
         run: |
           source .venv/bin/activate
           pytest --cov-report lcov:cov.json --cov=.
