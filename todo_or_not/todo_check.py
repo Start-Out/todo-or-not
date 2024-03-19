@@ -261,7 +261,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     target_file.write('\n')
 
 
-def get_bot_submitted_issues(_test:bool = False) -> list[dict]:
+def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
     """
     Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a
     list of dicts
