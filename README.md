@@ -1,7 +1,10 @@
 [![image.png](https://i.postimg.cc/W3HvnfNj/image.png)](https://postimg.cc/dkrpQ6ZS)
 
-![PyPI - Downloads](https://img.shields.io/pypi/dm/todo-or-not) ![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not) ![PyPI - License](https://img.shields.io/pypi/l/todo-or-not)
-
+![PyPI - Downloads](https://img.shields.io/pypi/dm/todo-or-not) 
+![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not) 
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not) 
+![PyPI - License](https://img.shields.io/pypi/l/todo-or-not)
+[![Coverage Status](https://coveralls.io/repos/github/Start-Out/todo-or-not/badge.svg?branch=dev/staging)](https://coveralls.io/github/Start-Out/todo-or-not?branch=dev/staging)
 
 > TODO or not to do, that is the question
 
