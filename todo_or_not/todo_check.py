@@ -232,9 +232,10 @@ def _hash(hit_str: str):
     return m.hexdigest()
 
 
-def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str or None]:
+def find_lines(filename: str, verbose: bool, ignore_flag: str, *args) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
+    :param verbose: Print lengthy feedback which includes (encoding failures)
     :param ignore_flag: The flag which, when detected on a triggering line, will ignore that line
     :param filename: File to open() read-only
     :param args: Keys to check each line for
@@ -299,12 +300,13 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
 
                 line_number += 1
     else:
-        print(
-            LOCALIZE[REGION]["warning_encoding_not_supported"],
-            "\n * ",
-            filename,
-            file=sys.stderr,
-        )
+        if verbose:
+            print(
+                LOCALIZE[REGION]["warning_encoding_not_supported"],
+                "\n * ",
+                filename,
+                file=sys.stderr,
+            )
 
     return output, use_encoding
 
@@ -398,6 +400,7 @@ def main(
     mode: str = "print",
     silent: bool = False,
     force: bool = False,
+    verbose: bool = False,
     ni: Annotated[
         Optional[List[str]],
         Option(help="Copy the contents of other files into a new .todo-ignore"),
@@ -584,7 +587,7 @@ def main(
         os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))
 
         # Generate the hits for each target collected
-        hits, _enc = find_lines(target, "#todoon", "todo", "fixme")
+        hits, _enc = find_lines(target, verbose, "#todoon", "todo", "fixme")
 
         if _enc is None:
             number_of_encoding_failures += 1

@@ -28,6 +28,28 @@ class TestTodoon(unittest.TestCase):
 
         self.assertEqual(context.exception.code, 1)
 
+
+    def test_todoon_silent_pushes_environment_variables(self):
+        td.main(silent=True)
+
+        TODOON_STATUS = os.environ.get("TODOON_STATUS")
+        TODOON_PROGRESS = os.environ.get("TODOON_PROGRESS")
+        TODOON_FILES_SCANNED = os.environ.get("TODOON_FILES_SCANNED")
+        TODOON_TODOS_FOUND = os.environ.get("TODOON_TODOS_FOUND")
+        TODOON_FIXMES_FOUND = os.environ.get("TODOON_FIXMES_FOUND")
+        TODOON_ENCODING_ERRORS = os.environ.get("TODOON_ENCODING_ERRORS")
+        TODOON_ISSUES_GENERATED = os.environ.get("TODOON_ISSUES_GENERATED")
+        TODOON_DUPLICATE_ISSUES_AVOIDED = os.environ.get("TODOON_DUPLICATE_ISSUES_AVOIDED")
+
+        assert TODOON_STATUS == "finished"
+        assert TODOON_PROGRESS == "100.0"
+        assert TODOON_FILES_SCANNED == "4"
+        assert TODOON_TODOS_FOUND == "6"
+        assert TODOON_FIXMES_FOUND == "1"
+        assert TODOON_ENCODING_ERRORS == "1"
+        assert TODOON_ISSUES_GENERATED == "0"
+        assert TODOON_DUPLICATE_ISSUES_AVOIDED == "0"
+
     def test_todoon_standard_fails_without_todo_ignore(self):
         with open(".todo-ignore", "r") as _before:
             before = _before.read()
