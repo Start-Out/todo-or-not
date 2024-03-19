@@ -46,6 +46,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
+          source .venv/bin/activate
           pytest --cov-report lcov:cov.json --cov=.
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.2.3
