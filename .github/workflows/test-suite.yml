@@ -33,7 +33,7 @@ jobs:
         uses: actions/create-github-app-token@v1
         with:
           app-id: 853479
-          private-key: ${{ secrets.TODOON_CLIENT_SECRET }}
+          private-key: ${{ secrets.TODOON_CLIENT_PEM }}
       - name: Install Requirements
         run: |
           python -m pip install --upgrade pip
