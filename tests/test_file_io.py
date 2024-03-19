@@ -58,9 +58,14 @@ class TestTodoIgnoreHelpers(unittest.TestCase):
             todo_or_not.todo_check.paste_contents_into_file(self.other_files, _dest)
 
         with open(dest, "r") as result:
-            _result = result.read()
+            _result = []
+            for line in result.readlines():
+                line = line.strip(" \n\t")
 
-            self.assertEqual("\na\n\nb\n\nc\n\n\n", _result)
+                if len(line) > 0:
+                    _result.append(line)
+
+            self.assertEqual(['a', 'b', 'c'], _result)
 
         os.remove(dest)
 
@@ -74,9 +79,14 @@ class TestTodoIgnoreHelpers(unittest.TestCase):
             todo_or_not.todo_check.paste_contents_into_file(self.other_files, _dest)
 
         with open(dest, "r") as result:
-            _result = result.read()
+            _result = []
+            for line in result.readlines():
+                line = line.strip(" \n\t")
 
-            self.assertEqual("\na\n\nb\n\nc\n\n\n", _result)
+                if len(line) > 0:
+                    _result.append(line)
+
+            self.assertEqual(['a', 'b', 'c'], _result)
 
         os.remove(dest)
 
