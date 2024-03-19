@@ -18,12 +18,22 @@ _todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
 DEBUG = os.environ.get("DEBUG", False)
 MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", 8)
 PERTINENT_LINE_LIMIT = os.environ.get("PERTINENT_LINE_LIMIT", 8)
-REGION = os.environ.get("REGION", "en_us")
 
-# Validate that we support the region, otherwise default to something we have
-if REGION not in LOCALIZE:
-    print(F"WARNING: REGION {REGION} not recognized, defaulting to en_us (sorry, reach out to us!)\n", file=sys.stderr)
-    REGION = "en_us"
+
+def get_region():
+    region = os.environ.get("REGION", "en_us")
+
+    # Validate that we support the region, otherwise default to something we have
+    if region not in LOCALIZE:
+        print(
+            F"WARNING: REGION {region} not recognized, defaulting to en_us (sorry, reach out to us if you would like to do a localization!)\n",
+            file=sys.stderr)
+        region = "en_us"
+
+    return region
+
+
+REGION = get_region()
 
 
 class Hit:
@@ -275,11 +285,11 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
         owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
 
     query = [
-            "gh", "api",
-            "-H", "Accept: application/vnd.github+json",
-            "-H", "X-GitHub-Api-Version: 2022-11-28",
-            f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not"
-        ]
+        "gh", "api",
+        "-H", "Accept: application/vnd.github+json",
+        "-H", "X-GitHub-Api-Version: 2022-11-28",
+        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not"
+    ]
 
     if not (DEBUG or _test):
         response = subprocess.check_output(query)
@@ -290,6 +300,7 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
         return json.loads(_str)
     else:
         return query
+
 
 def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or None:
     """
@@ -414,7 +425,8 @@ def main(
 
     _walk = os.walk(_project_dir, topdown=True)
 
-    print("** DEBUG: ABOUT TO START THE WALK...\n   HERE'S THE IGNORE DIR:", ignored_dirs, "\n   AND THE IGNORE FILES:", ignored_files, file=sys.stderr)
+    print("** DEBUG: ABOUT TO START THE WALK...\n   HERE'S THE IGNORE DIR:", ignored_dirs, "\n   AND THE IGNORE FILES:",
+          ignored_files, file=sys.stderr)
 
     for (dirpath, dirnames, filenames) in _walk:
         _to_remove = []
