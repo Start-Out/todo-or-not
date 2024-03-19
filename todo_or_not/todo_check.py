@@ -334,7 +334,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
 
 def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
     """
-    Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a
+    Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a #todoon
     list of dicts
     :return: List of issues as dicts
     """
@@ -437,7 +437,7 @@ def main(
     os.environ["TODOON_ISSUES_GENERATED"] = "0"
     os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"
 
-    # If using specific files, no todo-ignore utils are necessary
+    # If using specific files, no todo-ignore utils are necessary #todoon
     if not use_specified_files:
         # Don't worry about it if both ni and xi are none
         if (ni is None) and (xi is None):
@@ -452,7 +452,7 @@ def main(
                     file=sys.stderr,
                 )
 
-            # Create new .todo-ignore
+            # Create new .todo-ignore #todoon
             with open(
                     os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"
             ) as new_todo_ignore_file:
@@ -469,7 +469,7 @@ def main(
                     file=sys.stderr,
                 )
 
-            # Update append to the existing .todo-ignore
+            # Update append to the existing .todo-ignore #todoon
             with open(
                     os.path.join(get_project_dir(), ".todo-ignore"), "a+", encoding="UTF-8"
             ) as new_todo_ignore_file:
@@ -481,15 +481,15 @@ def main(
             exit(1)
 
     #############################################
-    # Parse .todo-ignore
+    # Parse .todo-ignore #todoon
     #############################################
 
-    # If using specific files, no todo-ignore parsing is necessary
+    # If using specific files, no todo-ignore parsing is necessary #todoon
     if not use_specified_files:
         os.environ["TODOON_STATUS"] = "parsing-todo-ignore"
-        # As long as we aren't foregoing the .todo-ignore...
+        # As long as we aren't foregoing the .todo-ignore... #todoon
         if not force:
-            # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
+            # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level #todoon
             use_encoding = get_encoding(
                 get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE
             )
@@ -499,7 +499,7 @@ def main(
                 print(LOCALIZE[REGION]["error_todo_ignore_not_supported"], file=sys.stderr)
                 exit(1)
 
-            # ... actually do the reading of the .todo-ignore
+            # ... actually do the reading of the .todo-ignore #todoon
             with open(get_todo_ignore_path(), "r", encoding=use_encoding) as _ignore:
                 for line in _ignore.readlines():
                     if not line.startswith("#") and len(line) > 1:
@@ -522,7 +522,7 @@ def main(
                         file=sys.stderr,
                     )
 
-                # Ignore the .todo-ignore itself
+                # Ignore the .todo-ignore itself #todoon
                 ignored_files.append(os.path.abspath(_ignore.name))
         else:
             print(
@@ -604,7 +604,7 @@ def main(
             existing_issues_hashed.append(_hash(issue["title"]))
 
     #############################################
-    # Run todo-check
+    # Run todo-check #todoon
     #############################################
 
     number_of_hits = 0  # Tracks the number of targets found

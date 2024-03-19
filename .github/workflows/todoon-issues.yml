@@ -11,7 +11,7 @@ on:
       - dev/staging
   push:
     branches:
-      - dev/staging!
+      - dev/staging
 jobs:
   run_todoon:
     runs-on: ubuntu-latest
