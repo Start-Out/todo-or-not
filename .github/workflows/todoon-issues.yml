@@ -2,6 +2,16 @@ name: Generate issues with TODO-or-not
 
 on:
   workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+    branches:
+      - dev/staging
+  push:
+    branches:
+      - dev/staging!
 jobs:
   run_todoon:
     runs-on: ubuntu-latest
