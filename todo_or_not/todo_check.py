@@ -12,12 +12,17 @@ from todo_or_not.localize import LOCALIZE
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK
 
-_project_dir = os.getcwd()
-_todo_ignore_file = os.path.join(_project_dir, ".todo-ignore")
-
 DEBUG = os.environ.get("DEBUG", False)
 MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", 8)
 PERTINENT_LINE_LIMIT = os.environ.get("PERTINENT_LINE_LIMIT", 8)
+
+
+def get_project_dir():
+    return os.getcwd()
+
+
+def get_todo_ignore_path():
+    return os.path.join(get_project_dir(), ".todo-ignore")
 
 
 def get_region():
@@ -82,7 +87,7 @@ class Hit:
         padding = " " * _pad
         header = header + padding
 
-        location = os.path.relpath(self.source_file, _project_dir)
+        location = os.path.relpath(self.source_file, get_project_dir())
         location = f"{location}:{_line_number}"
         _pad = 16 - len(location)
         padding = " " * _pad
@@ -243,7 +248,7 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
                             break
                         _i += 1
 
-                    _hit = Hit(os.path.relpath(filename, _project_dir), line_number, _found_keys, _pertinent_lines,
+                    _hit = Hit(os.path.relpath(filename, get_project_dir()), line_number, _found_keys, _pertinent_lines,
                                _trigger_line)
                     output.append(_hit)
 
@@ -267,7 +272,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
             lines = file.readlines()
 
             for line in lines:
-                line = f"{line}\n"
+                line = f"{line}"
                 target_file.write(line)
 
     target_file.write('\n')
@@ -360,10 +365,10 @@ def main(
     elif xi is None and len(ni) > 0:
         # ...check if force is used and warn the user if so
         if force:
-            print(LOCALIZE[REGION]['warning_force_overrides_ignore'], "--ni",  file=sys.stderr)
+            print(LOCALIZE[REGION]['warning_force_overrides_ignore'], "--ni", file=sys.stderr)
 
         # Create new .todo-ignore
-        with open(os.path.join(_project_dir, ".todo-ignore"), 'x', encoding="UTF-8") as new_todo_ignore_file:
+        with open(os.path.join(get_project_dir(), ".todo-ignore"), 'x', encoding="UTF-8") as new_todo_ignore_file:
             paste_contents_into_file(ni, new_todo_ignore_file)
 
     elif ni is None and len(xi) > 0:
@@ -374,7 +379,7 @@ def main(
             print(LOCALIZE[REGION]['warning_force_overrides_ignore'], "--xi", file=sys.stderr)
 
         # Update append to the existing .todo-ignore
-        with open(os.path.join(_project_dir, ".todo-ignore"), 'a+', encoding="UTF-8") as new_todo_ignore_file:
+        with open(os.path.join(get_project_dir(), ".todo-ignore"), 'a+', encoding="UTF-8") as new_todo_ignore_file:
             paste_contents_into_file(xi, new_todo_ignore_file)
 
     # Don't allow the use of ni and ci at the same time
@@ -389,7 +394,7 @@ def main(
     # As long as we aren't foregoing the .todo-ignore...
     if not force:
         # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
-        use_encoding = get_encoding(_todo_ignore_file, SUPPORTED_ENCODINGS_TODOIGNORE)
+        use_encoding = get_encoding(get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE)
 
         # If we weren't able to find a file in a supported encoding, program must exit
         if use_encoding is None:
@@ -397,7 +402,7 @@ def main(
             exit(1)
 
         # ... actually do the reading of the .todo-ignore
-        with open(_todo_ignore_file, 'r', encoding=use_encoding) as _ignore:
+        with open(get_todo_ignore_path(), 'r', encoding=use_encoding) as _ignore:
             for line in _ignore.readlines():
                 if not line.startswith("#") and len(line) > 1:
                     if line.endswith('\n'):
@@ -405,7 +410,7 @@ def main(
                     else:
                         cur_name = line
 
-                    cur_path = os.path.join(_project_dir, cur_name)
+                    cur_path = os.path.join(get_project_dir(), cur_name)
 
                     if os.path.isfile(cur_path):
                         ignored_files.append(cur_path)
@@ -430,7 +435,7 @@ def main(
     if DEBUG:
         ignored_files.append(__file__)
 
-    _walk = os.walk(_project_dir, topdown=True)
+    _walk = os.walk(get_project_dir(), topdown=True)
 
     for (dirpath, dirnames, filenames) in _walk:
         _to_remove = []
