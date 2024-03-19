@@ -419,7 +419,10 @@ def main(
     ignored_files = []
     ignored_dirs = []
 
-    use_specified_files = len(files) > 0
+    use_specified_files = False
+
+    if files is not None and len(files) > 0:
+        use_specified_files = True
 
     #############################################
     # Handle settings
