@@ -138,6 +138,25 @@ Options:
 If a file discovered by `todoon` is not of a supported encoding [see [SUPPORTED_ENCODINGS_TODO_CHECK](todo_or_not/localize.py) for most up-to-date list] it will be skipped.
 The number of skipped files is summarized at the end of the run.
 
+##### Feedback
+
+todoon will summarize the run in stderr when it completes, it will also update a number of environment variables during and after the run:
+
+- `$TODOON_STATUS`
+  - `starting`
+  - `parsing-todo-ignore` (if applicable)
+  - `collecting-targets` (if no targets specified)
+  - `collecting-issues` (if mode is "issue")
+  - `scanning-files`
+- `$TODOON_PROGRESS`
+  - starting at status `scanning-files`, this variable is updated to a percentage (e.g. '18.7') which reflects the number of targets scanned of all targets found
+- `$TODOON_FILES_SCANNED`
+- `$TODOON_TODOS_FOUND`
+- `$TODOON_FIXMES_FOUND`
+- `$TODOON_ENCODING_ERRORS`
+- `$TODOON_ISSUES_GENERATED`
+- `$TODOON_DUPLICATE_ISSUES_AVOIDED`
+
 ### Examples
 
 > Find ALL issues in the current working directory (including any hidden folders/files) and exit non-zero if any are found
