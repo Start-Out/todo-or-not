@@ -4,7 +4,7 @@
 ![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not) 
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not) 
 ![PyPI - License](https://img.shields.io/pypi/l/todo-or-not)
-[![Coverage Status](https://coveralls.io/repos/github/Start-Out/todo-or-not/badge.svg?branch=dev/staging)](https://coveralls.io/github/Start-Out/todo-or-not?branch=dev/staging)
+[![Coverage Status](https://coveralls.io/repos/github/Start-Out/todo-or-not/badge.svg?branch=dev/staging)](https://coveralls.io/github/Start-Out/todo-or-not?branch=dev/staging&kill_cache=1)
 
 > TODO or not to do, that is the question
 
