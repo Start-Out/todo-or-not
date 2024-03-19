@@ -425,9 +425,17 @@ def main(
     # Handle settings
     #############################################
 
+    os.environ["TODOON_STATUS"] = "starting"
+    os.environ["TODOON_PROGRESS"] = "0.0"
+    os.environ["TODOON_FILES_SCANNED"] = "0"
+    os.environ["TODOON_TODOS_FOUND"] = "0"
+    os.environ["TODOON_FIXMES_FOUND"] = "0"
+    os.environ["TODOON_ENCODING_ERRORS"] = "0"
+    os.environ["TODOON_ISSUES_GENERATED"] = "0"
+    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"
+
     # If using specific files, no todo-ignore utils are necessary
     if not use_specified_files:
-        os.environ["TODOON_STATUS"] = "starting"
         # Don't worry about it if both ni and xi are none
         if (ni is None) and (xi is None):
             pass
@@ -443,7 +451,7 @@ def main(
 
             # Create new .todo-ignore
             with open(
-                os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"
+                    os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"
             ) as new_todo_ignore_file:
                 paste_contents_into_file(ni, new_todo_ignore_file)
 
@@ -460,7 +468,7 @@ def main(
 
             # Update append to the existing .todo-ignore
             with open(
-                os.path.join(get_project_dir(), ".todo-ignore"), "a+", encoding="UTF-8"
+                    os.path.join(get_project_dir(), ".todo-ignore"), "a+", encoding="UTF-8"
             ) as new_todo_ignore_file:
                 paste_contents_into_file(xi, new_todo_ignore_file)
 
