@@ -39,6 +39,21 @@ def get_region():
     return region
 
 
+def get_os():
+    _os = os.environ.get("OS", "default")
+    _os = _os.lower()
+
+    # Validate that we support the region, otherwise default to something we have
+    if _os not in LOCALIZE:
+        print(
+            f"WARNING: REGION {_os} not recognized, using default (generic) tips\n",
+            file=sys.stderr,
+        )
+        _os = "default"
+
+    return _os
+
+
 REGION = get_region()
 
 
