@@ -12,10 +12,13 @@ documentation = "https://github.com/Start-Out/todo-or-not/blob/main/README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pytest = "^8.1.1"
 typer = "^0.9.0"
 typing-extensions = "^4.10.0"
 
+[tool.poetry.group.testing.dependencies]
+coveralls = "^3.3.1"
+pytest-cov = "^4.1.0"
+pytest = "^8.1.1"
 
 [build-system]
 requires = ["poetry-core"]
