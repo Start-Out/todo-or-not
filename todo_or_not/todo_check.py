@@ -31,8 +31,9 @@ def get_region():
     # Validate that we support the region, otherwise default to something we have
     if region not in LOCALIZE:
         print(
-            F"WARNING: REGION {region} not recognized, defaulting to en_us (sorry, reach out to us if you would like to do a localization!)\n",
-            file=sys.stderr)
+            f"WARNING: REGION {region} not recognized, defaulting to en_us (sorry, reach out to us if you would like to do a localization!)\n",
+            file=sys.stderr,
+        )
         region = "en_us"
 
     return region
@@ -42,8 +43,14 @@ REGION = get_region()
 
 
 class Hit:
-    def __init__(self, source_file: str, source_line: int, found_keys: list[str], pertinent_lines: list[str],
-                 trigger_line_index: int):
+    def __init__(
+        self,
+        source_file: str,
+        source_line: int,
+        found_keys: list[str],
+        pertinent_lines: list[str],
+        trigger_line_index: int,
+    ):
         self.found_keys = found_keys
         self.source_file = source_file
         self.source_line = source_line
@@ -109,7 +116,9 @@ class Hit:
 
     def get_pertinent_lines(self):
         starting_line_number = self.source_line - self.trigger_line_index
-        _max_line = self.source_line + (len(self.pertinent_lines) - self.trigger_line_index)
+        _max_line = self.source_line + (
+            len(self.pertinent_lines) - self.trigger_line_index
+        )
 
         def _parse_line_number(_l: int, star: bool = False) -> str:
             _padding = len(str(_max_line))
@@ -122,8 +131,10 @@ class Hit:
         output = f"```{self.get_file_extension()}\n"
 
         for pertinent_line in self.pertinent_lines:
-            output += (f"{_parse_line_number(starting_line_number, starting_line_number == self.source_line)}\t"
-                       f"{pertinent_line}")
+            output += (
+                f"{_parse_line_number(starting_line_number, starting_line_number == self.source_line)}\t"
+                f"{pertinent_line}"
+            )
             starting_line_number += 1
 
         output += "```"
@@ -131,7 +142,11 @@ class Hit:
         return output
 
     def get_title(self):
-        return self.generic_title() if self.structured_title is None else self.structured_title
+        return (
+            self.generic_title()
+            if self.structured_title is None
+            else self.structured_title
+        )
 
     def generic_title(self):
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
@@ -149,7 +164,7 @@ class Hit:
 
             github_ref = os.environ.get("GITHUB_REF_NAME")
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
-            owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
+            owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
 
         reference_file = self.source_file.split(":")[0]
 
@@ -165,14 +180,21 @@ class Hit:
         body.replace("@", "@<!-- -->")
 
         api_call = [
-            "gh", "api",
-            "--method", "POST",
-            "-H", "Accept: application/vnd.github+json",
-            "-H", "X-GitHub-Api-Version: 2022-11-28",
+            "gh",
+            "api",
+            "--method",
+            "POST",
+            "-H",
+            "Accept: application/vnd.github+json",
+            "-H",
+            "X-GitHub-Api-Version: 2022-11-28",
             f"/repos/{owner}/{repo}/issues",
-            "-f", f"title={self.get_title()}",
-            "-f", f"body={body}",
-            "-f", f"assignees[]={triggered_by}"
+            "-f",
+            f"title={self.get_title()}",
+            "-f",
+            f"body={body}",
+            "-f",
+            f"assignees[]={triggered_by}",
         ]
 
         if self.structured_labels is not None:
@@ -210,14 +232,17 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
     use_encoding = get_encoding(filename, SUPPORTED_ENCODINGS_TODO_CHECK)
 
     if use_encoding is not None:
-        with open(filename, 'r', encoding=use_encoding) as file:
+        with open(filename, "r", encoding=use_encoding) as file:
             line_number = 1
             lines = file.readlines()
 
             for _line in lines:
                 _found_keys = []
                 for key in args:
-                    if key.lower() in _line.lower() and ignore_flag.lower() not in _line.lower():
+                    if (
+                        key.lower() in _line.lower()
+                        and ignore_flag.lower() not in _line.lower()
+                    ):
                         _found_keys.append(key)
 
                 if len(_found_keys) > 0:
@@ -248,13 +273,23 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
                             break
                         _i += 1
 
-                    _hit = Hit(os.path.relpath(filename, get_project_dir()), line_number, _found_keys, _pertinent_lines,
-                               _trigger_line)
+                    _hit = Hit(
+                        os.path.relpath(filename, get_project_dir()),
+                        line_number,
+                        _found_keys,
+                        _pertinent_lines,
+                        _trigger_line,
+                    )
                     output.append(_hit)
 
                 line_number += 1
     else:
-        print(LOCALIZE[REGION]["warning_encoding_not_supported"], "\n * ", filename, file=sys.stderr)
+        print(
+            LOCALIZE[REGION]["warning_encoding_not_supported"],
+            "\n * ",
+            filename,
+            file=sys.stderr,
+        )
 
     return output, use_encoding
 
@@ -266,7 +301,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     :param target_file: path-like pointing to the destination file
     """
 
-    target_file.write('\n')
+    target_file.write("\n")
     for file_name in other_file_names:
         with open(file_name, "r") as file:
             lines = file.readlines()
@@ -275,7 +310,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
                 line = f"{line}"
                 target_file.write(line)
 
-    target_file.write('\n')
+    target_file.write("\n")
 
 
 def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
@@ -287,20 +322,23 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
     owner, repo = "owner", "repository"
 
     if not (DEBUG or _test):
-        owner, repo = os.environ.get('GITHUB_REPOSITORY').split("/")
+        owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
 
     query = [
-        "gh", "api",
-        "-H", "Accept: application/vnd.github+json",
-        "-H", "X-GitHub-Api-Version: 2022-11-28",
-        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not"
+        "gh",
+        "api",
+        "-H",
+        "Accept: application/vnd.github+json",
+        "-H",
+        "X-GitHub-Api-Version: 2022-11-28",
+        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not",
     ]
 
     if not (DEBUG or _test):
         response = subprocess.check_output(query)
 
         _str = response.decode("utf-8")
-        _str.replace("\"", '\\\"')
+        _str.replace('"', '\\"')
 
         return json.loads(_str)
     else:
@@ -316,14 +354,16 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
     try:
         assert os.path.isfile(_target_path)
     except AssertionError:
-        print(f"{LOCALIZE[REGION]['error_is_not_file']}: {_target_path}", file=sys.stderr)
+        print(
+            f"{LOCALIZE[REGION]['error_is_not_file']}: {_target_path}", file=sys.stderr
+        )
         return None
 
     # Try to read the file in a supported encoding
     _use_encoding = None
     for encoding in _supported_encodings:
         try:
-            with open(_target_path, 'r', encoding=encoding) as _ignore:
+            with open(_target_path, "r", encoding=encoding) as _ignore:
                 _ignore.readline()
         except UnicodeDecodeError:
             # Try the next encoding without setting the used encoding
@@ -340,13 +380,17 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
 
 
 def main(
-        mode: str = "print",
-        silent: bool = False,
-        force: bool = False,
-        ni: Annotated[
-            Optional[List[str]], Option(help="Copy the contents of other files into a new .todo-ignore")] = None,
-        xi: Annotated[
-            Optional[List[str]], Option(help="Copy the contents of other files into an existing .todo-ignore")] = None
+    mode: str = "print",
+    silent: bool = False,
+    force: bool = False,
+    ni: Annotated[
+        Optional[List[str]],
+        Option(help="Copy the contents of other files into a new .todo-ignore"),
+    ] = None,
+    xi: Annotated[
+        Optional[List[str]],
+        Option(help="Copy the contents of other files into an existing .todo-ignore"),
+    ] = None,
 ):
     mode = mode.lower()
 
@@ -365,10 +409,16 @@ def main(
     elif xi is None and len(ni) > 0:
         # ...check if force is used and warn the user if so
         if force:
-            print(LOCALIZE[REGION]['warning_force_overrides_ignore'], "--ni", file=sys.stderr)
+            print(
+                LOCALIZE[REGION]["warning_force_overrides_ignore"],
+                "--ni",
+                file=sys.stderr,
+            )
 
         # Create new .todo-ignore
-        with open(os.path.join(get_project_dir(), ".todo-ignore"), 'x', encoding="UTF-8") as new_todo_ignore_file:
+        with open(
+            os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"
+        ) as new_todo_ignore_file:
             paste_contents_into_file(ni, new_todo_ignore_file)
 
     elif ni is None and len(xi) > 0:
@@ -376,15 +426,21 @@ def main(
         if force:
             # Check which mode is being used
             _option = "--ni" if (len(ni) > len(xi)) else "--xi"
-            print(LOCALIZE[REGION]['warning_force_overrides_ignore'], "--xi", file=sys.stderr)
+            print(
+                LOCALIZE[REGION]["warning_force_overrides_ignore"],
+                "--xi",
+                file=sys.stderr,
+            )
 
         # Update append to the existing .todo-ignore
-        with open(os.path.join(get_project_dir(), ".todo-ignore"), 'a+', encoding="UTF-8") as new_todo_ignore_file:
+        with open(
+            os.path.join(get_project_dir(), ".todo-ignore"), "a+", encoding="UTF-8"
+        ) as new_todo_ignore_file:
             paste_contents_into_file(xi, new_todo_ignore_file)
 
     # Don't allow the use of ni and ci at the same time
     elif (len(ni) > 0) and (len(xi) > 0):
-        print(LOCALIZE[REGION]['error_cannot_specify_ni_xi'], file=sys.stderr)
+        print(LOCALIZE[REGION]["error_cannot_specify_ni_xi"], file=sys.stderr)
         exit(1)
 
     #############################################
@@ -394,18 +450,20 @@ def main(
     # As long as we aren't foregoing the .todo-ignore...
     if not force:
         # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
-        use_encoding = get_encoding(get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE)
+        use_encoding = get_encoding(
+            get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE
+        )
 
         # If we weren't able to find a file in a supported encoding, program must exit
         if use_encoding is None:
-            print(LOCALIZE[REGION]['error_todo_ignore_not_supported'], file=sys.stderr)
+            print(LOCALIZE[REGION]["error_todo_ignore_not_supported"], file=sys.stderr)
             exit(1)
 
         # ... actually do the reading of the .todo-ignore
-        with open(get_todo_ignore_path(), 'r', encoding=use_encoding) as _ignore:
+        with open(get_todo_ignore_path(), "r", encoding=use_encoding) as _ignore:
             for line in _ignore.readlines():
                 if not line.startswith("#") and len(line) > 1:
-                    if line.endswith('\n'):
+                    if line.endswith("\n"):
                         cur_name = line[:-1]
                     else:
                         cur_name = line
@@ -419,13 +477,18 @@ def main(
                         ignored_dirs.append(cur_path)
 
             if len(ignored_files) == 0 and len(ignored_dirs) == 0:
-                print(LOCALIZE[REGION]['warning_run_with_empty_todo_ignore'], file=sys.stderr)
+                print(
+                    LOCALIZE[REGION]["warning_run_with_empty_todo_ignore"],
+                    file=sys.stderr,
+                )
 
             # Ignore the .todo-ignore itself
             ignored_files.append(os.path.abspath(_ignore.name))
     else:
-        print(f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE['windows']['shell_sigint']}]",
-              file=sys.stderr)
+        print(
+            f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE['windows']['shell_sigint']}]",
+            file=sys.stderr,
+        )
 
     #############################################
     # Collect files to scan
@@ -437,7 +500,7 @@ def main(
 
     _walk = os.walk(get_project_dir(), topdown=True)
 
-    for (dirpath, dirnames, filenames) in _walk:
+    for dirpath, dirnames, filenames in _walk:
         _to_remove = []
 
         # Find all ignored dirs from this step of the walk
@@ -520,11 +583,17 @@ def main(
                             hit.generate_issue()
                             number_of_issues += 1
                         else:
-                            print(LOCALIZE[REGION]['error_todo_ignore_not_found'], file=sys.stderr)
+                            print(
+                                LOCALIZE[REGION]["error_todo_ignore_not_found"],
+                                file=sys.stderr,
+                            )
                             exit(1)
                     # If this title already exists, notify but do not halt
                     else:
-                        print(f"{LOCALIZE[REGION]['info_duplicate_issue_avoided']}: {hit}", file=sys.stderr)
+                        print(
+                            f"{LOCALIZE[REGION]['info_duplicate_issue_avoided']}: {hit}",
+                            file=sys.stderr,
+                        )
 
                 #############################################
                 # If not in ISSUE mode, print hit to stderr
