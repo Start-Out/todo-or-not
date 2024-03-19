@@ -417,6 +417,7 @@ def main(
     # Handle settings
     #############################################
 
+    os.environ["TODOON_STATUS"] = "starting"
     # Don't worry about it if both ni and xi are none
     if (ni is None) and (xi is None):
         pass
@@ -462,6 +463,7 @@ def main(
     # Parse .todo-ignore
     #############################################
 
+    os.environ["TODOON_STATUS"] = "parsing-todo-ignore"
     # As long as we aren't foregoing the .todo-ignore...
     if not force:
         # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
@@ -501,7 +503,7 @@ def main(
             ignored_files.append(os.path.abspath(_ignore.name))
     else:
         print(
-            f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE['windows']['shell_sigint']}]",
+            f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE[get_os()]['shell_sigint']}]",
             file=sys.stderr,
         )
 
@@ -509,6 +511,7 @@ def main(
     # Collect files to scan
     #############################################
 
+    os.environ["TODOON_STATUS"] = "collecting-targets"
     # Ignore this script if in DEBUG
     if DEBUG:
         ignored_files.append(__file__)
@@ -551,6 +554,7 @@ def main(
 
     # Collect all the issues that the bot has so far submitted to check for duplicates
     if mode == "issue":
+        os.environ["TODOON_STATUS"] = "collecting-issues"
         todoon_created_issues = get_bot_submitted_issues()
 
         for issue in todoon_created_issues:
@@ -562,14 +566,23 @@ def main(
 
     number_of_hits = 0  # Tracks the number of targets found
     number_of_issues = 0  # Tracks the number of issues generated
+    number_of_duplicate_issues_avoided = 0  # Tracks the number of issues avoided because they are already mentioned
     number_of_encoding_failures = 0  # Tracks the files unread due to encoding error
     number_of_files_scanned = len(targets)  # Tracks the files attempted to be read, regardless of errors
 
     # Used for summary
     number_of_todo, number_of_fixme = 0, 0
 
+    os.environ["TODOON_STATUS"] = "scanning-files"
+    os.environ["TODOON_PROGRESS"] = "0.0"
     # For each target file discovered
+    _i = 0
     for target in targets:
+
+        # Update progress
+        _i += 1
+        os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))
+
         # Generate the hits for each target collected
         hits, _enc = find_lines(target, "#todoon", "todo", "fixme")
 
@@ -606,6 +619,7 @@ def main(
                             exit(1)
                     # If this title already exists, notify but do not halt
                     else:
+                        number_of_issues += 1
                         print(
                             f"{LOCALIZE[REGION]['info_duplicate_issue_avoided']}: {hit}",
                             file=sys.stderr,
@@ -640,7 +654,32 @@ def main(
     elif number_of_files_scanned == 1:
         summary += f"# {number_of_files_scanned} {LOCALIZE[REGION]['summary_files_scanned_singular']}\n"  # TODO Localization | New target for localization
 
+    # Number of issues (if any) that were generated
+    if mode == "issue":
+        # Total number of issues generated
+        if number_of_issues > 1:
+            summary += f"# {number_of_issues} {LOCALIZE[REGION]['summary_issues_generated_plural']}\n"  # TODO Localization | New target for localization
+        elif number_of_issues == 1:
+            summary += f"# {number_of_issues} {LOCALIZE[REGION]['summary_issues_generated_singular']}\n"  # TODO Localization | New target for localization
+        else:
+            summary += f"# {LOCALIZE[REGION]['summary_issues_generated_none']}\n"  # TODO Localization | New target for localization
+
+        # Total number of duplicate issues avoided
+        if number_of_duplicate_issues_avoided > 1:
+            summary += f"# {number_of_duplicate_issues_avoided} {LOCALIZE[REGION]['summary_duplicate_issues_avoided_plural']}\n"  # TODO Localization | New target for localization
+        elif number_of_duplicate_issues_avoided == 1:
+            summary += f"# {number_of_duplicate_issues_avoided} {LOCALIZE[REGION]['summary_duplicate_issues_avoided_singular']}\n"  # TODO Localization | New target for localization
+
     summary += "##########################\n"
+
+    os.environ["TODOON_STATUS"] = "finished"
+    os.environ["TODOON_PROGRESS"] = "100.0"
+    os.environ["TODOON_FILES_SCANNED"] = str(number_of_files_scanned)
+    os.environ["TODOON_TODOS_FOUND"] = str(number_of_todo)
+    os.environ["TODOON_FIXMES_FOUND"] = str(number_of_fixme)
+    os.environ["TODOON_ENCODING_ERRORS"] = str(number_of_encoding_failures)
+    os.environ["TODOON_ISSUES_GENERATED"] = str(number_of_issues)
+    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(number_of_duplicate_issues_avoided)
 
     print(summary, file=sys.stderr)
 

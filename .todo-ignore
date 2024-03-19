@@ -1,3 +1,4 @@
+
 .git/
 .github/
 .idea/
@@ -24,3 +25,9 @@ todo_or_not/__pycache__/
 todo_or_not/__init__.py/
 todo_or_not/localize.py
 todo_or_not/todo_check.py
+
+
+a
+b
+c
+
