@@ -17,6 +17,9 @@ on:
       - reopened
     branches:
       - dev/staging
+  push:
+    branches:
+      - dev/staging
 jobs:
   test_suite:
     name: Run test suite steps
