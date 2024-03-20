@@ -24,9 +24,12 @@ class TestTodoon(unittest.TestCase):
 
     def test_todoon_standard_succeeds_with_no_todos(self):
         safe_dir = os.path.join("tests", "resources", "no_todos")
+        old_dir = os.getcwd()
         os.chdir(safe_dir)
 
         td.main(verbose=True)
+
+        os.chdir(old_dir)
 
 
     def test_todoon_standard_fails_when_finds_todos(self):
