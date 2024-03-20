@@ -33,7 +33,7 @@ def get_region():
     # Validate that we support the region, otherwise default to something we have
     if region not in LOCALIZE:
         print(
-            LOCALIZE[REGION]["warning_using_default_region"],  # TODO Localization | New target for localization
+            LOCALIZE[REGION]["warning_using_default_region"],  # TODO Localization | New target for #localization
             region,
             file=sys.stderr,
         )
@@ -49,7 +49,7 @@ def get_os():
     # Validate that we support the region, otherwise default to something we have
     if _os not in LOCALIZE:
         print(
-            LOCALIZE[REGION]["warning_using_default_os"],  # TODO Localization | New target for localization
+            LOCALIZE[REGION]["warning_using_default_os"],  # TODO Localization | New target for #localization
             _os,
             file=sys.stderr,
         )
@@ -688,7 +688,6 @@ def main(
                             exit(1)
                     # If this title already exists, notify but do not halt
                     else:
-                        number_of_issues += 1
                         print(
                             f"{LOCALIZE[REGION]['info_duplicate_issue_avoided']}: {hit}",
                             file=sys.stderr,
@@ -720,31 +719,31 @@ def main(
     # Total number of files scanned
     if number_of_files_scanned > 1:
         summary += (f"# {number_of_files_scanned} "
-                    f"{LOCALIZE[REGION]['summary_files_scanned_plural']}\n")  # TODO Localization | New target for localization
+                    f"{LOCALIZE[REGION]['summary_files_scanned_plural']}\n")  # TODO Localization | New target for #localization
     elif number_of_files_scanned == 1:
         summary += (f"# {number_of_files_scanned} "
-                    f"{LOCALIZE[REGION]['summary_files_scanned_singular']}\n")  # TODO Localization | New target for localization
+                    f"{LOCALIZE[REGION]['summary_files_scanned_singular']}\n")  # TODO Localization | New target for #localization
 
     # Number of issues (if any) that were generated
     if mode == "issue":
         # Total number of issues generated
         if number_of_issues > 1:
             summary += (f"# {number_of_issues} "
-                        f"{LOCALIZE[REGION]['summary_issues_generated_plural']}\n")  # TODO Localization | New target for localization
+                        f"{LOCALIZE[REGION]['summary_issues_generated_plural']}\n")  # TODO Localization | New target for #localization
         elif number_of_issues == 1:
             summary += (f"# {number_of_issues} "
-                        f"{LOCALIZE[REGION]['summary_issues_generated_singular']}\n")  # TODO Localization | New target for localization
+                        f"{LOCALIZE[REGION]['summary_issues_generated_singular']}\n")  # TODO Localization | New target for #localization
         else:
             summary += (f"# "
-                        f"{LOCALIZE[REGION]['summary_issues_generated_none']}\n")  # TODO Localization | New target for localization
+                        f"{LOCALIZE[REGION]['summary_issues_generated_none']}\n")  # TODO Localization | New target for #localization
 
         # Total number of duplicate issues avoided
         if number_of_duplicate_issues_avoided > 1:
             summary += (f"# {number_of_duplicate_issues_avoided} "
-                        f"{LOCALIZE[REGION]['summary_duplicate_issues_avoided_plural']}\n")  # TODO Localization | New target for localization
+                        f"{LOCALIZE[REGION]['summary_duplicate_issues_avoided_plural']}\n")  # TODO Localization | New target for #localization
         elif number_of_duplicate_issues_avoided == 1:
             summary += (f"# {number_of_duplicate_issues_avoided} "
-                        f"{LOCALIZE[REGION]['summary_duplicate_issues_avoided_singular']}\n")  # TODO Localization | New target for localization
+                        f"{LOCALIZE[REGION]['summary_duplicate_issues_avoided_singular']}\n")  # TODO Localization | New target for #localization
 
     summary += "##########################\n"
 
