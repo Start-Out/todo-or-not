@@ -1,5 +1,5 @@
-SUPPORTED_ENCODINGS_TODOIGNORE = ['utf-8', 'utf-16']
-SUPPORTED_ENCODINGS_TODO_CHECK = ['utf-8', 'utf-16']
+SUPPORTED_ENCODINGS_TODOIGNORE = ["utf-8", "utf-16"]
+SUPPORTED_ENCODINGS_TODO_CHECK = ["utf-8", "utf-16"]
 
 LOCALIZE = {
     "en_us": {
@@ -7,6 +7,13 @@ LOCALIZE = {
         "summary_title": "Summary",
         "summary_encoding_unsupported_singular": "File skipped due to unsupported encoding",
         "summary_encoding_unsupported_plural": "Files skipped due to unsupported encodings",
+        "summary_files_scanned_singular": "File scanned",
+        "summary_files_scanned_plural": "Files scanned",
+        "summary_issues_generated_singular": "Issue generated",
+        "summary_issues_generated_plural": "Issues generated",
+        "summary_issues_generated_none": "No issues generated",
+        "summary_duplicate_issues_avoided_singular": "Duplicate issue prevented",
+        "summary_duplicate_issues_avoided_plural": "Duplicate issues prevented",
         "info_duplicate_issue_avoided": "INFO: Duplicate issue avoided",
         "error_cannot_specify_ni_xi": "ERROR: Cannot specify both --ni and --xi",
         "error_is_not_file": "ERROR: Specified path is not a file",
@@ -17,13 +24,22 @@ LOCALIZE = {
         "warning_run_with_empty_todo_ignore": "WARNING: .todo-ignore was empty (if the file isn't empty, check its encoding), running anyway. To cancel use ",
         "warning_run_without_todo_ignore": "WARNING: Running without a .todo-ignore, to cancel use ",
         "warning_encoding_not_supported": f"WARNING: File uses unsupported encoding, we will skip it but consider adding to .todo-ignore (Supported encodings: {SUPPORTED_ENCODINGS_TODO_CHECK})",
+        "warning_using_default_region": f"WARNING: Unsupported region detected, defaulting to en_us. Detected region:",
+        "warning_using_default_os": f"WARNING: Unsupported OS detected, using default tips. Detected OS:",
     },
     "ko_kr": {
         "issue_body_reference_link": "참조",
         "summary_title": "요약",
         "summary_encoding_unsupported_singular": "지원되지 않는 인코딩(문자)의 이유로 파일이 제외되었습니다",
         "summary_encoding_unsupported_plural": "지원되지 않는 인코딩(문자)의 이유로 여러 파일이 제외되었습니다",
-        "info_duplicate_issue_avoided": "정보: 중복 이슈 생성이 방지되었음",
+        "summary_files_scanned_singular": "하나의 파일을 스캔하였습니다",
+        "summary_files_scanned_plural": "여러 개의 파일을 스캔하였습니다",
+        "summary_issues_generated_singular": "깃허브 이슈가 생성되었습니다",
+        "summary_issues_generated_plural": "깃허브 이슈들이 생성되었습니다",
+        "summary_issues_generated_none": "생성된 깃허브 이슈가 없습니다",
+        "summary_duplicate_issues_avoided_singular": "깃허브 이슈의 중복 생성이 방지되었습니다",
+        "summary_duplicate_issues_avoided_plural": "깃허브 이슈들의 중복 생성이 방지되었습니다",
+        "info_duplicate_issue_avoided": "정보: 중복 이슈 생성이 방지되었습니다",
         "error_cannot_specify_ni_xi": "오류: --ni 와 --xi 키워드는 동시에 사용할 수 없습니다",
         "error_is_not_file": "오류: 해당 경로는 파일이 아닙니다",
         "error_todo_ignore_not_found": "오류: .todo-ignore 를 찾을 수 없습니다! -i 를 사용하여 다른 .ignore를 복사하시거나 --force 를 사용하여 .todo-ignore 없이 실행할 수 있습니다(권장되지 않음)",
@@ -33,6 +49,8 @@ LOCALIZE = {
         "warning_run_with_empty_todo_ignore": "경고: .todo-ignore 이 비어있는 상태로 실행합니다 (만약 파일이 비어있지 않다면, 해당 파일의 인코딩을 확인하십시오), 해당 실행을 취소하고 싶다면 다음을 사용하세요 - ",
         "warning_run_without_todo_ignore": "경고: .todo-ignore 을 제외하고 실행합니다, 해당 실행을 취소하고 싶다면 다음을 사용하세요 -  ",
         "warning_encoding_not_supported": f"경고: 파일이 지원되지 않는 인코딩(문자)을 사용하고 있습니다, .todo-ignore 에 이 파일이 있다고 가정하고 해당 파일을 건너 뛸 것입니다 (지원되는 인코딩: {SUPPORTED_ENCODINGS_TODOIGNORE})",
+        "warning_using_default_region": f"경고: 지원되지 않는 지역이 감지되었습니다, en_us(영어)를 기본값으로 둡니다. 감지된 지역:",
+        "warning_using_default_os": f"경고: 지원되지 않는 운영체제가 감지되었습니다, 기본 단축키(Ctrl + C)를 사용합니다. 감지된 운영체제:",
     },
     "bu_mm": {
         "issue_body_reference_link": "အညွှန်း",
@@ -50,7 +68,6 @@ LOCALIZE = {
         "warning_run_without_todo_ignore": "သတိပေးချက်- .todo-ignore မပါဘဲ လုပ်ဆောင်နေသည်။ အသုံးပြုမှုကို ပယ်ဖျက်ရန် -",
         "warning_encoding_not_supported": f"သတိပေးချက်- ဖိုင်သည် ပံ့ပိုးမထားသော ကုဒ်နံပါတ်ကို အသုံးပြုသည်၊ ၎င်းကို ကျော်သွားပါမည်၊ သို့သော် .todo-ignore တွင် ထည့်ရန်စဉ်းစားသည် (ပံ့ပိုးပေးထားသော ကုဒ်နံပါတ်များ- {SUPPORTED_ENCODINGS_TODO_CHECK})",
     },
-    "windows": {
-        "shell_sigint": "CTRL + C"
-    }
+    "default": {"shell_sigint": "CTRL + C"},
+    "windows_nt": {"shell_sigint": "CTRL + C"},
 }
