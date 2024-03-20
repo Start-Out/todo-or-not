@@ -681,7 +681,7 @@ def main(
                         else:
                             print(
                                 LOCALIZE[REGION][
-                                    "error_todo_ignore_not_found"  # todoon
+                                    "error_exceeded_maximum_issues"
                                 ], 
                                 file=sys.stderr,
                             )
