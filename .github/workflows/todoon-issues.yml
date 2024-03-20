@@ -35,6 +35,7 @@ jobs:
       - name: Run TODO-or-not
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          MAXIMUM_ISSUES_GENERATED: 10
         run: |
           echo "Generate GitHub issues for each problem found, but don't fail the workflow"
           todoon --mode issue --silent
