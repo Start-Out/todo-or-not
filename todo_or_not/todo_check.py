@@ -11,8 +11,8 @@ from typing import List, Optional, TextIO
 from typing_extensions import Annotated
 
 from todo_or_not.localize import LOCALIZE
-from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE
-from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK
+from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
+from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 
 DEBUG = os.environ.get("DEBUG", False)
 MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", 8)
@@ -247,7 +247,7 @@ def find_lines(filename: str, verbose: bool, ignore_flag: str, *args) -> tuple[l
     """
     output = []
 
-    use_encoding = get_encoding(filename, SUPPORTED_ENCODINGS_TODO_CHECK)
+    use_encoding = get_encoding(filename, SUPPORTED_ENCODINGS_TODO_CHECK)  # todoon
 
     if use_encoding is not None:
         with open(filename, "r", encoding=use_encoding) as file:
@@ -428,14 +428,14 @@ def main(
     # Handle settings
     #############################################
 
-    os.environ["TODOON_STATUS"] = "starting"
-    os.environ["TODOON_PROGRESS"] = "0.0"
-    os.environ["TODOON_FILES_SCANNED"] = "0"
-    os.environ["TODOON_TODOS_FOUND"] = "0"
-    os.environ["TODOON_FIXMES_FOUND"] = "0"
-    os.environ["TODOON_ENCODING_ERRORS"] = "0"
-    os.environ["TODOON_ISSUES_GENERATED"] = "0"
-    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"
+    os.environ["TODOON_STATUS"] = "starting"  # todoon
+    os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
+    os.environ["TODOON_FILES_SCANNED"] = "0"  # todoon
+    os.environ["TODOON_TODOS_FOUND"] = "0"  # todoon
+    os.environ["TODOON_FIXMES_FOUND"] = "0"  # todoon
+    os.environ["TODOON_ENCODING_ERRORS"] = "0"  # todoon
+    os.environ["TODOON_ISSUES_GENERATED"] = "0"  # todoon
+    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"  # todoon
 
     # If using specific files, no todo-ignore utils are necessary #todoon
     if not use_specified_files:
@@ -486,12 +486,12 @@ def main(
 
     # If using specific files, no todo-ignore parsing is necessary #todoon
     if not use_specified_files:
-        os.environ["TODOON_STATUS"] = "parsing-todo-ignore"
+        os.environ["TODOON_STATUS"] = "parsing-todo-ignore"  # todoon
         # As long as we aren't foregoing the .todo-ignore... #todoon
         if not force:
             # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level #todoon
             use_encoding = get_encoding(
-                get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE
+                get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
             )
 
             # If we weren't able to find a file in a supported encoding, program must exit
@@ -536,7 +536,7 @@ def main(
 
     # If using specific files, we will just parse them instead of walking
     if not use_specified_files:
-        os.environ["TODOON_STATUS"] = "collecting-targets"
+        os.environ["TODOON_STATUS"] = "collecting-targets"  # todoon
         # Ignore this script if in DEBUG
         if DEBUG:
             ignored_files.append(__file__)
@@ -597,7 +597,7 @@ def main(
 
     # Collect all the issues that the bot has so far submitted to check for duplicates
     if mode == "issue":
-        os.environ["TODOON_STATUS"] = "collecting-issues"
+        os.environ["TODOON_STATUS"] = "collecting-issues"  # todoon
         todoon_created_issues = get_bot_submitted_issues()
 
         for issue in todoon_created_issues:
@@ -616,15 +616,15 @@ def main(
     # Used for summary
     number_of_todo, number_of_fixme = 0, 0
 
-    os.environ["TODOON_STATUS"] = "scanning-files"
-    os.environ["TODOON_PROGRESS"] = "0.0"
+    os.environ["TODOON_STATUS"] = "scanning-files"  # todoon
+    os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
     # For each target file discovered
     _i = 0
     for target in targets:
 
         # Update progress
         _i += 1
-        os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))
+        os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))  # todoon
 
         # Generate the hits for each target collected
         hits, _enc = find_lines(target, verbose, "#todoon", "todo", "fixme")
@@ -682,8 +682,8 @@ def main(
     # Mode the tool was run in
     summary += f"# ({mode.upper()} MODE)\n"
 
-    # Number of TODOs and FIXMEs found
-    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
+    # Number of TODOs and FIXMEs found  # todoon
+    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
 
     # Number of encoding failures
     if number_of_encoding_failures > 1:
@@ -715,14 +715,14 @@ def main(
 
     summary += "##########################\n"
 
-    os.environ["TODOON_STATUS"] = "finished"
-    os.environ["TODOON_PROGRESS"] = "100.0"
-    os.environ["TODOON_FILES_SCANNED"] = str(number_of_files_scanned)
-    os.environ["TODOON_TODOS_FOUND"] = str(number_of_todo)
-    os.environ["TODOON_FIXMES_FOUND"] = str(number_of_fixme)
-    os.environ["TODOON_ENCODING_ERRORS"] = str(number_of_encoding_failures)
-    os.environ["TODOON_ISSUES_GENERATED"] = str(number_of_issues)
-    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(number_of_duplicate_issues_avoided)
+    os.environ["TODOON_STATUS"] = "finished"  # todoon
+    os.environ["TODOON_PROGRESS"] = "100.0"  # todoon
+    os.environ["TODOON_FILES_SCANNED"] = str(number_of_files_scanned)  # todoon
+    os.environ["TODOON_TODOS_FOUND"] = str(number_of_todo)  # todoon
+    os.environ["TODOON_FIXMES_FOUND"] = str(number_of_fixme)  # todoon
+    os.environ["TODOON_ENCODING_ERRORS"] = str(number_of_encoding_failures)  # todoon
+    os.environ["TODOON_ISSUES_GENERATED"] = str(number_of_issues)  # todoon
+    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(number_of_duplicate_issues_avoided)  # todoon
 
     print(summary, file=sys.stderr)
 
