@@ -9,7 +9,7 @@
 
 > TODO or not to do, that is the question
 
-TODO Or Not (#todoon) is, in essence, a simple tool that checks your project for TODO's and FIXME's. You can also integrate this tool into your GitHub workflow via actions, and automate generating issues from the discovered TODO's and FIXME's.
+TODO Or Not (todoon) is, in essence, a simple tool that checks your project for TODO's and FIXME's. You can also integrate this tool into your GitHub workflow via actions, and automate generating issues from the discovered TODO's and FIXME's.
 
 [Get the GitHub App](https://github.com/apps/todo-or-not)
 
@@ -45,7 +45,7 @@ Check out [this example code](https://github.com/Start-Out/todo-or-not/blob/main
 
 ```py
 ##########################
-# Example usage of #todoon
+# Example usage of todoon
 ##########################
 
 def an_unfinished_function():
@@ -74,8 +74,8 @@ def a_broken_function():
 
 
 def a_skipping_example():
-    # Since the line below has #todoon in it, the checker will give it a pass even though it has the magic words!
-    print("Sometimes you really have to write TODO or FIXME, like this!")  # #todoon
+    # Since the line below has `# todoon` in it, the checker will give it a pass even though it has the magic words!
+    print("Sometimes you really have to write TODO or FIXME, like this!")  # todoon
 
 
 def a_very_pretty_example():
@@ -216,7 +216,7 @@ Issue generation is best supported from GitHub actions, the YAML included in thi
 
 ### Localization
 
-Try out your #todoon in your language! In the environment that you're running `todoon` in, set the environment variable "REGION" to your ISO code (see below). For example, on Windows (PowerShell): `$env:REGION="ko_kr"`
+Try out your todoon in your language! In the environment that you're running `todoon` in, set the environment variable "REGION" to your ISO code (see below). For example, on Windows (PowerShell): `$env:REGION="ko_kr"`
 
 Currently supported:
 

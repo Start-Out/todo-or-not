@@ -11,6 +11,7 @@ dist/
 node_modules/
 
 .gitignore
+example.todo-ignore
 
 package-lock.json
 package.json
