@@ -14,9 +14,8 @@ from todo_or_not.localize import LOCALIZE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 
-DEBUG = os.environ.get("DEBUG", False)
-MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", 8)
-PERTINENT_LINE_LIMIT = os.environ.get("PERTINENT_LINE_LIMIT", 8)
+MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", "8")
+PERTINENT_LINE_LIMIT = os.environ.get("PERTINENT_LINE_LIMIT", "8")
 
 
 def get_project_dir():
@@ -25,6 +24,14 @@ def get_project_dir():
 
 def get_todo_ignore_path():  # todoon
     return os.path.join(get_project_dir(), ".todo-ignore")  # todoon
+
+
+def get_is_debug():
+    _debug = os.environ.get("DEBUG", "False")
+    if _debug == "True":
+        return True
+    else:
+        return False
 
 
 def get_region():
@@ -63,12 +70,12 @@ REGION = get_region()
 
 class Hit:
     def __init__(
-        self,
-        source_file: str,
-        source_line: int,
-        found_keys: list[str],
-        pertinent_lines: list[str],
-        trigger_line_index: int,
+            self,
+            source_file: str,
+            source_line: int,
+            found_keys: list[str],
+            pertinent_lines: list[str],
+            trigger_line_index: int,
     ):
         self.found_keys = found_keys
         self.source_file = source_file
@@ -140,7 +147,7 @@ class Hit:
     def get_pertinent_lines(self):
         starting_line_number = self.source_line - self.trigger_line_index
         _max_line = self.source_line + (
-            len(self.pertinent_lines) - self.trigger_line_index
+                len(self.pertinent_lines) - self.trigger_line_index
         )
 
         def _parse_line_number(_l: int, star: bool = False) -> str:
@@ -182,7 +189,7 @@ class Hit:
         triggered_by = "octocat"
         owner, repo = "owner", "repository"
 
-        if not (DEBUG or _test):
+        if not (get_is_debug() or _test):
             repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
             github_ref = os.environ.get("GITHUB_REF_NAME")
@@ -225,7 +232,7 @@ class Hit:
                 api_call.append("-f")
                 api_call.append(f"labels[]={label}")
 
-        if not (DEBUG or _test):
+        if not (get_is_debug() or _test):
             _output = subprocess.check_output(api_call)
         else:
             _output = api_call
@@ -241,7 +248,7 @@ def _hash(hit_str: str):
 
 
 def find_lines(
-    filename: str, verbose: bool, ignore_flag: str, *args
+        filename: str, verbose: bool, ignore_flag: str, *args
 ) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
@@ -282,7 +289,7 @@ def find_lines(
 
                     # Look at lines before the pertinent line
                     _i = line_number - 1
-                    while abs(line_number - _i) <= PERTINENT_LINE_LIMIT and _i >= 0:
+                    while abs(line_number - _i) <= int(PERTINENT_LINE_LIMIT) and _i >= 0:
                         _i -= 1
                         if len(lines[_i].strip()) > 0:
                             _pertinent_lines.insert(0, lines[_i])
@@ -296,7 +303,7 @@ def find_lines(
 
                     # Look at lines after the pertinent line
                     _i = line_number
-                    while abs(_i - line_number) <= PERTINENT_LINE_LIMIT:
+                    while abs(_i - line_number) <= int(PERTINENT_LINE_LIMIT):
                         if _i < len(lines) and len(lines[_i].strip()) > 0:
                             _pertinent_lines.append(lines[_i])
                         else:
@@ -352,7 +359,7 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
     """
     owner, repo = "owner", "repository"
 
-    if not (DEBUG or _test):
+    if not (get_is_debug() or _test):
         owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
 
     query = [
@@ -365,7 +372,7 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
         f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not",  # todoon
     ]
 
-    if not (DEBUG or _test):
+    if not (get_is_debug() or _test):
         response = subprocess.check_output(query)
 
         _str = response.decode("utf-8")
@@ -411,19 +418,19 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
 
 
 def main(
-    files: Annotated[Optional[List[str]], typer.Argument()] = None,
-    mode: str = "print",
-    silent: bool = False,
-    force: bool = False,
-    verbose: bool = False,
-    ni: Annotated[
-        Optional[List[str]],
-        Option(help="Copy the contents of another file into a new .todo-ignore"),  # todoon
-    ] = None,
-    xi: Annotated[
-        Optional[List[str]],
-        Option(help="Copy the contents of another file into an existing .todo-ignore"),  # todoon
-    ] = None,
+        files: Annotated[Optional[List[str]], typer.Argument()] = None,
+        mode: str = "print",
+        silent: bool = False,
+        force: bool = False,
+        verbose: bool = False,
+        ni: Annotated[
+            Optional[List[str]],
+            Option(help="Copy the contents of another file into a new .todo-ignore"),  # todoon
+        ] = None,
+        xi: Annotated[
+            Optional[List[str]],
+            Option(help="Copy the contents of another file into an existing .todo-ignore"),  # todoon
+        ] = None,
 ):
     mode = mode.lower()
 
@@ -466,7 +473,7 @@ def main(
 
             # Create new .todo-ignore # todoon
             with open(
-                os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"  # todoon
+                    os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"  # todoon
             ) as new_todo_ignore_file:  # todoon
                 paste_contents_into_file(ni, new_todo_ignore_file)  # todoon
 
@@ -483,9 +490,9 @@ def main(
 
             # Update append to the existing .todo-ignore # todoon
             with open(
-                os.path.join(get_project_dir(), ".todo-ignore"),  # todoon
-                "a+",
-                encoding="UTF-8",
+                    os.path.join(get_project_dir(), ".todo-ignore"),  # todoon
+                    "a+",
+                    encoding="UTF-8",
             ) as new_todo_ignore_file:  # todoon
                 paste_contents_into_file(xi, new_todo_ignore_file)  # todoon
 
@@ -517,7 +524,7 @@ def main(
 
             # ... actually do the reading of the .todo-ignore # todoon
             with open(
-                get_todo_ignore_path(), "r", encoding=use_encoding  # todoon
+                    get_todo_ignore_path(), "r", encoding=use_encoding  # todoon
             ) as _ignore:
                 for line in _ignore.readlines():
                     if not line.startswith("#") and len(line) > 1:
@@ -558,7 +565,7 @@ def main(
     if not use_specified_files:
         os.environ["TODOON_STATUS"] = "collecting-targets"  # todoon
         # Ignore this script if in DEBUG
-        if DEBUG:
+        if get_is_debug():
             ignored_files.append(__file__)
 
         _walk = os.walk(get_project_dir(), topdown=True)
@@ -675,14 +682,14 @@ def main(
                     if _this_hit_hashed not in existing_issues_hashed:
 
                         # Limit the number of issues created in one run
-                        if number_of_issues < MAXIMUM_ISSUES_GENERATED:
+                        if number_of_issues < int(MAXIMUM_ISSUES_GENERATED):
                             hit.generate_issue()
                             number_of_issues += 1
                         else:
                             print(
                                 LOCALIZE[REGION][
                                     "error_exceeded_maximum_issues"
-                                ], 
+                                ],
                                 file=sys.stderr,
                             )
                             exit(1)
