@@ -2,6 +2,16 @@ name: Generate issues with TODO-or-not
 
 on:
   workflow_dispatch:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - reopened
+    branches:
+      - dev/staging
+  push:
+    branches:
+      - dev/staging
 jobs:
   run_todoon:
     runs-on: ubuntu-latest
@@ -27,4 +37,4 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           echo "Generate GitHub issues for each problem found, but don't fail the workflow"
-          todoon --mode issue --silent
+          todoon --mode waitforstableissue --silent

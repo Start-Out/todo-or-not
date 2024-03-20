@@ -4,13 +4,15 @@ import hashlib
 import subprocess
 import sys
 
+from pathlib import Path
+import typer
 from typer import Option, run
 from typing import List, Optional, TextIO
 from typing_extensions import Annotated
 
-from todo_or_not.localize import LOCALIZE
-from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE
-from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK
+from todo_or_not.localize import LOCALIZE  # todoon
+from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
+from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 
 DEBUG = os.environ.get("DEBUG", False)
 MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", 8)
@@ -21,8 +23,8 @@ def get_project_dir():
     return os.getcwd()
 
 
-def get_todo_ignore_path():
-    return os.path.join(get_project_dir(), ".todo-ignore")
+def get_todo_ignore_path():  # todoon
+    return os.path.join(get_project_dir(), ".todo-ignore")  # todoon
 
 
 def get_region():
@@ -31,12 +33,29 @@ def get_region():
     # Validate that we support the region, otherwise default to something we have
     if region not in LOCALIZE:
         print(
-            f"WARNING: REGION {region} not recognized, defaulting to en_us (sorry, reach out to us if you would like to do a localization!)\n",
+            LOCALIZE[REGION]["warning_using_default_region"],  # TODO Localization | New target for localization
+            region,
             file=sys.stderr,
         )
         region = "en_us"
 
     return region
+
+
+def get_os():
+    _os = os.environ.get("OS", "default")
+    _os = _os.lower()
+
+    # Validate that we support the region, otherwise default to something we have
+    if _os not in LOCALIZE:
+        print(
+            LOCALIZE[REGION]["warning_using_default_os"],  # TODO Localization | New target for localization
+            _os,
+            file=sys.stderr,
+        )
+        _os = "default"
+
+    return _os
 
 
 REGION = get_region()
@@ -85,6 +104,10 @@ class Hit:
                     self.structured_labels = None
 
     def __repr__(self):
+
+        if self.structured_title is not None:
+            return self.structured_title
+
         _line = self.get_triggering_line()
         _line_number = self.get_line_number()
         _found_keys = self.get_found_keys()
@@ -217,9 +240,12 @@ def _hash(hit_str: str):
     return m.hexdigest()
 
 
-def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str or None]:
+def find_lines(
+    filename: str, verbose: bool, ignore_flag: str, *args
+) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
+    :param verbose: Print lengthy feedback which includes (encoding failures)
     :param ignore_flag: The flag which, when detected on a triggering line, will ignore that line
     :param filename: File to open() read-only
     :param args: Keys to check each line for
@@ -229,20 +255,25 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
     """
     output = []
 
-    use_encoding = get_encoding(filename, SUPPORTED_ENCODINGS_TODO_CHECK)
+    use_encoding = get_encoding(filename, SUPPORTED_ENCODINGS_TODO_CHECK)  # todoon
 
     if use_encoding is not None:
         with open(filename, "r", encoding=use_encoding) as file:
-            line_number = 1
+            line_number = 0
             lines = file.readlines()
 
             for _line in lines:
+                line_number += 1
+
+                # If this line contains the ignore flag, simply move on
+                if ignore_flag.lower() in _line.lower():
+                    continue
+
+                # Collect the found keys and their associated info
                 _found_keys = []
+
                 for key in args:
-                    if (
-                        key.lower() in _line.lower()
-                        and ignore_flag.lower() not in _line.lower()
-                    ):
+                    if key.lower() in _line.lower():
                         _found_keys.append(key)
 
                 if len(_found_keys) > 0:
@@ -260,8 +291,8 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
                             break
 
                     # Push the triggering line to the pertinent lines and note its index
-                    _trigger_line = len(_pertinent_lines)
                     _pertinent_lines.append(lines[line_number - 1])
+                    _trigger_line = len(_pertinent_lines) - 1
 
                     # Look at lines after the pertinent line
                     _i = line_number
@@ -282,14 +313,14 @@ def find_lines(filename: str, ignore_flag: str, *args) -> tuple[list[Hit], str o
                     )
                     output.append(_hit)
 
-                line_number += 1
     else:
-        print(
-            LOCALIZE[REGION]["warning_encoding_not_supported"],
-            "\n * ",
-            filename,
-            file=sys.stderr,
-        )
+        if verbose:
+            print(
+                LOCALIZE[REGION]["warning_encoding_not_supported"],
+                "\n * ",
+                filename,
+                file=sys.stderr,
+            )
 
     return output, use_encoding
 
@@ -315,7 +346,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
 
 def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
     """
-    Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a
+    Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a # todoon
     list of dicts
     :return: List of issues as dicts
     """
@@ -331,7 +362,7 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
         "Accept: application/vnd.github+json",
         "-H",
         "X-GitHub-Api-Version: 2022-11-28",
-        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not",
+        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not",  # todoon
     ]
 
     if not (DEBUG or _test):
@@ -380,16 +411,18 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
 
 
 def main(
+    files: Annotated[Optional[List[str]], typer.Argument()] = None,
     mode: str = "print",
     silent: bool = False,
     force: bool = False,
+    verbose: bool = False,
     ni: Annotated[
         Optional[List[str]],
-        Option(help="Copy the contents of other files into a new .todo-ignore"),
+        Option(help="Copy the contents of another file into a new .todo-ignore"),  # todoon
     ] = None,
     xi: Annotated[
         Optional[List[str]],
-        Option(help="Copy the contents of other files into an existing .todo-ignore"),
+        Option(help="Copy the contents of another file into an existing .todo-ignore"),  # todoon
     ] = None,
 ):
     mode = mode.lower()
@@ -398,134 +431,182 @@ def main(
     ignored_files = []
     ignored_dirs = []
 
+    use_specified_files = False
+
+    if files is not None and len(files) > 0:
+        use_specified_files = True
+
     #############################################
     # Handle settings
     #############################################
 
-    # Don't worry about it if both ni and xi are none
-    if (ni is None) and (xi is None):
-        pass
-    # If using EITHER ni or ci...
-    elif xi is None and len(ni) > 0:
-        # ...check if force is used and warn the user if so
-        if force:
-            print(
-                LOCALIZE[REGION]["warning_force_overrides_ignore"],
-                "--ni",
-                file=sys.stderr,
-            )
+    os.environ["TODOON_STATUS"] = "starting"  # todoon
+    os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
+    os.environ["TODOON_FILES_SCANNED"] = "0"  # todoon
+    os.environ["TODOON_TODOS_FOUND"] = "0"  # todoon
+    os.environ["TODOON_FIXMES_FOUND"] = "0"  # todoon
+    os.environ["TODOON_ENCODING_ERRORS"] = "0"  # todoon
+    os.environ["TODOON_ISSUES_GENERATED"] = "0"  # todoon
+    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"  # todoon
 
-        # Create new .todo-ignore
-        with open(
-            os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"
-        ) as new_todo_ignore_file:
-            paste_contents_into_file(ni, new_todo_ignore_file)
-
-    elif ni is None and len(xi) > 0:
-        # ...check if force is used and warn the user if so
-        if force:
-            # Check which mode is being used
-            _option = "--ni" if (len(ni) > len(xi)) else "--xi"
-            print(
-                LOCALIZE[REGION]["warning_force_overrides_ignore"],
-                "--xi",
-                file=sys.stderr,
-            )
-
-        # Update append to the existing .todo-ignore
-        with open(
-            os.path.join(get_project_dir(), ".todo-ignore"), "a+", encoding="UTF-8"
-        ) as new_todo_ignore_file:
-            paste_contents_into_file(xi, new_todo_ignore_file)
-
-    # Don't allow the use of ni and ci at the same time
-    elif (len(ni) > 0) and (len(xi) > 0):
-        print(LOCALIZE[REGION]["error_cannot_specify_ni_xi"], file=sys.stderr)
-        exit(1)
-
-    #############################################
-    # Parse .todo-ignore
-    #############################################
-
-    # As long as we aren't foregoing the .todo-ignore...
-    if not force:
-        # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level
-        use_encoding = get_encoding(
-            get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE
-        )
-
-        # If we weren't able to find a file in a supported encoding, program must exit
-        if use_encoding is None:
-            print(LOCALIZE[REGION]["error_todo_ignore_not_supported"], file=sys.stderr)
-            exit(1)
-
-        # ... actually do the reading of the .todo-ignore
-        with open(get_todo_ignore_path(), "r", encoding=use_encoding) as _ignore:
-            for line in _ignore.readlines():
-                if not line.startswith("#") and len(line) > 1:
-                    if line.endswith("\n"):
-                        cur_name = line[:-1]
-                    else:
-                        cur_name = line
-
-                    cur_path = os.path.join(get_project_dir(), cur_name)
-
-                    if os.path.isfile(cur_path):
-                        ignored_files.append(cur_path)
-
-                    if os.path.isdir(cur_path):
-                        ignored_dirs.append(cur_path)
-
-            if len(ignored_files) == 0 and len(ignored_dirs) == 0:
+    # If using specific files, no todo-ignore utils are necessary # todoon
+    if not use_specified_files:
+        # Don't worry about it if both ni and xi are none
+        if (ni is None) and (xi is None):
+            pass
+        # If using EITHER ni or ci...
+        elif xi is None and len(ni) > 0:
+            # ...check if force is used and warn the user if so
+            if force:
                 print(
-                    LOCALIZE[REGION]["warning_run_with_empty_todo_ignore"],
+                    LOCALIZE[REGION]["warning_force_overrides_ignore"],
+                    "--ni",
                     file=sys.stderr,
                 )
 
-            # Ignore the .todo-ignore itself
-            ignored_files.append(os.path.abspath(_ignore.name))
-    else:
-        print(
-            f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE['windows']['shell_sigint']}]",
-            file=sys.stderr,
-        )
+            # Create new .todo-ignore # todoon
+            with open(
+                os.path.join(get_project_dir(), ".todo-ignore"), "x", encoding="UTF-8"  # todoon
+            ) as new_todo_ignore_file:  # todoon
+                paste_contents_into_file(ni, new_todo_ignore_file)  # todoon
+
+        elif ni is None and len(xi) > 0:
+            # ...check if force is used and warn the user if so
+            if force:
+                # Check which mode is being used
+                _option = "--ni" if (len(ni) > len(xi)) else "--xi"
+                print(
+                    LOCALIZE[REGION]["warning_force_overrides_ignore"],
+                    "--xi",
+                    file=sys.stderr,
+                )
+
+            # Update append to the existing .todo-ignore # todoon
+            with open(
+                os.path.join(get_project_dir(), ".todo-ignore"),  # todoon
+                "a+",
+                encoding="UTF-8",
+            ) as new_todo_ignore_file:  # todoon
+                paste_contents_into_file(xi, new_todo_ignore_file)  # todoon
+
+        # Don't allow the use of ni and ci at the same time
+        elif (len(ni) > 0) and (len(xi) > 0):
+            print(LOCALIZE[REGION]["error_cannot_specify_ni_xi"], file=sys.stderr)
+            exit(1)
+
+    #############################################
+    # Parse .todo-ignore # todoon
+    #############################################
+
+    # If using specific files, no todo-ignore parsing is necessary # todoon
+    if not use_specified_files:
+        os.environ["TODOON_STATUS"] = "parsing-todo-ignore"  # todoon
+        # As long as we aren't foregoing the .todo-ignore... # todoon
+        if not force:
+            # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level # todoon
+            use_encoding = get_encoding(
+                get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
+            )
+
+            # If we weren't able to find a file in a supported encoding, program must exit
+            if use_encoding is None:
+                print(
+                    LOCALIZE[REGION]["error_todo_ignore_not_supported"], file=sys.stderr  # todoon
+                )
+                exit(1)
+
+            # ... actually do the reading of the .todo-ignore # todoon
+            with open(
+                get_todo_ignore_path(), "r", encoding=use_encoding  # todoon
+            ) as _ignore:
+                for line in _ignore.readlines():
+                    if not line.startswith("#") and len(line) > 1:
+                        if line.endswith("\n"):
+                            cur_name = line[:-1]
+                        else:
+                            cur_name = line
+
+                        cur_path = os.path.join(get_project_dir(), cur_name)
+
+                        if os.path.isfile(cur_path):
+                            ignored_files.append(cur_path)
+
+                        if os.path.isdir(cur_path):
+                            ignored_dirs.append(cur_path)
+
+                if len(ignored_files) == 0 and len(ignored_dirs) == 0:
+                    print(
+                        LOCALIZE[REGION][
+                            "warning_run_with_empty_todo_ignore"  # todoon
+                        ],
+                        file=sys.stderr,
+                    )
+
+                # Ignore the .todo-ignore itself # todoon
+                ignored_files.append(os.path.abspath(_ignore.name))
+        else:
+            print(
+                f"{LOCALIZE[REGION]['error_todo_ignore_not_found']}[{LOCALIZE[get_os()]['shell_sigint']}]",  # todoon
+                file=sys.stderr,
+            )
 
     #############################################
     # Collect files to scan
     #############################################
 
-    # Ignore this script if in DEBUG
-    if DEBUG:
-        ignored_files.append(__file__)
+    # If using specific files, we will just parse them instead of walking
+    if not use_specified_files:
+        os.environ["TODOON_STATUS"] = "collecting-targets"  # todoon
+        # Ignore this script if in DEBUG
+        if DEBUG:
+            ignored_files.append(__file__)
 
-    _walk = os.walk(get_project_dir(), topdown=True)
+        _walk = os.walk(get_project_dir(), topdown=True)
 
-    for dirpath, dirnames, filenames in _walk:
-        _to_remove = []
+        for dirpath, dirnames, filenames in _walk:
+            _to_remove = []
 
-        # Find all ignored dirs from this step of the walk
-        for dirname in dirnames:
-            for _dir in ignored_dirs:
-                _dirname = os.path.join(dirpath, dirname)
-                if os.path.samefile(_dirname, _dir):
-                    # Found this directory in the ignored directories, mark for removal and move to the next
-                    _to_remove.append(dirname)
-                    break
+            # Find all ignored dirs from this step of the walk
+            for dirname in dirnames:
+                for _dir in ignored_dirs:
+                    _dirname = os.path.join(dirpath, dirname)
+                    if os.path.samefile(_dirname, _dir):
+                        # Found this directory in the ignored directories, mark for removal and move to the next
+                        _to_remove.append(dirname)
+                        break
 
-        # Remove those directories (can't do in place because indexing)
-        for remove in _to_remove:
-            dirnames.remove(remove)
+            # Remove those directories (can't do in place because indexing)
+            for remove in _to_remove:
+                dirnames.remove(remove)
 
-        for _file in filenames:
-            current = os.path.join(dirpath, _file)
+            for _file in filenames:
+                current = os.path.join(dirpath, _file)
 
-            for i in ignored_files:
-                if os.path.samefile(i, current):
-                    current = None
-                    break
+                for i in ignored_files:
+                    if os.path.samefile(i, current):
+                        current = None
+                        break
 
-            if current is not None:
-                targets.append(current)
+                if current is not None:
+                    targets.append(current)
+    else:
+        # Collect specified files
+        for file in files:
+            current_path = os.path.join(get_project_dir(), file)
+
+            # If the specified path is a file, simply add it
+            if os.path.isfile(current_path):
+                targets.append(current_path)
+                continue
+
+            # If the specified path is a directory, add its children
+            elif os.path.isdir(current_path):
+                _walk = os.walk(current_path, topdown=True)
+
+                for dirpath, dirnames, filenames in _walk:
+                    for _filename in filenames:
+                        filename = os.path.join(dirpath, _filename)
+                        targets.append(filename)
 
     #############################################
     # Preventing duplicate issues
@@ -536,26 +617,41 @@ def main(
 
     # Collect all the issues that the bot has so far submitted to check for duplicates
     if mode == "issue":
-        todoon_created_issues = get_bot_submitted_issues()
+        os.environ["TODOON_STATUS"] = "collecting-issues"  # todoon
+        todoon_created_issues = get_bot_submitted_issues()  # todoon
 
-        for issue in todoon_created_issues:
+        for issue in todoon_created_issues:  # todoon
             existing_issues_hashed.append(_hash(issue["title"]))
 
     #############################################
-    # Run todo-check
+    # Run todo-check # todoon
     #############################################
 
     number_of_hits = 0  # Tracks the number of targets found
     number_of_issues = 0  # Tracks the number of issues generated
+    number_of_duplicate_issues_avoided = (
+        0  # Tracks the number of issues avoided because they are already mentioned
+    )
     number_of_encoding_failures = 0  # Tracks the files unread due to encoding error
+    number_of_files_scanned = len(
+        targets
+    )  # Tracks the files attempted to be read, regardless of errors
 
     # Used for summary
-    number_of_todo, number_of_fixme = 0, 0
+    number_of_todo, number_of_fixme = 0, 0  # todoon
 
+    os.environ["TODOON_STATUS"] = "scanning-files"  # todoon
+    os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
     # For each target file discovered
+    _i = 0
     for target in targets:
+
+        # Update progress
+        _i += 1
+        os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))  # todoon
+
         # Generate the hits for each target collected
-        hits, _enc = find_lines(target, "#todoon", "todo", "fixme")
+        hits, _enc = find_lines(target, verbose, "# todoon", "todo", "fixme")
 
         if _enc is None:
             number_of_encoding_failures += 1
@@ -566,8 +662,8 @@ def main(
             # Handle each hit that was detected
             for hit in hits:
                 number_of_hits += 1
-                number_of_todo += 1 if "todo" in hit.found_keys else 0
-                number_of_fixme += 1 if "fixme" in hit.found_keys else 0
+                number_of_todo += 1 if "todo" in hit.found_keys else 0  # todoon
+                number_of_fixme += 1 if "fixme" in hit.found_keys else 0  # todoon
 
                 #############################################
                 # Special handling for the ISSUE mode
@@ -584,12 +680,15 @@ def main(
                             number_of_issues += 1
                         else:
                             print(
-                                LOCALIZE[REGION]["error_todo_ignore_not_found"],
+                                LOCALIZE[REGION][
+                                    "error_exceeded_maximum_issues"
+                                ], 
                                 file=sys.stderr,
                             )
                             exit(1)
                     # If this title already exists, notify but do not halt
                     else:
+                        number_of_issues += 1
                         print(
                             f"{LOCALIZE[REGION]['info_duplicate_issue_avoided']}: {hit}",
                             file=sys.stderr,
@@ -602,19 +701,63 @@ def main(
                     print(hit, file=sys.stderr)
 
     #############################################
-    # Summarize the run of todo-check
+    # Summarize the run of todo-check  # todoon
     #############################################
 
     summary = f"\n##########################\n# {LOCALIZE[REGION]['summary_title']}\n"
-    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
+    # Mode the tool was run in
+    summary += f"# ({mode.upper()} MODE)\n"
 
+    # Number of TODOs and FIXMEs found  # todoon
+    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
+
+    # Number of encoding failures
     if number_of_encoding_failures > 1:
         summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['summary_encoding_unsupported_plural']}\n"
     elif number_of_encoding_failures == 1:
         summary += f"# {number_of_encoding_failures} {LOCALIZE[REGION]['summary_encoding_unsupported_singular']}\n"
 
-    summary += f"# ({mode.upper()} MODE)\n"
+    # Total number of files scanned
+    if number_of_files_scanned > 1:
+        summary += (f"# {number_of_files_scanned} "
+                    f"{LOCALIZE[REGION]['summary_files_scanned_plural']}\n")  # TODO Localization | New target for localization
+    elif number_of_files_scanned == 1:
+        summary += (f"# {number_of_files_scanned} "
+                    f"{LOCALIZE[REGION]['summary_files_scanned_singular']}\n")  # TODO Localization | New target for localization
+
+    # Number of issues (if any) that were generated
+    if mode == "issue":
+        # Total number of issues generated
+        if number_of_issues > 1:
+            summary += (f"# {number_of_issues} "
+                        f"{LOCALIZE[REGION]['summary_issues_generated_plural']}\n")  # TODO Localization | New target for localization
+        elif number_of_issues == 1:
+            summary += (f"# {number_of_issues} "
+                        f"{LOCALIZE[REGION]['summary_issues_generated_singular']}\n")  # TODO Localization | New target for localization
+        else:
+            summary += (f"# "
+                        f"{LOCALIZE[REGION]['summary_issues_generated_none']}\n")  # TODO Localization | New target for localization
+
+        # Total number of duplicate issues avoided
+        if number_of_duplicate_issues_avoided > 1:
+            summary += (f"# {number_of_duplicate_issues_avoided} "
+                        f"{LOCALIZE[REGION]['summary_duplicate_issues_avoided_plural']}\n")  # TODO Localization | New target for localization
+        elif number_of_duplicate_issues_avoided == 1:
+            summary += (f"# {number_of_duplicate_issues_avoided} "
+                        f"{LOCALIZE[REGION]['summary_duplicate_issues_avoided_singular']}\n")  # TODO Localization | New target for localization
+
     summary += "##########################\n"
+
+    os.environ["TODOON_STATUS"] = "finished"  # todoon
+    os.environ["TODOON_PROGRESS"] = "100.0"  # todoon
+    os.environ["TODOON_FILES_SCANNED"] = str(number_of_files_scanned)  # todoon
+    os.environ["TODOON_TODOS_FOUND"] = str(number_of_todo)  # todoon
+    os.environ["TODOON_FIXMES_FOUND"] = str(number_of_fixme)  # todoon
+    os.environ["TODOON_ENCODING_ERRORS"] = str(number_of_encoding_failures)  # todoon
+    os.environ["TODOON_ISSUES_GENERATED"] = str(number_of_issues)  # todoon
+    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(  # todoon
+        number_of_duplicate_issues_avoided
+    )
 
     print(summary, file=sys.stderr)
 
