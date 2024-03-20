@@ -125,8 +125,8 @@ class TestTodoon(unittest.TestCase):
     def test_todoon_takes_individual_targets(self):
         td.main(verbose=True, silent=True, files=self.specific_files_list)
 
-        self.assertEqual(os.environ.get("TODOON_FILES_SCANNED"), '5')
         self.assertEqual(os.getcwd(), 'cheeky')
+        self.assertEqual(os.environ.get("TODOON_FILES_SCANNED"), '5')
 
 
 if __name__ == '__main__':
