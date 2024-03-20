@@ -30,19 +30,19 @@ class TestFindLines(unittest.TestCase):
         hit_1 = hits_repr_list[1][1]
         hit_2 = hits_repr_list[2][1]
 
-        assert hit_0.found_keys == ['fixme']
-        assert len(hit_0.pertinent_lines) == 10
-        assert hit_0.source_line == 24
-        assert hit_0.structured_title is None
-        assert hit_0.structured_body is None
-        assert hit_0.structured_labels is None
+        assert hit_0.found_keys == ['todo']
+        assert len(hit_0.pertinent_lines) == 3
+        assert hit_0.source_line == 36
+        assert hit_0.structured_title == '# TODO Titled Issue!'
+        assert hit_0.structured_body == 'In this format, you can define a title and a body! Also labels like #example or #enhancement'
+        assert hit_0.structured_labels == ['example', 'enhancement']
 
-        assert hit_1.found_keys == ['todo']
-        assert len(hit_1.pertinent_lines) == 3
-        assert hit_1.source_line == 36
-        assert hit_1.structured_title == '# TODO Titled Issue!'
-        assert hit_1.structured_body == 'In this format, you can define a title and a body! Also labels like #example or #enhancement'
-        assert hit_1.structured_labels == ['example', 'enhancement']
+        assert hit_1.found_keys == ['fixme']
+        assert len(hit_1.pertinent_lines) == 10
+        assert hit_1.source_line == 24
+        assert hit_1.structured_title is None
+        assert hit_1.structured_body is None
+        assert hit_1.structured_labels is None
 
         assert hit_2.found_keys == ['todo']
         assert len(hit_2.pertinent_lines) == 7
