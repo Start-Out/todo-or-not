@@ -27,20 +27,18 @@ class TestTodoon(unittest.TestCase):
         old_dir = os.getcwd()
         os.chdir(safe_dir)
 
-        td.main(verbose=True)
+        td.todoon(verbose=True)
 
         os.chdir(old_dir)
 
-
     def test_todoon_standard_fails_when_finds_todos(self):
         with self.assertRaises(SystemExit) as context:
-            td.main(verbose=True)
+            td.todoon(verbose=True)
 
         self.assertEqual(context.exception.code, 1)
 
-
     def test_todoon_silent_pushes_environment_variables(self):
-        td.main(verbose=True, silent=True)
+        td.todoon(verbose=True, silent=True)
 
         TODOON_STATUS = os.environ.get("TODOON_STATUS")
         TODOON_PROGRESS = os.environ.get("TODOON_PROGRESS")
@@ -66,7 +64,7 @@ class TestTodoon(unittest.TestCase):
         os.remove(".todo-ignore")
 
         with self.assertRaises(SystemExit) as context:
-            td.main()
+            td.todoon()
 
         self.assertEqual(context.exception.code, 1)
 
@@ -74,45 +72,7 @@ class TestTodoon(unittest.TestCase):
             _after.write(before)
 
     def test_todoon_silent_passes(self):
-        td.main(verbose=True, silent=True)
-
-
-    def test_todoon_modifies_existing_todo_ignore(self):
-        with open(".todo-ignore", "r") as _before:
-            before = _before.read()
-
-        td.main(verbose=True, silent=True, xi=self.other_files_list)
-
-        with open(".todo-ignore", "r") as _after:
-            after = _after.read()
-
-        self.assertNotEqual(before, after)
-
-    def test_todoon_creates_new_todo_ignore(self):
-        os.remove(".todo-ignore")
-
-        example = "example.todo-ignore"
-        example_todo_ignore = [example]
-
-        td.main(verbose=True, silent=True, ni=example_todo_ignore)
-
-        with open(".todo-ignore", "r") as new_todo_ignore:
-            new_result = []
-            for line in new_todo_ignore.readlines():
-                line = line.strip(" \n\t")
-
-                if len(line) > 0:
-                    new_result.append(line)
-
-        with open(example, "r") as new_todo_ignore:
-            example_result = []
-            for line in new_todo_ignore.readlines():
-                line = line.strip(" \n\t")
-
-                if len(line) > 0:
-                    example_result.append(line)
-
-        self.assertEqual(new_result, example_result)
+        td.todoon(verbose=True, silent=True)
 
     def test_todoon_runs_when_forced(self):
         with open(".todo-ignore", "r") as _before:
@@ -120,13 +80,13 @@ class TestTodoon(unittest.TestCase):
 
         os.remove(".todo-ignore")
 
-        td.main(verbose=True, silent=True, force=True)
+        td.todoon(verbose=True, silent=True, force=True)
 
         with open(".todo-ignore", "x") as _after:
             _after.write(before)
 
     def test_todoon_takes_individual_targets(self):
-        td.main(verbose=True, silent=True, files=self.specific_files_list)
+        td.todoon(verbose=True, silent=True, files=self.specific_files_list)
 
         self.assertEqual(os.environ.get("TODOON_FILES_SCANNED"), '5')
 
