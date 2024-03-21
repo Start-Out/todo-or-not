@@ -109,9 +109,10 @@ class TestTodoignoreUtil(unittest.TestCase):
         results = []
         expected = [
             "existing.content",
-            "a",
-            "b",
-            "c"
+            "hello_world.txt",
+            "goodbye_world.txt",
+            "directory/file.txt",
+            "directory/"
         ]
 
         with open(".todo-ignore", 'r') as _results:
@@ -146,9 +147,10 @@ class TestTodoignoreUtil(unittest.TestCase):
         # Check results
         results = []
         expected = [
-            "a",
-            "b",
-            "c"
+            "hello_world.txt",
+            "goodbye_world.txt",
+            "directory/file.txt",
+            "directory/"
         ]
 
         with open(".todo-ignore", 'r') as _results:
