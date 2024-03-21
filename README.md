@@ -19,6 +19,8 @@ FIXME's.
 
 ```bash
 pip install todo-or-not
+todoignore-util -pc .gitignore
+todoon
 ```
 
 ## Table of Contents
