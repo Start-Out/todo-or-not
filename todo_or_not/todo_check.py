@@ -416,16 +416,18 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
     return _use_encoding
 
 
-@todoon_app.command()
+@todoon_app.command(help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or other development operations.")
 def todoon(
-        files: Annotated[Optional[List[str]], typer.Argument(help="If specified, only these files will be scanned for TODOs and FIXMEs. Otherwise, all files in the current working directory except for those specified in .todo-ignore will be scanned.")] = None,
-        mode: str = "print",
-        silent: bool = False,
-        force: bool = False,
-        verbose: bool = False
+        files: Annotated[Optional[List[str]], typer.Argument(help="If specified, only these [FILES] will be scanned for TODOs and FIXMEs. Otherwise, all files in the current working directory except for those specified in .todo-ignore will be scanned.")] = None,
+        print_mode: Annotated[bool, typer.Option("--print/--issue", "-p/-i",
+                                                  help="Whether to print the discovered TODOs and FIXMEs to stderr or to try an generate GitHub issues")] = True,
+        silent: Annotated[bool, typer.Option("--silent/", "-s/",
+                                                 help="If specified, todoon will not exit with an error code even when TODOs and/or FIXMEs are detected")] = False,
+        force: Annotated[bool, typer.Option("--force/", "-f/",
+                                             help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,
+        verbose: Annotated[bool, typer.Option("--verbose/", "-v/",
+                                             help="If specified, todoon will not to print lengthy or numerous messages (like each encoding failure)")] = False,
 ):
-    mode = mode.lower()
-
     targets = []
     ignored_files = []
     ignored_dirs = []
@@ -571,7 +573,7 @@ def todoon(
     existing_issues_hashed = []
 
     # Collect all the issues that the bot has so far submitted to check for duplicates
-    if mode == "issue":
+    if not print_mode:
         os.environ["TODOON_STATUS"] = "collecting-issues"  # todoon
         todoon_created_issues = get_bot_submitted_issues()  # todoon
 
@@ -623,7 +625,7 @@ def todoon(
                 #############################################
                 # Special handling for the ISSUE mode
 
-                if mode == "issue":
+                if not print_mode:
                     _this_hit_hashed = _hash(hit.get_title())
 
                     # Check if the app already created this hit's title
@@ -660,9 +662,12 @@ def todoon(
 
     summary = f"\n##########################\n# {LOCALIZE[get_region()]['summary_title']}\n"
     # Mode the tool was run in
-    summary += f"# ({mode.upper()} MODE)\n"
+    if print_mode:
+        summary += "# (PRINT MODE)\n"
+    else:
+        summary += "# (ISSUE MODE)\n"
 
-    # Number of TODOs and FIXMEs found  # todoon
+# Number of TODOs and FIXMEs found  # todoon
     summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
 
     # Number of encoding failures
@@ -680,7 +685,7 @@ def todoon(
                     f"{LOCALIZE[get_region()]['summary_files_scanned_singular']}\n")
 
         # Number of issues (if any) that were generated
-    if mode == "issue":
+    if not print_mode:
         # Total number of issues generated
         if number_of_issues > 1:
             summary += (f"# {number_of_issues} "
