@@ -43,7 +43,7 @@ def get_region():
     # Validate that we support the region, otherwise default to something we have
     if region not in LOCALIZE:
         print(
-            LOCALIZE[get_region()]["warning_using_default_region"],
+            LOCALIZE["en_us"]["warning_using_default_region"],
             region,
             file=sys.stderr,
         )
