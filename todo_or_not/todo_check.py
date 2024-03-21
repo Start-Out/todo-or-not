@@ -739,7 +739,7 @@ def todoignore_util(
         source_is_text: Annotated[bool, typer.Option("--source-text/--source-paths", "-t/-p",
                                                      help="Whether to treat SOURCES as text or as file paths.")] = True
 ):
-    todoignore_path = os.path.join(os.getcwd(), "axaa.todo-ignore")
+    todoignore_path = os.path.join(os.getcwd(), ".todo-ignore")
     output = []
 
     if create_mode:
