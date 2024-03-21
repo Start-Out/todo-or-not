@@ -21,6 +21,8 @@ class TestLocalization(unittest.TestCase):
 
         self.assertEqual(region, "ko_kr")
 
+        os.environ["REGION"] = "en_us"
+
     def test_unsupported_and_supported_operating_systems(self):
         # Check unsupported
         region = todo_or_not.todo_check.get_os()

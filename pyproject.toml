@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "todo-or-not"
-version = "0.8.8-beta"
+version = "0.8.10-beta"
 description = "todoon integrates the TODOs in your codebase with your GitHub repository"
 authors = ["TrentonYo <trentonyo@gmail.com>"]
 license = "GPL-3.0-only"
@@ -29,4 +29,5 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-todoon = "todo_or_not:todo_check.typer_main"
+todoon = "todo_or_not:todo_check.todoon"
+todoignore-util = "todo_or_not:todo_check.todoignore_util"
