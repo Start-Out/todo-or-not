@@ -755,14 +755,18 @@ def todoignore_util(
             for file in sources:
                 _path = os.path.join(os.getcwd(), file)
 
-                with (open(_path, "r")) as current:
-                    _current_lines = current.readlines()
+                try:
+                    with (open(_path, "r")) as current:
+                        _current_lines = current.readlines()
 
-                    for line in _current_lines:
-                        line = line.strip()
+                        for line in _current_lines:
+                            line = line.strip()
 
-                        if len(line) > 0:
-                            output.append(line)
+                            if len(line) > 0:
+                                output.append(line)
+                except FileNotFoundError:
+                    print(LOCALIZE[get_region()]["warning_file_does_not_exist"], _path, file=sys.stderr)
+                    # TODO Localization "warning_file_does_not_exist" | This should be reusable #localization
 
     try:
         with open(todoignore_path, access_mode) as target:
