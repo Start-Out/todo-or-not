@@ -1,3 +1,4 @@
+import glob
 import os
 import json
 import hashlib
@@ -483,6 +484,10 @@ def todoon(
                             cur_name = line
 
                         cur_path = os.path.join(get_project_dir(), cur_name)
+
+                        # Resolve wildcards
+                        if '*' in cur_path:
+                            ignored_files.extend(glob.glob(cur_path))
 
                         if os.path.isfile(cur_path):
                             ignored_files.append(cur_path)
