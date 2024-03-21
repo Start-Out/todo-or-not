@@ -725,7 +725,7 @@ def todoon(
         exit(1)
 
 
-@todoon_app.command()
+@todoon_app.command(help="Small utility for generating a .todo-ignore file")
 def todoignore_util(
         sources: Annotated[Optional[List[str]], typer.Argument(
             help="(default) [with -p] Files whose contents will be added to the .todo-ignore file.\n\n          [with -t] Lines of text to be added to the .todo-ignore file.")],
