@@ -38,6 +38,11 @@ class TestTodoon(unittest.TestCase):
         self.assertEqual(context.exception.code, 1)
 
     def test_todoon_silent_pushes_environment_variables(self):
+        # Set up
+        safe_dir = os.path.join("tests", "resources", "specific_files")
+        old_dir = os.getcwd()
+        os.chdir(safe_dir)
+
         td.todoon(verbose=True, silent=True)
 
         TODOON_STATUS = os.environ.get("TODOON_STATUS")
@@ -51,12 +56,15 @@ class TestTodoon(unittest.TestCase):
 
         assert TODOON_STATUS == "finished"
         assert TODOON_PROGRESS == "100.0"
-        assert int(TODOON_FILES_SCANNED) > 0
-        assert int(TODOON_TODOS_FOUND) > 0
-        assert int(TODOON_FIXMES_FOUND) > 0
-        assert int(TODOON_ENCODING_ERRORS) > 0
+        assert int(TODOON_FILES_SCANNED) == 2
+        assert int(TODOON_TODOS_FOUND) == 2
+        assert int(TODOON_FIXMES_FOUND) == 0
+        assert int(TODOON_ENCODING_ERRORS) == 0
         assert TODOON_ISSUES_GENERATED == "0"
         assert TODOON_DUPLICATE_ISSUES_AVOIDED == "0"
+
+        # Tear down
+        os.chdir(old_dir)
 
     def test_todoon_standard_fails_without_todo_ignore(self):
         with open(".todo-ignore", "r") as _before:
