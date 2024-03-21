@@ -98,6 +98,23 @@ class TestTodoon(unittest.TestCase):
 
         self.assertEqual(os.environ.get("TODOON_FILES_SCANNED"), '6')
 
+    def test_todoignore_uses_wildcards(self):
+        # Set up
+        safe_dir = os.path.join("tests", "resources", "wildcard_test")
+        old_dir = os.getcwd()
+        os.chdir(safe_dir)
+
+        # Run util
+        td.todoon()
+
+        # Check results
+        files_scanned = os.environ["TODOON_FILES_SCANNED"]
+
+        self.assertEqual(files_scanned, '8')
+
+        # Tear down
+        os.chdir(old_dir)
+
 
 if __name__ == '__main__':
     unittest.main()

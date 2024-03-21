@@ -487,7 +487,7 @@ def todoon(
 
                         # Resolve wildcards
                         if '*' in cur_path:
-                            ignored_files.extend(glob.glob(cur_path))
+                            ignored_files.extend(glob.glob(cur_path, recursive=True))
 
                         if os.path.isfile(cur_path):
                             ignored_files.append(cur_path)
