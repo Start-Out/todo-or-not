@@ -4,6 +4,13 @@
 Translation performed by submitter
 ----------------------------------
 
+Associated Issues
+-----
+
+<!-- DO NOT USE 'CLOSES' KEYWORD HERE, THAT WILL BE HANDLED DOWNSTREAM -->
+
+- #ISSUE
+
 Notes
 -----
 
