@@ -3,8 +3,8 @@
 ![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not)
 [![Coverage Status](https://coveralls.io/repos/github/Start-Out/todo-or-not/badge.svg?branch=dev/staging&kill_cache=1)](https://coveralls.io/github/Start-Out/todo-or-not?branch=dev/staging&kill_cache=1)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/todo-or-not)
-![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not)
 ![PyPI - License](https://img.shields.io/pypi/l/todo-or-not?color=purple)
 
 > TODO or not to do, that is the question
