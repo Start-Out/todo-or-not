@@ -768,7 +768,6 @@ def todoignore_util(  # todoon
                                 output.append(line)
                 except FileNotFoundError:
                     print(LOCALIZE[get_region()]["warning_file_does_not_exist"], _path, file=sys.stderr)
-                    # TODO Localization: "warning_file_does_not_exist" | This should be reusable #localization
 
     try:
         with open(todoignore_path, access_mode) as target:  # todoon
@@ -782,12 +781,10 @@ def todoignore_util(  # todoon
     except FileNotFoundError:
         print(
             LOCALIZE[get_region()]["error_file_already_exists"], file=sys.stderr
-            # TODO Localization: "error_file_already_exists" | This one should be reusable #localization
         )
         exit(1)
 
     print(LOCALIZE[get_region()]["general_done"])
-    # TODO Localization: "general_done" | This one should be reusable #localization
 
 
 if __name__ == "__main__":
