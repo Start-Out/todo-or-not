@@ -755,8 +755,8 @@ def todo_ignore_util(  # todoon
         sources: Annotated[
             Optional[List[str]],
             typer.Argument(
-                help="(default) [with -p] Files whose contents will be added to the .todo-ignore file.\n\n          "
-                     "[with -t] Lines of text to be added to the .todo-ignore file.")] = None, # todoon
+                help="(default) [with -p] Files whose contents will be added to the .todo-ignore file.\n\n          "  # todoon
+                     "[with -t] Lines of text to be added to the .todo-ignore file.")] = None,  # todoon
         create_mode: Annotated[
             bool,
             typer.Option("--create/--update", "-c/-u",
