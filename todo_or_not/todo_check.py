@@ -733,7 +733,7 @@ def todoon(  # todoon
 
 
 @todoon_app.command(help="Small utility for generating a .todo-ignore file")  # todoon
-def todoignore_util(  # todoon
+def todo_ignore_util(  # todoon
         sources: Annotated[Optional[List[str]], typer.Argument(
             help="(default) [with -p] Files whose contents will be added to the .todo-ignore file.\n\n          [with -t] Lines of text to be added to the .todo-ignore file.")],  # todoon
         create_mode: Annotated[bool, typer.Option("--create/--update", "-c/-u",

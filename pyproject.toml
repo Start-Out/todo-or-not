@@ -30,4 +30,4 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 todoon = "todo_or_not:todo_check.todoon"
-todoignore-util = "todo_or_not:todo_check.todoignore_util"
+todoignore-util = "todo_or_not:todo_check.todo_ignore_util"
