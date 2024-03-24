@@ -1,30 +1,30 @@
-name: Run TODO-or-not
+name: Assert No TODO/FIXMEs with TODO-or-not
 
 on:
   workflow_dispatch:
 jobs:
   run_todoon:
     runs-on: ubuntu-latest
-    environment: todo-or-not-1
+    environment: testing
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.11.7
         uses: actions/setup-python@v3
         with:
           python-version: "3.11.7"
-      - name: Install dependencies
+      - name: Install TODO-or-not
         run: |
           python -m pip install --upgrade pip
-          python -m pip install typer
-      - name: Generate Token
+          python -m pip install todo-or-not
+      - name: Generate GH Token for todoon app
         id: generate-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: 853479
-          private-key: ${{ secrets.APP_PEM }}
+          private-key: ${{ secrets.TODOON_CLIENT_PEM }}
       - name: Run TODO-or-not
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
-          echo "Check for TODOs, pass regardless and generate new issues"
-          python todo_check.py --mode issue --silent
+          echo "Fail the workflow if any TODOs or FIXMEs are discovered"
+          todoon

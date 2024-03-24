@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "todo-or-not"
-version = "0.7.4-beta"
-description = "#todoon integrates the TODOs in your codebase with your GitHub repository"
+version = "0.9.1"
+description = "todoon integrates the TODOs in your codebase with your GitHub repository"
 authors = ["TrentonYo <trentonyo@gmail.com>"]
 license = "GPL-3.0-only"
 readme = "README.md"
@@ -15,10 +15,19 @@ python = "^3.11"
 typer = "^0.9.0"
 typing-extensions = "^4.10.0"
 
+[tool.poetry.group.testing.dependencies]
+coveralls = "^3.3.1"
+pytest-cov = "^4.1.0"
+pytest = "^8.1.1"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.3.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-todoon = "todo_or_not:todo_check.typer_main"
+todoon = "todo_or_not:todo_check.typer_todoon"
+todoignore-util = "todo_or_not:todo_check.typer_todo_ignore_util"
