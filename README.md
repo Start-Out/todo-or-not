@@ -1,4 +1,4 @@
-[![image.png](https://i.postimg.cc/zDsb0YJW/image.png)](https://postimg.cc/jChSS9nd)
+[![image.png](https://i.postimg.cc/0yC7LPx6/image.png)](https://postimg.cc/75fCzv5D)
 
 ![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not)
 [![Coverage Status](https://coveralls.io/repos/github/Start-Out/todo-or-not/badge.svg?branch=dev/staging&kill_cache=1)](https://coveralls.io/github/Start-Out/todo-or-not?branch=dev/staging&kill_cache=1)
