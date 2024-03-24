@@ -30,7 +30,7 @@ class TestTodoignoreUtil(unittest.TestCase):
             old_todoignore = _old.read()
 
         # Run util
-        td.todoignore_util(self.source_files_list, create_mode=False, source_is_text=False)
+        td.todo_ignore_util(self.source_files_list, create_mode=False, source_is_text=False)
 
         # Check results
         results = []
@@ -68,7 +68,7 @@ class TestTodoignoreUtil(unittest.TestCase):
         os.remove(".todo-ignore")
 
         # Run util
-        td.todoignore_util(self.source_files_list, create_mode=True, source_is_text=False)
+        td.todo_ignore_util(self.source_files_list, create_mode=True, source_is_text=False)
 
         # Check results
         results = []
@@ -103,7 +103,7 @@ class TestTodoignoreUtil(unittest.TestCase):
             old_todoignore = _old.read()
 
         # Run util
-        td.todoignore_util(self.source_text_list, create_mode=False, source_is_text=True)
+        td.todo_ignore_util(self.source_text_list, create_mode=False, source_is_text=True)
 
         # Check results
         results = []
@@ -142,7 +142,7 @@ class TestTodoignoreUtil(unittest.TestCase):
         os.remove(".todo-ignore")
 
         # Run util
-        td.todoignore_util(self.source_text_list, create_mode=True, source_is_text=True)
+        td.todo_ignore_util(self.source_text_list, create_mode=True, source_is_text=True)
 
         # Check results
         results = []
