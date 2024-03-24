@@ -417,25 +417,37 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
     return _use_encoding
 
 
+# fmt: off
 @todoon_app.command(  # todoon
     help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or other development operations.")  # todoon
 def todoon(  # todoon
-        files: Annotated[Optional[List[str]], typer.Argument(
-            help="If specified, only these [FILES] will be scanned for TODOs and FIXMEs. Otherwise, all files in the current working directory except for those specified in .todo-ignore will be scanned.")] = None,
-        # todoon
-        print_mode: Annotated[bool, typer.Option("--print/--issue", "-p/-i",
-                                                 help="Whether to print the discovered TODOs and FIXMEs to stderr or to try an generate GitHub issues")] = True,
-        # todoon
-        silent: Annotated[bool, typer.Option("--silent/", "-s/",
-                                             help="If specified, todoon will not exit with an error code even when TODOs and/or FIXMEs are detected")] = False,
-        # todoon
-        force: Annotated[bool, typer.Option("--force/", "-f/",
-                                            help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,
-        # todoon
-        verbose: Annotated[bool, typer.Option("--verbose/", "-v/",
-                                              help="If specified, todoon will not to print lengthy or numerous messages (like each encoding failure)")] = False,
-        # todoon
+        files: Annotated[
+            Optional[List[str]],
+            typer.Argument(
+                help="If specified, only these [FILES] will be scanned for TODOs and FIXMEs. "  # todoon
+                     "Otherwise, all files in the current working directory except for those "
+                     "specified in .todo-ignore will be scanned.")] = None,  # todoon
+        print_mode: Annotated[
+            bool,
+            typer.Option("--print/--issue", "-p/-i",
+                help="Whether to print the discovered TODOs and FIXMEs to stderr or to try"  # todoon
+                     " an generate GitHub issues")] = True,
+        silent: Annotated[
+            bool,
+            typer.Option("--silent/", "-s/",
+                help="If specified, todoon will not exit with an error code even when TODOs and/or "  # todoon
+                     "FIXMEs are detected")] = False,  # todoon
+        force: Annotated[
+            bool,
+            typer.Option("--force/", "-f/",
+                help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,  # todoon
+        verbose: Annotated[
+            bool,
+            typer.Option("--verbose/", "-v/",
+                help="If specified, todoon will not to print lengthy or numerous messages"  # todoon
+                     " (like each encoding failure)")] = False,
 ):
+# fmt: on
     targets = []
     ignored_files = []
     ignored_dirs = []
@@ -737,17 +749,22 @@ def todoon(  # todoon
         exit(1)
 
 
+# fmt: off
 @todoon_app.command(help="Small utility for generating a .todo-ignore file")  # todoon
 def todo_ignore_util(  # todoon
-        sources: Annotated[Optional[List[str]], typer.Argument(
-            help="(default) [with -p] Files whose contents will be added to the .todo-ignore file.\n\n          [with -t] Lines of text to be added to the .todo-ignore file.")] = None,
-        # todoon
-        create_mode: Annotated[bool, typer.Option("--create/--update", "-c/-u",
-                                                  help="Whether to create a new .todo-ignore file or update an existing one")] = True,
-        # todoon
+        sources: Annotated[
+            Optional[List[str]],
+            typer.Argument(
+                help="(default) [with -p] Files whose contents will be added to the .todo-ignore file.\n\n          "
+                     "[with -t] Lines of text to be added to the .todo-ignore file.")] = None, # todoon
+        create_mode: Annotated[
+            bool,
+            typer.Option("--create/--update", "-c/-u",
+                help="Whether to create a new .todo-ignore file or update an existing one")] = True,  # todoon
         source_is_text: Annotated[bool, typer.Option("--source-text/--source-paths", "-t/-p",
                                                      help="Whether to treat SOURCES as text or as file paths.")] = True
 ):
+#fmt: on
     todoignore_path = os.path.join(os.getcwd(), ".todo-ignore")  # todoon
     output = []
 
@@ -787,24 +804,24 @@ def todo_ignore_util(  # todoon
                 target.write(f"{line}\n")
     except FileNotFoundError:
         print(
-            LOCALIZE[get_region()]["error_is_not_file"], todoignore_path, file=sys.stderr
+            LOCALIZE[get_region()]["error_is_not_file"], todoignore_path, file=sys.stderr  # todoon
         )
         exit(1)
     except FileExistsError:
         print(
-            LOCALIZE[get_region()]["error_file_already_exists"], todoignore_path, file=sys.stderr
+            LOCALIZE[get_region()]["error_file_already_exists"], todoignore_path, file=sys.stderr  # todoon
         )
         exit(1)
 
     print(LOCALIZE[get_region()]["general_done"])
 
 
-def typer_todoon():
-    run(todoon)
+def typer_todoon():  # todoon
+    run(todoon)  # todoon
 
 
-def typer_todo_ignore_util():
-    run(todo_ignore_util)
+def typer_todo_ignore_util():  # todoon
+    run(todo_ignore_util)  # todoon
 
 
 if __name__ == "__main__":
