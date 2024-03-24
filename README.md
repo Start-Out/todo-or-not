@@ -7,6 +7,16 @@
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/todo-or-not)
 ![PyPI - License](https://img.shields.io/pypi/l/todo-or-not?color=purple)
 
+<!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
+
+- [Overview](#overview)
+- [Example](#example)
+- [Contributing](#contributing)
+- [Help](#help)
+- [Fun Promo Video](#fun-promo-video)
+
+<!-- TOC end -->
+
 ## Overview
 
 > TODO or not to do, that is the question
@@ -77,3 +87,9 @@ Please target `dev/contribute` with your fork, and please use the appropriate PR
 ## Help
 
 [See the wiki!](wiki)
+
+## Fun Promo Video
+
+https://github.com/Start-Out/todo-or-not/assets/10158233/d2c860f6-efd8-4ca4-b5d6-fcabe0bae6ce
+
+
