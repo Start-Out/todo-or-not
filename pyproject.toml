@@ -29,5 +29,5 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-todoon = "todo_or_not:todo_check.todoon"
-todoignore-util = "todo_or_not:todo_check.todo_ignore_util"
+todoon = "todo_or_not:todo_check.typer_todoon"
+todoignore-util = "todo_or_not:todo_check.typer_todo_ignore_util"
