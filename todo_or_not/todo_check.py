@@ -181,7 +181,7 @@ class Hit:
     def generic_title(self):
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
-    def generate_issue(self, _test: bool = False) -> str:
+    def generate_issue(self, _test: bool = False) -> str or bool:
 
         repo_uri = f"https://github.com/None"
 
@@ -233,9 +233,13 @@ class Hit:
                 api_call.append(f"labels[]={label}")
 
         if not (get_is_debug() or _test):
-            _output = subprocess.check_output(api_call)
+            try:
+                _output = subprocess.check_output(api_call)
+            except subprocess.CalledProcessError as e:
+                print(e, file=sys.stderr)
+                _output = False
         else:
-            _output = api_call
+            _output = False
             print(api_call)
 
         return _output
@@ -359,8 +363,13 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
     """
     owner, repo = "owner", "repository"
 
-    if not (get_is_debug() or _test):
-        owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
+    try:
+        if not (get_is_debug() or _test):
+            owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
+    except AttributeError as e:
+        print(
+            f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr # TODO Localization "error_no_env" | en_us: "ERROR: Missing required environment variable" #localization
+        )
 
     query = [
         "gh",
@@ -657,8 +666,10 @@ def todoon(  # todoon
 
                         # Limit the number of issues created in one run
                         if number_of_issues < int(MAXIMUM_ISSUES_GENERATED):
-                            hit.generate_issue()
-                            number_of_issues += 1
+                            output = hit.generate_issue()
+
+                            if output is not False:
+                                number_of_issues += 1
                         else:
                             print(
                                 LOCALIZE[get_region()][
