@@ -454,7 +454,7 @@ def todoon(  # todoon
         fail_closed_duplicates: Annotated[
             bool,
             typer.Option("--closed-duplicates-fail/", "-c/",
-                help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state")] = False,  # todoon
+                help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,  # todoon
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
