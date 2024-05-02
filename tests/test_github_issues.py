@@ -76,6 +76,15 @@ class TestIssueHelperFunctions(unittest.TestCase):
 
 class TestDebugIssueFeatures(unittest.TestCase):
     def setUp(self):
+        if os.environ.get("GITHUB_REPOSITORY", None) is not None:
+            del os.environ["GITHUB_REPOSITORY"]
+
+        if os.environ.get("GITHUB_REF_NAME", None) is not None:
+            del os.environ["GITHUB_REF_NAME"]
+
+        if os.environ.get("GITHUB_TRIGGERING_ACTOR", None) is not None:
+            del os.environ["GITHUB_TRIGGERING_ACTOR"]
+
         self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues(_test=True)
 
     def test_unable_to_collect_issues(self):
