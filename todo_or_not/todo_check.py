@@ -813,7 +813,7 @@ def todoon(  # todoon
         exit(1)
 
     # Fail if any closed duplicates were found and we are set to fail if so
-    if number_of_closed_issues > 0 and not fail_closed_duplicates:
+    if number_of_closed_issues > 0 and fail_closed_duplicates:
         exit(1)
 
 # fmt: off
