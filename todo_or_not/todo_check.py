@@ -715,7 +715,7 @@ def todoon(  # todoon
                     elif existing_issues_hashed[_this_hit_hashed] == "closed":
                         print(
                         # TODO Localization "warning_duplicate_closed_issue" | en_us: "WARNING: Found an issue that has already been closed" #localization
-                            f"{LOCALIZE[get_region()]['warning_duplicate_closed_issue']}", file=sys.stderr
+                            f"{LOCALIZE[get_region()]['warning_duplicate_closed_issue']}: {hit}", file=sys.stderr
                         )
                         number_of_closed_issues += 1
                     # If this title already exists, notify but do not halt
@@ -772,7 +772,7 @@ def todoon(  # todoon
             summary += (f"# "
                         f"{LOCALIZE[get_region()]['summary_issues_generated_none']}\n")
 
-            # Total number of duplicate issues avoided
+        # Total number of duplicate issues avoided
         if number_of_duplicate_issues_avoided > 1:
             summary += (f"# {number_of_duplicate_issues_avoided} "
                         f"{LOCALIZE[get_region()]['summary_duplicate_issues_avoided_plural']}\n")
@@ -780,7 +780,7 @@ def todoon(  # todoon
             summary += (f"# {number_of_duplicate_issues_avoided} "
                         f"{LOCALIZE[get_region()]['summary_duplicate_issues_avoided_singular']}\n")
 
-            # Total number of duplicate closed issues
+        # Total number of duplicate closed issues
         if number_of_closed_issues > 1:
             # TODO Localization "summary_duplicate_closed_issues_plural" | en_us: "Previously closed issues detected" #localization
             summary += (f"# {number_of_closed_issues} "
@@ -789,9 +789,15 @@ def todoon(  # todoon
             # TODO Localization "summary_duplicate_closed_issues_singular" | en_us: "Previously closed issue detected" #localization
             summary += (f"# {number_of_closed_issues} "
                         f"{LOCALIZE[get_region()]['summary_duplicate_closed_issues_singular']}\n")
-        if fail_closed_duplicates and number_of_duplicate_issues_avoided > 0:
+
+        # Fail reasons
+        if number_of_hits > 0 and not silent:
+            # TODO Localization "summary_fail_issues_no_silent" | en_us: "* FAIL: New issues detected" #localization
+            summary += (f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n")
+
+        if number_of_closed_issues > 0 and fail_closed_duplicates:
             # TODO Localization "summary_fail_duplicate_closed_issues" | en_us: "* FAIL: Closed duplicate issues detected" #localization
-            summary += (f"{LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
+            summary += (f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
 
     summary += "##########################\n"
 
