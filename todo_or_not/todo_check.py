@@ -378,7 +378,7 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict] or bool:
         "Accept: application/vnd.github+json",
         "-H",
         "X-GitHub-Api-Version: 2022-11-28",
-        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not",  # todoon
+        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not&state=all",  # todoon
     ]
 
     if not (get_is_debug() or _test):
