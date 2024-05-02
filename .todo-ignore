@@ -2,6 +2,7 @@
 .git/
 .github/
 .idea/
+.run/
 .pytest_cache/
 .venv/
 tests/

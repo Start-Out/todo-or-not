@@ -368,7 +368,8 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict] or bool:
             owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
     except AttributeError as e:
         print(
-            f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr # TODO Localization "error_no_env" | en_us: "ERROR: Missing required environment variable" #localization
+            # TODO Localization "error_no_env" | en_us: "ERROR: Missing required environment variable" #localization
+            f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr
         )
 
     query = [
@@ -630,12 +631,12 @@ def todoon(  # todoon
         os.environ["TODOON_STATUS"] = "collecting-issues"  # todoon
         todoon_created_issues = get_bot_submitted_issues()  # todoon
 
-        if todoon_created_issues is not False:
+        if todoon_created_issues is not False:  # todoon
             for issue in todoon_created_issues:  # todoon
                 existing_issues_hashed[_hash(issue["title"])] = issue["state"]
         else:
             print(
-                # TODO Localization "error_gh_issues_read_failed" | en_us: "ERROR: todoon failed to read from GitHub issues" #localization
+                # TODO Localization "error_gh_issues_read_failed" | en_us: "ERROR: to-doon failed to read from GitHub issues" #localization
                 f"{LOCALIZE[get_region()]['error_gh_issues_read_failed']}", file=sys.stderr
             )
 
@@ -699,7 +700,7 @@ def todoon(  # todoon
                                 number_of_issues += 1
                             else:
                                 print(
-                                # TODO Localization "error_gh_issues_create_failed" | en_us: "ERROR: todoon failed to create a new GitHub issue" #localization
+                                # TODO Localization "error_gh_issues_create_failed" | en_us: "ERROR: to-doon failed to create a new GitHub issue" #localization
                                     f"{LOCALIZE[get_region()]['error_gh_issues_create_failed']}", file=sys.stderr
                                 )
 

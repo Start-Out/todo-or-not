@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "todo-or-not"
-version = "0.10.0"
+version = "0.10.1"
 description = "todoon integrates the TODOs in your codebase with your GitHub repository"
 authors = ["TrentonYo <trentonyo@gmail.com>"]
 license = "GPL-3.0-only"
