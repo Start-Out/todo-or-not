@@ -78,6 +78,10 @@ class TestDebugIssueFeatures(unittest.TestCase):
     def setUp(self):
         self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues(_test=True)
 
+    def test_unable_to_collect_issues(self):
+        result = todo_or_not.todo_check.get_bot_submitted_issues()
+        assert result is False
+
     def test_bot_submitted_issues_collected(self):
         assert self.bot_submitted_issues is False
 
