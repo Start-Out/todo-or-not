@@ -123,6 +123,7 @@ class TestTodoon(unittest.TestCase):
         os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
         os.environ["GITHUB_REF_NAME"] = "branch"
         os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
+        os.environ["MAXIMUM_ISSUES_GENERATED"] = "1"
 
         # Set up
         safe_dir = os.path.join("tests", "resources", "no_todos")
@@ -132,12 +133,34 @@ class TestTodoon(unittest.TestCase):
 
         td.todoon(print_mode=False, silent=True)
 
-        # Tear down env variables
+        # Tear down
         del os.environ["GITHUB_REPOSITORY"]
         del os.environ["GITHUB_REF_NAME"]
         del os.environ["GITHUB_TRIGGERING_ACTOR"]
+        del os.environ["MAXIMUM_ISSUES_GENERATED"]
+        os.chdir(old_dir)
+
+    def test_issue_mode_exceed_maximum_issues(self):
+        # Set up to check todoon
+        os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
+        os.environ["GITHUB_REF_NAME"] = "branch"
+        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
+        os.environ["MAXIMUM_ISSUES_GENERATED"] = "1"
+
+        # Set up
+        safe_dir = os.path.join("tests", "resources", "specific_files")
+        old_dir = os.getcwd()
+        rel = os.path.relpath(safe_dir)
+        os.chdir(rel)
+
+        with self.assertRaises(SystemExit) as context:
+            td.todoon(print_mode=False, silent=True)
 
         # Tear down
+        del os.environ["GITHUB_REPOSITORY"]
+        del os.environ["GITHUB_REF_NAME"]
+        del os.environ["GITHUB_TRIGGERING_ACTOR"]
+        del os.environ["MAXIMUM_ISSUES_GENERATED"]
         os.chdir(old_dir)
 
     def test_issue_mode_with_fail_on_closed(self):

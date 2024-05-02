@@ -15,8 +15,6 @@ from todo_or_not.localize import LOCALIZE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 
-MAXIMUM_ISSUES_GENERATED = os.environ.get("MAXIMUM_ISSUES_GENERATED", "8")
-PERTINENT_LINE_LIMIT = os.environ.get("PERTINENT_LINE_LIMIT", "8")
 
 todoon_app = typer.Typer(name="todoon")  # todoon
 
@@ -35,6 +33,28 @@ def get_is_debug():
         return True
     else:
         return False
+
+
+def get_max_issues():
+    _max_issues = os.environ.get("MAXIMUM_ISSUES_GENERATED", "8")
+
+    try:
+        max_issues = int(_max_issues)
+    except:
+        max_issues = 8
+
+    return max_issues
+
+
+def get_pertinent_line_limit():
+    _pertinent_line_limit = os.environ.get("PERTINENT_LINE_LIMIT", "8")
+
+    try:
+        pertinent_line_limit = int(_pertinent_line_limit)
+    except:
+        pertinent_line_limit = 8
+
+    return pertinent_line_limit
 
 
 def get_region():
@@ -239,7 +259,7 @@ class Hit:
                 print(e, file=sys.stderr)
                 _output = False
         else:
-            _output = False
+            _output = True
             print(api_call)
 
         return _output
@@ -293,7 +313,7 @@ def find_lines(
 
                     # Look at lines before the pertinent line
                     _i = line_number - 1
-                    while abs(line_number - _i) <= int(PERTINENT_LINE_LIMIT) and _i >= 0:
+                    while abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0:
                         _i -= 1
                         if len(lines[_i].strip()) > 0:
                             _pertinent_lines.insert(0, lines[_i])
@@ -307,7 +327,7 @@ def find_lines(
 
                     # Look at lines after the pertinent line
                     _i = line_number
-                    while abs(_i - line_number) <= int(PERTINENT_LINE_LIMIT):
+                    while abs(_i - line_number) <= get_pertinent_line_limit():
                         if _i < len(lines) and len(lines[_i].strip()) > 0:
                             _pertinent_lines.append(lines[_i])
                         else:
@@ -693,7 +713,7 @@ def todoon(  # todoon
                     if _this_hit_hashed not in existing_issues_hashed:
 
                         # Limit the number of issues created in one run
-                        if number_of_issues < int(MAXIMUM_ISSUES_GENERATED):
+                        if number_of_issues < get_max_issues():
                             output = hit.generate_issue()
 
                             if output is not False:

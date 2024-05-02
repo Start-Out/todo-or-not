@@ -123,13 +123,13 @@ class TestLiveIssueFeatures(unittest.TestCase):
 def test_debug_submit_test_issue(example_hit_todo):
     response = example_hit_todo.generate_issue(_test=True)
 
-    assert response is False
+    assert response is True
 
 
 def test_live_submit_formatted_test_issue(example_hit_formatted_todo):
     response = example_hit_formatted_todo.generate_issue(_test=True)
 
-    assert response is False
+    assert response is True
 
 
 if __name__ == '__main__':
