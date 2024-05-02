@@ -79,7 +79,7 @@ class TestLiveIssueFeatures(unittest.TestCase):
         self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues(_test=True)
 
     def test_bot_submitted_issues_collected(self):
-        assert len(self.bot_submitted_issues) is False
+        assert self.bot_submitted_issues is False
 
 
 def test_live_submit_test_issue(example_hit_todo):
