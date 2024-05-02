@@ -812,6 +812,9 @@ def todoon(  # todoon
     if number_of_hits > 0 and not silent:
         exit(1)
 
+    # Fail if any closed duplicates were found and we are set to fail if so
+    if number_of_closed_issues > 0 and not fail_closed_duplicates:
+        exit(1)
 
 # fmt: off
 @todoon_app.command(help="Small utility for generating a .todo-ignore file")  # todoon
