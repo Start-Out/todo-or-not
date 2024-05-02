@@ -42,7 +42,7 @@ def example_hit_formatted_todo():
 def example_hit_formatted_todo_no_labels():
     return todo_or_not.todo_check.Hit('tests\\resources\\example.txt', 36, ['todo'],
                                       ['def a_very_pretty_example():\n',
-                                       '    # TODO No Labels! | Test coverage said that we have to make an issue without any labels :( \n',
+                                       '    # TODO No Labels! | Test coverage said that we have to make an issue without any labels :( # but if there is just an octothorpe then there should be no labels\n',
                                        '    print("Check this out!")\n'],
                                       1)
 
@@ -74,7 +74,7 @@ class TestIssueHelperFunctions(unittest.TestCase):
         self.assertEqual(output, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3")  # add assertion here
 
 
-class TestLiveIssueFeatures(unittest.TestCase):
+class TestDebugIssueFeatures(unittest.TestCase):
     def setUp(self):
         self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues(_test=True)
 
@@ -82,7 +82,32 @@ class TestLiveIssueFeatures(unittest.TestCase):
         assert self.bot_submitted_issues is False
 
 
-def test_live_submit_test_issue(example_hit_todo):
+class TestLiveIssueFeatures(unittest.TestCase):
+    def setUp(self):
+        os.environ["GITHUB_REPOSITORY"] = "github/gitignore"
+        os.environ["GITHUB_REF_NAME"] = "branch"
+        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
+        
+        self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues()
+
+        self.example_hit_todo = todo_or_not.todo_check.Hit('tests\\resources\\example.txt', 6, ['todo'],
+                                   ['def an_unfinished_function():\n',
+                                    '    # TODO Finish documenting todo-or-not\n',
+                                    '    print("Hello, I\'m not quite done, there\'s more to do!")\n',
+                                    '    print("Look at all these things I have to do!")\n',
+                                    '    a = 1 + 1\n', '    b = a * 2\n',
+                                    '    print("Okay I\'m done!")\n'], 1)
+
+    def test_bot_submitted_issues_collected(self):
+        assert len(self.bot_submitted_issues) == 0
+
+    def test_live_submit_test_issue(self):
+        response = self.example_hit_todo.generate_issue()
+
+        assert response is False
+
+
+def test_debug_submit_test_issue(example_hit_todo):
     response = example_hit_todo.generate_issue(_test=True)
 
     assert response is False
