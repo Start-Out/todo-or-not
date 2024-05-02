@@ -355,7 +355,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     target_file.write("\n")
 
 
-def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
+def get_bot_submitted_issues(_test: bool = False) -> list[dict] or bool:
     """
     Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a # todoon
     list of dicts
@@ -382,14 +382,19 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict]:
     ]
 
     if not (get_is_debug() or _test):
-        response = subprocess.check_output(query)
+        try:
+            response = subprocess.check_output(query)
+        except subprocess.CalledProcessError as e:
+            print(e, file=sys.stderr)
+            return False
 
         _str = response.decode("utf-8")
         _str.replace('"', '\\"')
 
         return json.loads(_str)
     else:
-        return query
+        print(query, file=sys.stderr)
+        return False
 
 
 def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or None:
@@ -610,8 +615,14 @@ def todoon(  # todoon
         os.environ["TODOON_STATUS"] = "collecting-issues"  # todoon
         todoon_created_issues = get_bot_submitted_issues()  # todoon
 
-        for issue in todoon_created_issues:  # todoon
-            existing_issues_hashed.append(_hash(issue["title"]))
+        if todoon_created_issues is not False:
+            for issue in todoon_created_issues:  # todoon
+                existing_issues_hashed.append(_hash(issue["title"]))
+        else:
+            print(
+                # TODO Localization "error_gh_issues_read_failed" | en_us: "ERROR: todoon failed to read from GitHub issues" #localization
+                f"{LOCALIZE[get_region()]['error_gh_issues_read_failed']}", file=sys.stderr
+            )
 
     #############################################
     # Run todo-check # todoon
@@ -670,6 +681,12 @@ def todoon(  # todoon
 
                             if output is not False:
                                 number_of_issues += 1
+                            else:
+                                print(
+                                # TODO Localization "error_gh_issues_create_failed" | en_us: "ERROR: todoon failed to create a new GitHub issue" #localization
+                                    f"{LOCALIZE[get_region()]['error_gh_issues_create_failed']}", file=sys.stderr
+                                )
+
                         else:
                             print(
                                 LOCALIZE[get_region()][
