@@ -688,7 +688,7 @@ def todoon(  # todoon
                 if not print_mode:
                     _this_hit_hashed = _hash(hit.get_title())
 
-                    # Check if the app already created this hit's title
+                    # Check if the app already created this hit's title in open AND closed issues
                     if _this_hit_hashed not in existing_issues_hashed:
 
                         # Limit the number of issues created in one run

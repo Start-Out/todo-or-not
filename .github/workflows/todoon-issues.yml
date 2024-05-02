@@ -38,4 +38,4 @@ jobs:
           MAXIMUM_ISSUES_GENERATED: 10
         run: |
           echo "Generate GitHub issues for each problem found, but don't fail the workflow"
-          todoon -ics
+          todoon -is
