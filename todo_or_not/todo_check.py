@@ -790,16 +790,17 @@ def todoon(  # todoon
             summary += (f"# {number_of_closed_issues} "
                         f"{LOCALIZE[get_region()]['summary_duplicate_closed_issues_singular']}\n")
 
-        # Fail reasons
-        if number_of_hits > 0 and not silent:
-            # TODO Localization "summary_fail_issues_no_silent" | en_us: "* FAIL: New issues detected" #localization
-            summary += (f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n")
+    summary += "##########################\n\n"
 
-        if number_of_closed_issues > 0 and fail_closed_duplicates:
-            # TODO Localization "summary_fail_duplicate_closed_issues" | en_us: "* FAIL: Closed duplicate issues detected" #localization
-            summary += (f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
+    # Fail reasons
+    if number_of_hits > 0 and not silent:
+        # TODO Localization "summary_fail_issues_no_silent" | en_us: "* FAIL: New issues detected" #localization
+        summary += (f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n")
 
-    summary += "##########################\n"
+    if number_of_closed_issues > 0 and fail_closed_duplicates:
+        # TODO Localization "summary_fail_duplicate_closed_issues" | en_us: "* FAIL: Closed duplicate issues detected" #localization
+        summary += (f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
+
 
     os.environ["TODOON_STATUS"] = "finished"  # todoon
     os.environ["TODOON_PROGRESS"] = "100.0"  # todoon
