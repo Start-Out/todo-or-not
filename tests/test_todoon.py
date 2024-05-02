@@ -27,7 +27,7 @@ class TestTodoon(unittest.TestCase):
         old_dir = os.getcwd()
         os.chdir(safe_dir)
 
-        td.todoon(verbose=True)
+        td.todoon(verbose=True, print_mode=True)
 
         os.chdir(old_dir)
 
@@ -81,6 +81,9 @@ class TestTodoon(unittest.TestCase):
 
     def test_todoon_silent_passes(self):
         td.todoon(verbose=True, silent=True)
+
+    def test_todoon_with_print_and_fail_on_closed_duplicate(self):
+        td.todoon(verbose=True, silent=True, fail_closed_duplicates=True)
 
     def test_todoon_runs_when_forced(self):
         with open(".todo-ignore", "r") as _before:
