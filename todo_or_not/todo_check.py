@@ -451,6 +451,10 @@ def todoon(  # todoon
             typer.Option("--silent/", "-s/",
                 help="If specified, todoon will not exit with an error code even when TODOs and/or "  # todoon
                      "FIXMEs are detected")] = False,  # todoon
+        fail_closed_duplicates: Annotated[
+            bool,
+            typer.Option("--closed-duplicates-fail/", "-c/",
+                help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state")] = False,  # todoon
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
@@ -607,6 +611,14 @@ def todoon(  # todoon
     # Preventing duplicate issues
     #############################################
 
+    # Warning if issues options are used when issue mode is not enabled
+    if print_mode:
+        if fail_closed_duplicates:
+            print(
+                # TODO Localization "warning_nonissue_mode_closed_duplicate_used | en_us: "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode" #localization
+                f"{LOCALIZE[get_region()]['warning_nonissue_mode_closed_duplicate_used']}", file=sys.stderr
+            )
+
     # When pinging for all queries their titles are hashed and saved here along with their state,
     # this is for checking for duplicate issues.
     # e.g. {"892f2a": "open", "39Ac9m": "closed"}
@@ -614,6 +626,7 @@ def todoon(  # todoon
 
     # Collect all the issues that the bot has so far submitted to check for duplicates
     if not print_mode:
+
         os.environ["TODOON_STATUS"] = "collecting-issues"  # todoon
         todoon_created_issues = get_bot_submitted_issues()  # todoon
 
@@ -776,6 +789,9 @@ def todoon(  # todoon
             # TODO Localization "summary_duplicate_closed_issues_singular" | en_us: "Previously closed issue detected" #localization
             summary += (f"# {number_of_closed_issues} "
                         f"{LOCALIZE[get_region()]['summary_duplicate_closed_issues_singular']}\n")
+        if fail_closed_duplicates and number_of_duplicate_issues_avoided > 0:
+            # TODO Localization "summary_fail_duplicate_closed_issues" | en_us: "* FAIL: Closed duplicate issues detected" #localization
+            summary += (f"{LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
 
     summary += "##########################\n"
 
