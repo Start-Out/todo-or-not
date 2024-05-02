@@ -607,8 +607,10 @@ def todoon(  # todoon
     # Preventing duplicate issues
     #############################################
 
-    # When pinging for all queries, their titles are hashed and saved here. This is for checking for duplicate issues
-    existing_issues_hashed = []
+    # When pinging for all queries their titles are hashed and saved here along with their state,
+    # this is for checking for duplicate issues.
+    # e.g. {"892f2a": "open", "39Ac9m": "closed"}
+    existing_issues_hashed = {}
 
     # Collect all the issues that the bot has so far submitted to check for duplicates
     if not print_mode:
@@ -617,7 +619,7 @@ def todoon(  # todoon
 
         if todoon_created_issues is not False:
             for issue in todoon_created_issues:  # todoon
-                existing_issues_hashed.append(_hash(issue["title"]))
+                existing_issues_hashed[_hash(issue["title"])] = issue["state"]
         else:
             print(
                 # TODO Localization "error_gh_issues_read_failed" | en_us: "ERROR: todoon failed to read from GitHub issues" #localization
@@ -633,6 +635,7 @@ def todoon(  # todoon
     number_of_duplicate_issues_avoided = (
         0  # Tracks the number of issues avoided because they are already mentioned
     )
+    number_of_closed_issues = 0
     number_of_encoding_failures = 0  # Tracks the files unread due to encoding error
     number_of_files_scanned = len(
         targets
@@ -695,6 +698,13 @@ def todoon(  # todoon
                                 file=sys.stderr,
                             )
                             exit(1)
+                    # If this title exists AND is closed, potentially fail the check
+                    elif existing_issues_hashed[_this_hit_hashed] == "closed":
+                        print(
+                        # TODO Localization "warning_duplicate_closed_issue" | en_us: "WARNING: Found an issue that has already been closed" #localization
+                            f"{LOCALIZE[get_region()]['warning_duplicate_closed_issue']}", file=sys.stderr
+                        )
+                        number_of_closed_issues += 1
                     # If this title already exists, notify but do not halt
                     else:
                         print(
@@ -756,6 +766,16 @@ def todoon(  # todoon
         elif number_of_duplicate_issues_avoided == 1:
             summary += (f"# {number_of_duplicate_issues_avoided} "
                         f"{LOCALIZE[get_region()]['summary_duplicate_issues_avoided_singular']}\n")
+
+            # Total number of duplicate closed issues
+        if number_of_closed_issues > 1:
+            # TODO Localization "summary_duplicate_closed_issues_plural" | en_us: "Previously closed issues detected" #localization
+            summary += (f"# {number_of_closed_issues} "
+                        f"{LOCALIZE[get_region()]['summary_duplicate_closed_issues_plural']}\n")
+        elif number_of_closed_issues == 1:
+            # TODO Localization "summary_duplicate_closed_issues_singular" | en_us: "Previously closed issue detected" #localization
+            summary += (f"# {number_of_closed_issues} "
+                        f"{LOCALIZE[get_region()]['summary_duplicate_closed_issues_singular']}\n")
 
     summary += "##########################\n"
 

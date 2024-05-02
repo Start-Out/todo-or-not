@@ -15,6 +15,8 @@ LOCALIZE = {
         "summary_issues_generated_none": "No issues generated",
         "summary_duplicate_issues_avoided_singular": "Duplicate issue prevented",
         "summary_duplicate_issues_avoided_plural": "Duplicate issues prevented",
+        "summary_duplicate_closed_issues_singular": "Previously closed issue detected",
+        "summary_duplicate_closed_issues_plural": "Previously closed issues detected",
         "info_duplicate_issue_avoided": "INFO: Duplicate issue avoided",
         "error_cannot_specify_ni_xi": "ERROR: Cannot specify both --ni and --xi",
         "error_is_not_file": "ERROR: Specified path is not a file",
@@ -32,6 +34,7 @@ LOCALIZE = {
         "warning_encoding_not_supported": f"WARNING: File uses unsupported encoding, we will skip it but consider adding to .todo-ignore (Supported encodings: {SUPPORTED_ENCODINGS_TODO_CHECK})",
         "warning_using_default_region": f"WARNING: Unsupported region detected, defaulting to en_us. Detected region:",
         "warning_using_default_os": f"WARNING: Unsupported OS detected, using default tips. Detected OS:",
+        "warning_duplicate_closed_issue": f"WARNING: Found an issue that has already been closed",
     },
     "ko_kr": {
         "general_done": "끝났습니다!",
