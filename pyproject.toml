@@ -8,7 +8,7 @@ readme = "README.md"
 keywords = ["todo", "github"]
 homepage = "https://github.com/apps/todo-or-not"
 repository = "https://github.com/Start-Out/todo-or-not"
-documentation = "https://github.com/Start-Out/todo-or-not/blob/main/README.md"
+documentation = "https://github.com/Start-Out/todo-or-not/wiki"
 
 [tool.poetry.dependencies]
 python = "^3.11"
