@@ -120,7 +120,7 @@ class TestTodoon(unittest.TestCase):
 
     def test_issue_mode(self):
         # Set up to check todoon
-        os.environ["GITHUB_REPOSITORY"] = "StartOut/todo-or-not"
+        os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
         os.environ["GITHUB_REF_NAME"] = "branch"
         os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
 
@@ -142,6 +142,31 @@ class TestTodoon(unittest.TestCase):
 
     def test_issue_mode_with_fail_on_closed(self):
         td.todoon(print_mode=False, fail_closed_duplicates=True, silent=True)
+
+    def test_issue_collection_live(self):
+        # Set up to check todoon
+        os.environ["DEBUG"] = 'False'
+        os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
+        os.environ["GITHUB_REF_NAME"] = "branch"
+        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
+
+        # Set up
+        safe_dir = os.path.join("tests", "resources", "no_todos")
+        old_dir = os.getcwd()
+        rel = os.path.relpath(safe_dir)
+        os.chdir(rel)
+
+        td.todoon(print_mode=False, silent=True)
+
+        # Tear down env variables
+        os.environ["DEBUG"] = 'True'
+        del os.environ["GITHUB_REPOSITORY"]
+        del os.environ["GITHUB_REF_NAME"]
+        del os.environ["GITHUB_TRIGGERING_ACTOR"]
+
+        # Tear down
+        os.chdir(old_dir)
+
 
 
 if __name__ == '__main__':
