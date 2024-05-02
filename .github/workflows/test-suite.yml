@@ -53,5 +53,7 @@ jobs:
           source .venv/bin/activate
           pytest --cov-report lcov:cov.json --cov=todo_or_not
       - name: Coveralls GitHub Action
+        env:
+          FILE: cov.json
         uses: coverallsapp/github-action@v2.2.3
 
