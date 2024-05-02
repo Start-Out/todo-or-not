@@ -64,7 +64,7 @@ def test_formatted_hits_are_formatted(example_hit_todo, example_hit_fixme, examp
     assert example_hit_formatted_todo.structured_labels == ['example', 'enhancement']
 
     assert example_hit_formatted_todo_no_labels.structured_title == '# TODO No Labels!'
-    assert example_hit_formatted_todo_no_labels.structured_body == 'Test coverage said that we have to make an issue without any labels :('
+    assert example_hit_formatted_todo_no_labels.structured_body == 'Test coverage said that we have to make an issue without any labels :( # but if there is just an octothorpe then there should be no labels'
     assert example_hit_formatted_todo_no_labels.structured_labels is None
 
 
