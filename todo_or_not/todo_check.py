@@ -205,16 +205,18 @@ class Hit:
 
         repo_uri = f"https://github.com/None"
 
-        github_ref = "reference"
-        triggered_by = "octocat"
-        owner, repo = "owner", "repository"
+        github_ref = "$NONE"
+        triggered_by = "$NONE"
+        owner, repo = "$NONE", "$NONE"
 
         if not (get_is_debug() or _test):
             repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
-            github_ref = os.environ.get("GITHUB_REF_NAME")
-            triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR")
-            owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
+            github_ref = os.environ.get("GITHUB_REF_NAME", "$NONE")
+            triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR", "$NONE")
+            owner, repo = os.environ.get("GITHUB_REPOSITORY", "$NONE/$NONE").split("/")
+
+        # Find missing env
 
         reference_file = self.source_file.split(":")[0]
 
