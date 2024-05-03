@@ -901,11 +901,6 @@ def todo_ignore_util(  # todoon
                 previous = line[0]
 
                 target.write(f"{line}\n")
-    except FileNotFoundError:
-        print(
-            LOCALIZE[get_region()]["error_is_not_file"], todoignore_path, file=sys.stderr  # todoon
-        )
-        exit(1)
     except FileExistsError:
         print(
             LOCALIZE[get_region()]["error_file_already_exists"], todoignore_path, file=sys.stderr  # todoon
