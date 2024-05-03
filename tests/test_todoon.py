@@ -197,7 +197,17 @@ class TestTodoon(unittest.TestCase):
         self._environment_down()
 
     def test_issue_mode_with_fail_on_closed(self):
-        td.todoon(print_mode=False, fail_closed_duplicates=True, silent=True)
+        env = [
+            ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
+            ("GITHUB_REF_NAME", "branch"),
+            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+        ]
+        self._environment_up("closed_issue", env_variables=env, disable_debug=True)
+
+        with self.assertRaises(SystemExit) as context:
+            td.todoon(print_mode=False, fail_closed_duplicates=True, silent=True)
+
+        self._environment_down()
 
     def test_issue_collection_live(self):
         env = [
