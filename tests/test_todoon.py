@@ -180,105 +180,61 @@ class TestTodoon(unittest.TestCase):
         self._environment_down()
 
     def test_issue_mode_exceed_maximum_issues(self):
-        # Set up to check todoon
-        os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
-        os.environ["GITHUB_REF_NAME"] = "branch"
-        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
-        os.environ["MAXIMUM_ISSUES_GENERATED"] = "1"
-
         # Set up
-        safe_dir = os.path.join("tests", "resources", "specific_files")
-        old_dir = os.getcwd()
-        rel = os.path.relpath(safe_dir)
-        os.chdir(rel)
+        env = [
+            ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
+            ("GITHUB_REF_NAME", "branch"),
+            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("MAXIMUM_ISSUES_GENERATED", "1")
+        ]
+        self._environment_up("specific_files", env_variables=env)
 
         with self.assertRaises(SystemExit) as context:
             td.todoon(print_mode=False, silent=True)
 
-        # Tear down
-        del os.environ["GITHUB_REPOSITORY"]
-        del os.environ["GITHUB_REF_NAME"]
-        del os.environ["GITHUB_TRIGGERING_ACTOR"]
-        del os.environ["MAXIMUM_ISSUES_GENERATED"]
-        os.chdir(old_dir)
+        self._environment_down()
 
     def test_issue_mode_with_fail_on_closed(self):
         td.todoon(print_mode=False, fail_closed_duplicates=True, silent=True)
 
     def test_issue_collection_live(self):
-        # Set up to check todoon
-        os.environ["DEBUG"] = 'False'
-        os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
-        os.environ["GITHUB_REF_NAME"] = "branch"
-        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
-
-        # Set up
-        safe_dir = os.path.join("tests", "resources", "no_todos")
-        old_dir = os.getcwd()
-        rel = os.path.relpath(safe_dir)
-        os.chdir(rel)
+        env = [
+            ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
+            ("GITHUB_REF_NAME", "branch"),
+            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+        ]
+        self._environment_up("no_todos", env_variables=env, disable_debug=True)
 
         td.todoon(print_mode=False, silent=True)
 
-        # Tear down env variables
-        os.environ["DEBUG"] = 'True'
-        del os.environ["GITHUB_REPOSITORY"]
-        del os.environ["GITHUB_REF_NAME"]
-        del os.environ["GITHUB_TRIGGERING_ACTOR"]
-
-        # Tear down
-        os.chdir(old_dir)
+        self._environment_down()
 
     def test_closed_duplicate_issue_fails(self):
-        # Set up to check todoon
-        os.environ["DEBUG"] = 'False'
-        os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
-        os.environ["GITHUB_REF_NAME"] = "branch"
-        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
-
-        # Set up
-        safe_dir = os.path.join("tests", "resources", "closed_issue")
-        old_dir = os.getcwd()
-        rel = os.path.relpath(safe_dir)
-        os.chdir(rel)
+        env = [
+            ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
+            ("GITHUB_REF_NAME", "branch"),
+            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+        ]
+        self._environment_up("closed_issue", env_variables=env, disable_debug=True)
 
         with self.assertRaises(SystemExit) as context:
             td.todoon(print_mode=False, fail_closed_duplicates=True)
 
-        # Tear down env variables
-        os.environ["DEBUG"] = 'True'
-        del os.environ["GITHUB_REPOSITORY"]
-        del os.environ["GITHUB_REF_NAME"]
-        del os.environ["GITHUB_TRIGGERING_ACTOR"]
-
-        # Tear down
-        os.chdir(old_dir)
+        self._environment_down()
 
     def test_environment_variables(self):
-
-        # Set up
-        safe_dir = os.path.join("tests", "resources", "no_todos")
-        old_dir = os.getcwd()
-        rel = os.path.relpath(safe_dir)
-        os.chdir(rel)
-
-        # Set up to check todoon
-        os.environ["DEBUG"] = 'False'
-        os.environ["MAXIMUM_ISSUES_GENERATED"] = "invalid"
-        os.environ["PERTINENT_LINE_LIMIT"] = "invalid"
+        env = [
+            ("MAXIMUM_ISSUES_GENERATED", "invalid"),
+            ("PERTINENT_LINE_LIMIT", "invalid")
+        ]
+        self._environment_up("no_todos", env_variables=env, disable_debug=True)
 
         td.todoon(print_mode=False, silent=True)
 
         assert td.get_max_issues() == 8
         assert td.get_pertinent_line_limit() == 8
 
-        # Tear down env variables
-        os.environ["DEBUG"] = 'True'
-
-        del os.environ["MAXIMUM_ISSUES_GENERATED"]
-        del os.environ["PERTINENT_LINE_LIMIT"]
-
-        os.chdir(old_dir)
+        self._environment_down()
 
     def test_singular_passages_in_summary(self):
         pass
