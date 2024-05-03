@@ -120,13 +120,13 @@ class TestTodoon(unittest.TestCase):
 
     def test_issue_mode(self):
         # Set up to check todoon
+        os.environ["DEBUG"] = 'False'
         os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
         os.environ["GITHUB_REF_NAME"] = "branch"
         os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
-        os.environ["MAXIMUM_ISSUES_GENERATED"] = "1"
 
         # Set up
-        safe_dir = os.path.join("tests", "resources", "no_todos")
+        safe_dir = os.path.join("tests", "resources", "existing_issues")
         old_dir = os.getcwd()
         rel = os.path.relpath(safe_dir)
         os.chdir(rel)
@@ -134,10 +134,10 @@ class TestTodoon(unittest.TestCase):
         td.todoon(print_mode=False, silent=True)
 
         # Tear down
+        os.environ["DEBUG"] = 'True'
         del os.environ["GITHUB_REPOSITORY"]
         del os.environ["GITHUB_REF_NAME"]
         del os.environ["GITHUB_TRIGGERING_ACTOR"]
-        del os.environ["MAXIMUM_ISSUES_GENERATED"]
         os.chdir(old_dir)
 
     def test_issue_mode_cannot_create_issues(self):
