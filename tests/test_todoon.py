@@ -140,6 +140,30 @@ class TestTodoon(unittest.TestCase):
         del os.environ["MAXIMUM_ISSUES_GENERATED"]
         os.chdir(old_dir)
 
+    def test_issue_mode_cannot_create_issues(self):
+        # Set up to check todoon
+        os.environ["DEBUG"] = 'False'
+        os.environ["GITHUB_REPOSITORY"] = "github/gitignore"
+        os.environ["GITHUB_REF_NAME"] = "branch"
+        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
+
+        # Set up
+        safe_dir = os.path.join("tests", "resources", "specific_files")
+        old_dir = os.getcwd()
+        rel = os.path.relpath(safe_dir)
+        os.chdir(rel)
+
+        td.todoon(print_mode=False, silent=True)
+
+        assert os.environ["TODOON_ISSUES_GENERATED"] == '0'
+
+        # Tear down
+        os.environ["DEBUG"] = 'True'
+        del os.environ["GITHUB_REPOSITORY"]
+        del os.environ["GITHUB_REF_NAME"]
+        del os.environ["GITHUB_TRIGGERING_ACTOR"]
+        os.chdir(old_dir)
+
     def test_issue_mode_exceed_maximum_issues(self):
         # Set up to check todoon
         os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
@@ -180,6 +204,31 @@ class TestTodoon(unittest.TestCase):
         os.chdir(rel)
 
         td.todoon(print_mode=False, silent=True)
+
+        # Tear down env variables
+        os.environ["DEBUG"] = 'True'
+        del os.environ["GITHUB_REPOSITORY"]
+        del os.environ["GITHUB_REF_NAME"]
+        del os.environ["GITHUB_TRIGGERING_ACTOR"]
+
+        # Tear down
+        os.chdir(old_dir)
+
+    def test_closed_duplicate_issue_fails(self):
+        # Set up to check todoon
+        os.environ["DEBUG"] = 'False'
+        os.environ["GITHUB_REPOSITORY"] = "Start-Out/todo-or-not"
+        os.environ["GITHUB_REF_NAME"] = "branch"
+        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
+
+        # Set up
+        safe_dir = os.path.join("tests", "resources", "closed_issue")
+        old_dir = os.getcwd()
+        rel = os.path.relpath(safe_dir)
+        os.chdir(rel)
+
+        with self.assertRaises(SystemExit) as context:
+            td.todoon(print_mode=False, fail_closed_duplicates=True)
 
         # Tear down env variables
         os.environ["DEBUG"] = 'True'
