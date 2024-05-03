@@ -190,6 +190,31 @@ class TestTodoon(unittest.TestCase):
         # Tear down
         os.chdir(old_dir)
 
+    def test_environment_variables(self):
+
+        # Set up
+        safe_dir = os.path.join("tests", "resources", "no_todos")
+        old_dir = os.getcwd()
+        rel = os.path.relpath(safe_dir)
+        os.chdir(rel)
+
+        # Set up to check todoon
+        os.environ["DEBUG"] = 'False'
+        os.environ["MAXIMUM_ISSUES_GENERATED"] = "invalid"
+        os.environ["PERTINENT_LINE_LIMIT"] = "invalid"
+
+        td.todoon(print_mode=False, silent=True)
+
+        assert td.get_max_issues() == 8
+        assert td.get_pertinent_line_limit() == 8
+
+        # Tear down env variables
+        os.environ["DEBUG"] = 'True'
+
+        del os.environ["MAXIMUM_ISSUES_GENERATED"]
+        del os.environ["PERTINENT_LINE_LIMIT"]
+
+        os.chdir(old_dir)
 
 
 if __name__ == '__main__':
