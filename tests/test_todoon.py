@@ -22,14 +22,22 @@ class TestTodoon(unittest.TestCase):
             os.path.join("tests", "resources", "specific_files")
         ]
 
-    def test_todoon_standard_succeeds_with_no_todos(self):
-        safe_dir = os.path.join("tests", "resources", "no_todos")
-        old_dir = os.getcwd()
+    def _environment_up(self, resource_dir: str):
+        safe_dir = os.path.join("tests", "resources", resource_dir)
+        self.old_dir = os.getcwd()
         os.chdir(safe_dir)
+
+    def _environment_down(self):
+        os.chdir(self.old_dir)
+
+    #######################################################################
+
+    def test_todoon_standard_succeeds_with_no_todos(self):
+        self._environment_up("no_todos")
 
         td.todoon(verbose=True, print_mode=True)
 
-        os.chdir(old_dir)
+        self._environment_down()
 
     def test_todoon_standard_fails_when_finds_todos(self):
         with self.assertRaises(SystemExit) as context:
@@ -39,9 +47,7 @@ class TestTodoon(unittest.TestCase):
 
     def test_todoon_silent_pushes_environment_variables(self):
         # Set up
-        safe_dir = os.path.join("tests", "resources", "specific_files")
-        old_dir = os.getcwd()
-        os.chdir(safe_dir)
+        self._environment_up("specific_files")
 
         td.todoon(verbose=True, silent=True)
 
@@ -63,8 +69,7 @@ class TestTodoon(unittest.TestCase):
         assert TODOON_ISSUES_GENERATED == "0"
         assert TODOON_DUPLICATE_ISSUES_AVOIDED == "0"
 
-        # Tear down
-        os.chdir(old_dir)
+        self._environment_down()
 
     def test_todoon_standard_fails_without_todo_ignore(self):
         with open(".todo-ignore", "r") as _before:
@@ -103,9 +108,7 @@ class TestTodoon(unittest.TestCase):
 
     def test_todoignore_uses_wildcards(self):
         # Set up
-        safe_dir = os.path.join("tests", "resources", "wildcard_test")
-        old_dir = os.getcwd()
-        os.chdir(safe_dir)
+        self._environment_up("wildcard_test")
 
         # Run util
         td.todoon()
@@ -116,7 +119,7 @@ class TestTodoon(unittest.TestCase):
         self.assertEqual(files_scanned, '8')
 
         # Tear down
-        os.chdir(old_dir)
+        self._environment_down()
 
     def test_issue_mode(self):
         # Set up to check todoon
