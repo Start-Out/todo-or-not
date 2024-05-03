@@ -834,6 +834,9 @@ def todoon(  # todoon
     os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(  # todoon
         number_of_duplicate_issues_avoided
     )
+    os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] = str(  # todoon
+        number_of_closed_issues
+    )
 
     print(summary, file=sys.stderr)
 

@@ -89,6 +89,7 @@ class TestTodoon(unittest.TestCase):
         TODOON_ENCODING_ERRORS = os.environ.get("TODOON_ENCODING_ERRORS")
         TODOON_ISSUES_GENERATED = os.environ.get("TODOON_ISSUES_GENERATED")
         TODOON_DUPLICATE_ISSUES_AVOIDED = os.environ.get("TODOON_DUPLICATE_ISSUES_AVOIDED")
+        TODOON_DUPLICATE_CLOSED_ISSUES = os.environ.get("TODOON_DUPLICATE_CLOSED_ISSUES")
 
         assert TODOON_STATUS == "finished"
         assert TODOON_PROGRESS == "100.0"
@@ -98,6 +99,7 @@ class TestTodoon(unittest.TestCase):
         assert int(TODOON_ENCODING_ERRORS) == 0
         assert TODOON_ISSUES_GENERATED == "0"
         assert TODOON_DUPLICATE_ISSUES_AVOIDED == "0"
+        assert TODOON_DUPLICATE_CLOSED_ISSUES == "0"
 
         self._environment_down()
 
@@ -237,10 +239,42 @@ class TestTodoon(unittest.TestCase):
         self._environment_down()
 
     def test_singular_passages_in_summary(self):
-        pass
+        env = [
+            ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
+            ("GITHUB_REF_NAME", "branch"),
+            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+        ]
+        self._environment_up("singular", env_variables=env, disable_debug=True)
+
+        td.todoon(print_mode=False, silent=True)
+
+        # number of issues
+        assert os.environ["TODOON_ISSUES_GENERATED"] == '0'
+        # number of duplicate issues
+        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == '1'
+        # number of closed issues
+        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == '1'
+
+        self._environment_down()
 
     def test_plural_passages_in_summary(self):
-        pass
+        env = [
+            ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
+            ("GITHUB_REF_NAME", "branch"),
+            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+        ]
+        self._environment_up("plural", env_variables=env, disable_debug=True)
+
+        td.todoon(print_mode=False, silent=True)
+
+        # number of issues
+        assert os.environ["TODOON_ISSUES_GENERATED"] == '0'
+        # number of duplicate issues
+        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == '2'
+        # number of closed issues
+        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == '2'
+
+        self._environment_down()
 
 
 if __name__ == '__main__':
