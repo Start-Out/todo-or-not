@@ -745,6 +745,7 @@ def todoon(  # todoon
                             f"{LOCALIZE[get_region()]['info_duplicate_issue_avoided']}: {hit}",
                             file=sys.stderr,
                         )
+                        number_of_duplicate_issues_avoided += 1
 
                 #############################################
                 # If not in ISSUE mode, print hit to stderr

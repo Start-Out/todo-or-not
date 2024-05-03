@@ -265,6 +265,12 @@ class TestTodoon(unittest.TestCase):
 
         os.chdir(old_dir)
 
+    def test_singular_passages_in_summary(self):
+        pass
+
+    def test_plural_passages_in_summary(self):
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()
