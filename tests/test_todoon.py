@@ -23,10 +23,17 @@ class TestTodoon(unittest.TestCase):
         ]
 
     def _environment_up(self, resource_dir: str, env_variables: list[tuple[str, str]] or None = None, disable_debug: bool = False):
-        safe_dir = os.path.join("tests", "resources", resource_dir)
-        self.old_dir = os.getcwd()
-        os.chdir(safe_dir)
+        # Preserve state
+        with open(".todo-ignore", "r") as _before:
+            self.todoignore_before = _before.read()
 
+        safe_dir = os.path.join("tests", "resources", resource_dir) if resource_dir is not "." else None
+        self.old_dir = os.getcwd()
+
+        if safe_dir is not None:
+            os.chdir(safe_dir)
+
+        # Set environment variables
         self.active_env_variables = env_variables
 
         if self.active_env_variables is not None:
@@ -39,14 +46,19 @@ class TestTodoon(unittest.TestCase):
             os.environ["DEBUG"] = 'False'
 
     def _environment_down(self):
+        # Reset environment variables
         if self.active_env_variables is not None:
             for env_variable in self.active_env_variables:
                 key, _ = env_variable
 
                 del os.environ[key]
 
+        # Restore state
         os.environ["DEBUG"] = 'True'
         os.chdir(self.old_dir)
+
+        with open(".todo-ignore", "w+") as _after:
+            _after.write(self.todoignore_before)
 
     #######################################################################
 
@@ -109,15 +121,14 @@ class TestTodoon(unittest.TestCase):
         td.todoon(verbose=True, silent=True, fail_closed_duplicates=True)
 
     def test_todoon_runs_when_forced(self):
-        with open(".todo-ignore", "r") as _before:
-            before = _before.read()
+        self._environment_up(".")
 
         os.remove(".todo-ignore")
 
         td.todoon(verbose=True, silent=True, force=True)
 
-        with open(".todo-ignore", "x") as _after:
-            _after.write(before)
+        self._environment_down()
+
 
     def test_todoon_takes_individual_targets(self):
         td.todoon(verbose=True, silent=True, files=self.specific_files_list)
