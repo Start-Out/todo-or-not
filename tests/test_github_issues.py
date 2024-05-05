@@ -97,10 +97,12 @@ class TestDebugIssueFeatures(unittest.TestCase):
 
 class TestLiveIssueFeatures(unittest.TestCase):
     def setUp(self):
-        os.environ["GITHUB_REPOSITORY"] = "github/gitignore"
-        os.environ["GITHUB_REF_NAME"] = "branch"
-        os.environ["GITHUB_TRIGGERING_ACTOR"] = "pytest"
-        
+        self.default_env = [
+            ("GITHUB_REPOSITORY", "github/gitignore"),
+            ("GITHUB_REF_NAME", "branch"),
+            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+        ]
+
         self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues()
 
         self.example_hit_todo = todo_or_not.todo_check.Hit('tests\\resources\\example.txt', 6, ['todo'],
@@ -111,13 +113,68 @@ class TestLiveIssueFeatures(unittest.TestCase):
                                     '    a = 1 + 1\n', '    b = a * 2\n',
                                     '    print("Okay I\'m done!")\n'], 1)
 
+    def _environment_up(self, resource_dir: str, env_variables: list[tuple[str, str]] or None = None, disable_debug: bool = False):
+        # Preserve state
+        with open(".todo-ignore", "r") as _before:
+            self.todoignore_before = _before.read()
+
+        safe_dir = os.path.join("tests", "resources", resource_dir) if resource_dir is not "." else None
+        self.old_dir = os.getcwd()
+
+        if safe_dir is not None:
+            os.chdir(safe_dir)
+
+        # Set environment variables
+        self.active_env_variables = env_variables
+
+        if self.active_env_variables is not None:
+            for env_variable in self.active_env_variables:
+                key, value = env_variable
+
+                os.environ[key] = value
+
+        if disable_debug:
+            os.environ["DEBUG"] = 'False'
+
+    def _environment_down(self):
+        # Reset environment variables
+        if self.active_env_variables is not None:
+            for env_variable in self.active_env_variables:
+                key, _ = env_variable
+
+                del os.environ[key]
+
+        # Restore state
+        os.environ["DEBUG"] = 'True'
+        os.chdir(self.old_dir)
+
+        with open(".todo-ignore", "w+") as _after:
+            _after.write(self.todoignore_before)
+
     def test_bot_submitted_issues_collected(self):
-        assert len(self.bot_submitted_issues) == 0
+        self._environment_up(".", env_variables=self.default_env)
+
+        assert self.bot_submitted_issues is False
+
+        self._environment_down()
 
     def test_live_submit_test_issue(self):
+        self._environment_up(".", env_variables=self.default_env)
+
         response = self.example_hit_todo.generate_issue()
 
-        assert response is False
+        # If the function in test mode makes it all the way to where it would call
+        # the subprocesses, it returns true instead.
+        assert response is True
+
+        self._environment_down()
+
+    def test_hit_with_no_env(self):
+
+        test_hit = todo_or_not.todo_check.Hit('source.txt', 6, ['todo'], ["todo"], 0)
+        issue_outcome = test_hit.generate_issue()
+
+        assert issue_outcome is False
 
 
 def test_debug_submit_test_issue(example_hit_todo):
@@ -130,6 +187,7 @@ def test_live_submit_formatted_test_issue(example_hit_formatted_todo):
     response = example_hit_formatted_todo.generate_issue(_test=True)
 
     assert response is True
+
 
 
 if __name__ == '__main__':

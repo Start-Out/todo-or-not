@@ -216,7 +216,24 @@ class Hit:
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR", "$NONE")
             owner, repo = os.environ.get("GITHUB_REPOSITORY", "$NONE/$NONE").split("/")
 
-        # Find missing env
+            # Find missing env variables
+            missing_envs = []
+
+            if github_ref is "$NONE":
+                print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REF_NAME", file=sys.stderr)
+                missing_envs.append("GITHUB_REF_NAME")
+            if triggered_by is "$NONE":
+                print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_TRIGGERING_ACTOR", file=sys.stderr)
+                missing_envs.append("GITHUB_TRIGGERING_ACTOR")
+            if owner is "$NONE":
+                print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr)
+                missing_envs.append("GITHUB_REPOSITORY")
+            if repo is "$NONE":
+                print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr)
+                missing_envs.append("GITHUB_REPOSITORY")
+
+            if len(missing_envs) > 0:
+                return False
 
         reference_file = self.source_file.split(":")[0]
 
