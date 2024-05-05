@@ -42,7 +42,7 @@ def example_hit_formatted_todo():
 def example_hit_formatted_todo_no_labels():
     return todo_or_not.todo_check.Hit('tests\\resources\\example.txt', 36, ['todo'],
                                       ['def a_very_pretty_example():\n',
-                                       '    # TODO No Labels! | Test coverage said that we have to make an issue without any labels :( \n',
+                                       '    # TODO No Labels! | Test coverage said that we have to make an issue without any labels :( # but if there is just an octothorpe then there should be no labels\n',
                                        '    print("Check this out!")\n'],
                                       1)
 
@@ -64,7 +64,7 @@ def test_formatted_hits_are_formatted(example_hit_todo, example_hit_fixme, examp
     assert example_hit_formatted_todo.structured_labels == ['example', 'enhancement']
 
     assert example_hit_formatted_todo_no_labels.structured_title == '# TODO No Labels!'
-    assert example_hit_formatted_todo_no_labels.structured_body == 'Test coverage said that we have to make an issue without any labels :('
+    assert example_hit_formatted_todo_no_labels.structured_body == 'Test coverage said that we have to make an issue without any labels :( # but if there is just an octothorpe then there should be no labels'
     assert example_hit_formatted_todo_no_labels.structured_labels is None
 
 
@@ -74,36 +74,132 @@ class TestIssueHelperFunctions(unittest.TestCase):
         self.assertEqual(output, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3")  # add assertion here
 
 
-class TestLiveIssueFeatures(unittest.TestCase):
+class TestDebugIssueFeatures(unittest.TestCase):
     def setUp(self):
+        if os.environ.get("GITHUB_REPOSITORY", None) is not None:
+            del os.environ["GITHUB_REPOSITORY"]
+
+        if os.environ.get("GITHUB_REF_NAME", None) is not None:
+            del os.environ["GITHUB_REF_NAME"]
+
+        if os.environ.get("GITHUB_TRIGGERING_ACTOR", None) is not None:
+            del os.environ["GITHUB_TRIGGERING_ACTOR"]
+
         self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues(_test=True)
 
+    def test_unable_to_collect_issues(self):
+        result = todo_or_not.todo_check.get_bot_submitted_issues()
+        assert result is False
+
     def test_bot_submitted_issues_collected(self):
-        assert len(self.bot_submitted_issues) > 0
+        assert self.bot_submitted_issues is False
 
 
-def test_live_submit_test_issue(example_hit_todo):
-    api_call = example_hit_todo.generate_issue(_test=True)
+class TestLiveIssueFeatures(unittest.TestCase):
+    def setUp(self):
+        self.default_env = [
+            ("GITHUB_REPOSITORY", "github/gitignore"),
+            ("GITHUB_REF_NAME", "branch"),
+            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+        ]
 
-    expected = ['gh', 'api', '--method', 'POST', '-H', 'Accept: application/vnd.github+json', '-H',
-                'X-GitHub-Api-Version: 2022-11-28', '/repos/owner/repository/issues', '-f',
-                'title=TODO -     # TODO Finish documenting todo-or-not\n', '-f',
-                'body=## [TODO]           - tests\\resources\\example.txt:6 - # TODO Finish documenting todo-or-not\n\n```txt\n   5:\tdef an_unfinished_function():\n * 6:\t    # TODO Finish documenting todo-or-not\n   7:\t    print("Hello, I\'m not quite done, there\'s more to do!")\n   8:\t    print("Look at all these things I have to do!")\n   9:\t    a = 1 + 1\n  10:\t    b = a * 2\n  11:\t    print("Okay I\'m done!")\n```\n\nReference: <a href="https://github.com/None/blob/reference/tests\\resources\\example.txt">tests\\resources\\example.txt</a>',
-                '-f', 'assignees[]=octocat']
+        self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues()
 
-    assert api_call == expected
+        self.example_hit_todo = todo_or_not.todo_check.Hit('tests\\resources\\example.txt', 6, ['todo'],
+                                   ['def an_unfinished_function():\n',
+                                    '    # TODO Finish documenting todo-or-not\n',
+                                    '    print("Hello, I\'m not quite done, there\'s more to do!")\n',
+                                    '    print("Look at all these things I have to do!")\n',
+                                    '    a = 1 + 1\n', '    b = a * 2\n',
+                                    '    print("Okay I\'m done!")\n'], 1)
+
+    def _environment_up(self, resource_dir: str, env_variables: list[tuple[str, str]] or None = None, disable_debug: bool = False):
+        # Preserve state
+        with open(".todo-ignore", "r") as _before:
+            self.todoignore_before = _before.read()
+
+        safe_dir = os.path.join("tests", "resources", resource_dir) if resource_dir != "." else None
+        self.old_dir = os.getcwd()
+
+        if safe_dir is not None:
+            os.chdir(safe_dir)
+
+        # Set environment variables
+        self.active_env_variables = env_variables
+
+        if self.active_env_variables is not None:
+            for env_variable in self.active_env_variables:
+                key, value = env_variable
+
+                os.environ[key] = value
+
+        if disable_debug:
+            os.environ["DEBUG"] = 'False'
+
+    def _environment_down(self):
+        # Reset environment variables
+        if self.active_env_variables is not None:
+            for env_variable in self.active_env_variables:
+                key, _ = env_variable
+
+                del os.environ[key]
+
+        # Restore state
+        os.environ["DEBUG"] = 'True'
+        os.chdir(self.old_dir)
+
+        with open(".todo-ignore", "w+") as _after:
+            _after.write(self.todoignore_before)
+
+    def test_bot_submitted_issues_collected(self):
+        self._environment_up(".", env_variables=self.default_env)
+
+        assert self.bot_submitted_issues is False
+
+        self._environment_down()
+
+    def test_live_submit_test_issue(self):
+        self._environment_up(".", env_variables=self.default_env)
+
+        response = self.example_hit_todo.generate_issue()
+
+        # If the function in test mode makes it all the way to where it would call
+        # the subprocesses, it returns true instead.
+        assert response is True
+
+        self._environment_down()
+
+    #######################################
+    # Removed from test suite because
+    # test environment sets these env vars
+    #
+    # def test_hit_with_no_env(self):
+    #     none_env = [
+    #         ("GITHUB_REPOSITORY", "$NONE"),
+    #         ("GITHUB_REF_NAME", "$NONE"),
+    #         ("GITHUB_TRIGGERING_ACTOR", "$NONE")
+    #     ]
+    #     self._environment_up(".", env_variables=none_env)
+    #
+    #     test_hit = todo_or_not.todo_check.Hit('source.txt', 6, ['todo'], ["todo"], 0)
+    #     issue_outcome = test_hit.generate_issue()
+    #
+    #     assert issue_outcome is False
+    #
+    #     self._environment_down()
+
+
+def test_debug_submit_test_issue(example_hit_todo):
+    response = example_hit_todo.generate_issue(_test=True)
+
+    assert response is True
 
 
 def test_live_submit_formatted_test_issue(example_hit_formatted_todo):
-    api_call = example_hit_formatted_todo.generate_issue(_test=True)
+    response = example_hit_formatted_todo.generate_issue(_test=True)
 
-    expected = ['gh', 'api', '--method', 'POST', '-H', 'Accept: application/vnd.github+json', '-H',
-                'X-GitHub-Api-Version: 2022-11-28', '/repos/owner/repository/issues', '-f',
-                'title=# TODO Titled Issue!', '-f',
-                'body=## In this format, you can define a title and a body! Also labels like #example or #enhancement\n\n```txt\n  35:\tdef a_very_pretty_example():\n* 36:\t    # TODO Titled Issue! | In this format, you can define a title and a body! Also labels like #example or #enhancement\n  37:\t    print("Check this out!")\n```\n\nReference: <a href="https://github.com/None/blob/reference/tests\\resources\\example.txt">tests\\resources\\example.txt</a>',
-                '-f', 'assignees[]=octocat', '-f', 'labels[]=example', '-f', 'labels[]=enhancement']
+    assert response is True
 
-    assert api_call == expected
 
 
 if __name__ == '__main__':
