@@ -118,7 +118,7 @@ class TestLiveIssueFeatures(unittest.TestCase):
         with open(".todo-ignore", "r") as _before:
             self.todoignore_before = _before.read()
 
-        safe_dir = os.path.join("tests", "resources", resource_dir) if resource_dir is not "." else None
+        safe_dir = os.path.join("tests", "resources", resource_dir) if resource_dir != "." else None
         self.old_dir = os.getcwd()
 
         if safe_dir is not None:

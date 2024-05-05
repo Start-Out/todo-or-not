@@ -219,16 +219,16 @@ class Hit:
             # Find missing env variables
             missing_envs = []
 
-            if github_ref is "$NONE":
+            if github_ref == "$NONE":
                 print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REF_NAME", file=sys.stderr)
                 missing_envs.append("GITHUB_REF_NAME")
-            if triggered_by is "$NONE":
+            if triggered_by == "$NONE":
                 print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_TRIGGERING_ACTOR", file=sys.stderr)
                 missing_envs.append("GITHUB_TRIGGERING_ACTOR")
-            if owner is "$NONE":
+            if owner == "$NONE":
                 print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr)
                 missing_envs.append("GITHUB_REPOSITORY")
-            if repo is "$NONE":
+            if repo == "$NONE":
                 print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr)
                 missing_envs.append("GITHUB_REPOSITORY")
 
