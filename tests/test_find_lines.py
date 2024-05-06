@@ -23,12 +23,12 @@ class TestFindLines(unittest.TestCase):
             hits_repr_list.append((hit.__repr__(), hit))
         hits_repr_list.sort()
 
-        assert len(hits) == 3
+        assert len(hits) == 4
 
         # Test Hit contents
-        hit_0 = hits_repr_list[0][1]
-        hit_1 = hits_repr_list[1][1]
-        hit_2 = hits_repr_list[2][1]
+        hit_0 = hits_repr_list[1][1]  # structured
+        hit_1 = hits_repr_list[2][1]  # fixme
+        hit_2 = hits_repr_list[3][1]  # todo finish documenting
 
         assert hit_0.found_keys == ['todo']
         assert len(hit_0.pertinent_lines) == 3

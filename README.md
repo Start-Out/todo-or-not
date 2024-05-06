@@ -1,6 +1,6 @@
 [![image.png](https://i.postimg.cc/0yC7LPx6/image.png)](https://postimg.cc/75fCzv5D)
 
-![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not)
+![PyPI - Version](https://img.shields.io/pypi/v/todo-or-not?color=green)
 [![Coverage Status](https://coveralls.io/repos/github/Start-Out/todo-or-not/badge.svg?branch=dev/staging&kill_cache=1)](https://coveralls.io/github/Start-Out/todo-or-not?branch=dev/staging&kill_cache=1)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/todo-or-not)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -21,9 +21,11 @@
 
 > TODO or not to do, that is the question
 
-TODO Or Not (todoon) is, in essence, a simple tool that checks your project for TODO's and FIXME's. You can also
-integrate this tool into your GitHub workflow via actions, and automate generating issues from the discovered TODO's and
-FIXME's.
+TODO Or Not (todoon) is, in essence, a simple tool that checks your project for TODOs and FIXMEs and lets you know where they are. 
+
+You can also integrate this tool into your GitHub workflow via actions, and automate generating issues from the discovered TODOs and
+FIXMEs. These generated issues will include a link to the file in GitHub as well as the surrounding lines. [Check out the wiki](wiki/Commands-‐-todoon#issues) for 
+more details on the GitHub Issues integration!
 
 [Try it out! (see on PyPi)](https://pypi.org/project/todo-or-not/)
 

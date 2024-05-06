@@ -1,7 +1,3 @@
-##########################
-# Example usage of # todoon
-##########################
-
 def an_unfinished_function():
     # TODO Finish documenting todo-or-not
     print("Hello, I'm not quite done, there's more to do!")
@@ -9,6 +5,11 @@ def an_unfinished_function():
     a = 1 + 1
     b = a * 2
     print("Okay I'm done!")
+
+
+def a_very_pretty_example():
+    # TODO Titled Issue! | In this format, you can define a title and a body! Also labels like #example or #enhancement
+    print("Check this out!")
 
 
 def a_broken_function():
@@ -25,16 +26,6 @@ def a_broken_function():
     # Notice that this line will be collected
 
     # But this one won't, because there's some whitespace between it and the trigger!
-
-
-def a_skipping_example():
-    # Since the line below has `# todoon` in it, the checker will give it a pass even though it has the magic words!
-    print("Sometimes you really have to write TODO or FIXME, like this!")  # todoon
-
-
-def a_very_pretty_example():
-    # TODO Titled Issue! | In this format, you can define a title and a body! Also labels like #example or #enhancement
-    print("Check this out!")
 
 
 def a_closed_example():
