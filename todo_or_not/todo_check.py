@@ -407,7 +407,6 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict] or bool:
             owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
     except AttributeError as e:
         print(
-            # TODO Localization "error_no_env" | en_us: "ERROR: Missing required environment variable" #localization
             f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr
         )
 
@@ -655,7 +654,6 @@ def todoon(  # todoon
     if print_mode:
         if fail_closed_duplicates:
             print(
-                # TODO Localization "warning_nonissue_mode_closed_duplicate_used | en_us: "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode" #localization
                 f"{LOCALIZE[get_region()]['warning_nonissue_mode_closed_duplicate_used']}", file=sys.stderr
             )
 
@@ -675,7 +673,6 @@ def todoon(  # todoon
                 existing_issues_hashed[_hash(issue["title"])] = issue["state"]
         else:
             print(
-                # TODO Localization "error_gh_issues_read_failed" | en_us: "ERROR: to-doon failed to read from GitHub issues" #localization
                 f"{LOCALIZE[get_region()]['error_gh_issues_read_failed']}", file=sys.stderr
             )
 
@@ -739,7 +736,6 @@ def todoon(  # todoon
                                 number_of_issues += 1
                             else:
                                 print(
-                                # TODO Localization "error_gh_issues_create_failed" | en_us: "ERROR: to-doon failed to create a new GitHub issue" #localization
                                     f"{LOCALIZE[get_region()]['error_gh_issues_create_failed']}", file=sys.stderr
                                 )
 
@@ -754,7 +750,6 @@ def todoon(  # todoon
                     # If this title exists AND is closed, potentially fail the check
                     elif existing_issues_hashed[_this_hit_hashed] == "closed":
                         print(
-                        # TODO Localization "warning_duplicate_closed_issue" | en_us: "WARNING: Found an issue that has already been closed" #localization
                             f"{LOCALIZE[get_region()]['warning_duplicate_closed_issue']}: {hit}", file=sys.stderr
                         )
                         number_of_closed_issues += 1
@@ -823,11 +818,9 @@ def todoon(  # todoon
 
         # Total number of duplicate closed issues
         if number_of_closed_issues > 1:
-            # TODO Localization "summary_duplicate_closed_issues_plural" | en_us: "Previously closed issues detected" #localization
             summary += (f"# {number_of_closed_issues} "
                         f"{LOCALIZE[get_region()]['summary_duplicate_closed_issues_plural']}\n")
         elif number_of_closed_issues == 1:
-            # TODO Localization "summary_duplicate_closed_issues_singular" | en_us: "Previously closed issue detected" #localization
             summary += (f"# {number_of_closed_issues} "
                         f"{LOCALIZE[get_region()]['summary_duplicate_closed_issues_singular']}\n")
 
@@ -835,11 +828,9 @@ def todoon(  # todoon
 
     # Fail reasons
     if number_of_hits > 0 and not silent:
-        # TODO Localization "summary_fail_issues_no_silent" | en_us: "* FAIL: New issues detected" #localization
         summary += (f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n")
 
     if number_of_closed_issues > 0 and fail_closed_duplicates:
-        # TODO Localization "summary_fail_duplicate_closed_issues" | en_us: "* FAIL: Closed duplicate issues detected" #localization
         summary += (f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
 
 
