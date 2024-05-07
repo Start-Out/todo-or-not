@@ -11,15 +11,17 @@ from typer import Option, run
 from typing import List, Optional, TextIO
 from typing_extensions import Annotated
 
+import todo_or_not  # todoon
 from todo_or_not.localize import LOCALIZE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
+
 
 todoon_app = typer.Typer(name="todoon")  # todoon
 
 
 def version_callback():
-    print("todoon version 00.10.15")  # todoon
+    print(f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})")  # todoon
     raise typer.Exit()
 
 
