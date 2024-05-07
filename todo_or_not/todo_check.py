@@ -25,7 +25,7 @@ def version_callback(value: bool):
 @todoon_app.callback()
 def main(version: bool = typer.Option("--version", callback=version_callback, is_flag=True, help="Show the application version.")):
     if version:
-        print("todoon version 00.10.15")
+        print("todoon version is 00.10.15")
         raise typer.Exit()
 
 def get_project_dir():
