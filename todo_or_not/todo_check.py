@@ -24,12 +24,6 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 
-@todoon_app.callback()
-def main(version: bool = typer.Option("--version", callback=version_callback, is_flag=True,
-                                      help="Show the application version.")):
-    version_callback(version)
-
-
 def get_project_dir():
     return os.getcwd()
 
@@ -479,6 +473,12 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
         break
 
     return _use_encoding
+
+
+@todoon_app.callback()
+def main(version: bool = typer.Option("--version", callback=version_callback, is_flag=True,
+                                      help="Show the application version.")):
+    version_callback(version)
 
 
 # fmt: off
