@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CMD todoon" type="PythonConfigurationType" factoryName="Python">
+  <configuration default="false" name="CMD todoon" type="PythonConfigurationType" factoryName="Python" editBeforeRun="true">
     <module name="todo-or-not" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
