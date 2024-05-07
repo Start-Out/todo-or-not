@@ -22,7 +22,7 @@ todoon_app = typer.Typer(name="todoon")  # todoon
 
 def version_callback():
     print(f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})")  # todoon
-    raise typer.Exit()
+    exit(0)
 
 
 def get_project_dir():
