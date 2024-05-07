@@ -18,10 +18,9 @@ from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 todoon_app = typer.Typer(name="todoon")  # todoon
 
 
-def version_callback(value: bool):
-    if value:
-        print("todoon version 00.10.15")
-        raise typer.Exit()
+def version_callback():
+    print("todoon version 00.10.15")  # todoon
+    raise typer.Exit()
 
 
 def get_project_dir():
@@ -475,12 +474,6 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
     return _use_encoding
 
 
-@todoon_app.callback()
-def main(version: bool = typer.Option("--version/", "-v/", callback=version_callback, is_flag=True,
-                                      help="Show the application version.")):
-    version_callback(version)
-
-
 # fmt: off
 @todoon_app.command(  # todoon
     help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or other development operations.")  # todoon
@@ -504,18 +497,19 @@ def todoon(  # todoon
         fail_closed_duplicates: Annotated[
             bool,
             typer.Option("--closed-duplicates-fail/", "-c/",
-                         help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
-        # todoon
+                         help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,  # todoon
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
-                         help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,
-        # todoon
+                         help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,  # todoon
         verbose: Annotated[
             bool,
-            typer.Option("--verbose/", "-v/",
-                         help="If specified, todoon will not to print lengthy or numerous messages"  # todoon
-                              " (like each encoding failure)")] = False,
+            typer.Option("--verbose/", "-V/",
+                         help="If specified, todoon will not to print lengthy or numerous messages (like each encoding failure)")] = False,  # todoon
+        version: Annotated[
+            bool,
+            typer.Option("--version/", "-v/",
+                         help="Show the application version and exit.")] = False
 ):
     # fmt: on
     targets = []
@@ -526,6 +520,9 @@ def todoon(  # todoon
 
     if files is not None and len(files) > 0:
         use_specified_files = True
+
+    if version:
+        version_callback()
 
     #############################################
     # Handle settings
