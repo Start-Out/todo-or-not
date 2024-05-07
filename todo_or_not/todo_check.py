@@ -15,9 +15,18 @@ from todo_or_not.localize import LOCALIZE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 
-
 todoon_app = typer.Typer(name="todoon")  # todoon
 
+def version_callback(value: bool):
+    if value:
+        print("todoon version 00.10.15")
+        raise typer.Exit()
+
+@todoon_app.callback()
+def main(version: bool = typer.Option("--version", callback=version_callback, is_flag=True, help="Show the application version.")):
+    if version:
+        print("todoon version 00.10.15")
+        raise typer.Exit()
 
 def get_project_dir():
     return os.getcwd()
