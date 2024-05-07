@@ -286,6 +286,10 @@ class TestTodoon(unittest.TestCase):
 
         self._environment_down()
 
+    def test_todoon_version_print(self):
+        with self.assertRaises(SystemExit) as context:
+            td.todoon(silent=True, version=True)
+
 
 if __name__ == '__main__':
     unittest.main()
