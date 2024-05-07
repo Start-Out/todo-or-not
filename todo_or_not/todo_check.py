@@ -17,16 +17,18 @@ from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 
 todoon_app = typer.Typer(name="todoon")  # todoon
 
+
 def version_callback(value: bool):
     if value:
         print("todoon version 00.10.15")
         raise typer.Exit()
 
+
 @todoon_app.callback()
-def main(version: bool = typer.Option("--version", callback=version_callback, is_flag=True, help="Show the application version.")):
-    if version:
-        print("todoon version is 00.10.15")
-        raise typer.Exit()
+def main(version: bool = typer.Option("--version", callback=version_callback, is_flag=True,
+                                      help="Show the application version.")):
+    version_callback(version)
+
 
 def get_project_dir():
     return os.getcwd()
@@ -492,28 +494,30 @@ def todoon(  # todoon
         print_mode: Annotated[
             bool,
             typer.Option("--print/--issue", "-p/-i",
-                help="Whether to print the discovered TODOs and FIXMEs to stderr or to try"  # todoon
-                     " an generate GitHub issues")] = True,
+                         help="Whether to print the discovered TODOs and FIXMEs to stderr or to try"  # todoon
+                              " an generate GitHub issues")] = True,
         silent: Annotated[
             bool,
             typer.Option("--silent/", "-s/",
-                help="If specified, todoon will not exit with an error code even when TODOs and/or "  # todoon
-                     "FIXMEs are detected")] = False,  # todoon
+                         help="If specified, todoon will not exit with an error code even when TODOs and/or "  # todoon
+                              "FIXMEs are detected")] = False,  # todoon
         fail_closed_duplicates: Annotated[
             bool,
             typer.Option("--closed-duplicates-fail/", "-c/",
-                help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,  # todoon
+                         help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
+        # todoon
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
-                help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,  # todoon
+                         help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,
+        # todoon
         verbose: Annotated[
             bool,
             typer.Option("--verbose/", "-v/",
-                help="If specified, todoon will not to print lengthy or numerous messages"  # todoon
-                     " (like each encoding failure)")] = False,
+                         help="If specified, todoon will not to print lengthy or numerous messages"  # todoon
+                              " (like each encoding failure)")] = False,
 ):
-# fmt: on
+    # fmt: on
     targets = []
     ignored_files = []
     ignored_dirs = []
@@ -842,7 +846,6 @@ def todoon(  # todoon
     if number_of_closed_issues > 0 and fail_closed_duplicates:
         summary += (f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
 
-
     os.environ["TODOON_STATUS"] = "finished"  # todoon
     os.environ["TODOON_PROGRESS"] = "100.0"  # todoon
     os.environ["TODOON_FILES_SCANNED"] = str(number_of_files_scanned)  # todoon
@@ -867,6 +870,7 @@ def todoon(  # todoon
     if number_of_closed_issues > 0 and fail_closed_duplicates:
         exit(1)
 
+
 # fmt: off
 @todoon_app.command(help="Small utility for generating a .todo-ignore file")  # todoon
 def todo_ignore_util(  # todoon
@@ -878,11 +882,11 @@ def todo_ignore_util(  # todoon
         create_mode: Annotated[
             bool,
             typer.Option("--create/--update", "-c/-u",
-                help="Whether to create a new .todo-ignore file or update an existing one")] = True,  # todoon
+                         help="Whether to create a new .todo-ignore file or update an existing one")] = True,  # todoon
         source_is_text: Annotated[bool, typer.Option("--source-text/--source-paths", "-t/-p",
                                                      help="Whether to treat SOURCES as text or as file paths.")] = True
 ):
-#fmt: on
+    # fmt: on
     todoignore_path = os.path.join(os.getcwd(), ".todo-ignore")  # todoon
     output = []
 
