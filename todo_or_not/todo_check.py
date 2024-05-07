@@ -476,7 +476,7 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
 
 
 @todoon_app.callback()
-def main(version: bool = typer.Option("--version", callback=version_callback, is_flag=True,
+def main(version: bool = typer.Option("--version/", "-v/", callback=version_callback, is_flag=True,
                                       help="Show the application version.")):
     version_callback(version)
 
