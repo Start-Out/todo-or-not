@@ -19,8 +19,10 @@ if __name__ == "__main__":
     if len(args) == 1:
         if args[0] == '-a':
             major += 1
+            minor = patch = 0
         if args[0] == '-i':
             minor += 1
+            patch = 0
         if args[0] == '-p':
             patch += 1
     else:
