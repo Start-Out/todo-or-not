@@ -34,8 +34,8 @@ def print_wrap(
 def version_callback(log_level=LOG_LEVEL_NORMAL):
     print_wrap(
         log_level=log_level,
-        msg=f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})",
-    )  # todoon
+        msg=f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})",  # todoon
+    )
     exit(0)
 
 
@@ -100,7 +100,7 @@ def get_os(log_level=LOG_LEVEL_NORMAL):
     if _os not in LOCALIZE:
         print_wrap(
             log_level=log_level,
-            msg=f"{LOCALIZE[get_region()]["warning_using_default_os"]} _os",
+            msg=f"{LOCALIZE[get_region()]['warning_using_default_os']} _os",
             file=sys.stderr,
         )
         _os = "default"
@@ -329,7 +329,7 @@ def _hash(hit_str: str):
 
 
 def find_lines(
-        filename: str, verbose: bool, ignore_flag: str, ignore_keys: list
+        filename: str, verbose: bool, ignore_flag: str, ignore_keys: list, log_level=LOG_LEVEL_NORMAL
 ) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
@@ -337,6 +337,7 @@ def find_lines(
     :param ignore_flag: The flag which, when detected on a triggering line, will ignore that line
     :param filename: File to open() read-only
     :param ignore_keys: Keys to check each line for
+    :param log_level: The importance of any feedback prints (e.g. 0=NONE, 3=VERBOSE)
     :return:
      | List of lines of text and their line number that contain at least one key and the keys each contains
      | The detected encoding of the file or none if not found
@@ -404,16 +405,16 @@ def find_lines(
                     output.append(_hit)
 
     else:
-        # print_wrap(log_level=log_level,
-        #            msg_level=LEVEL_VERBOSE,
-        #            msg=f"{LOCALIZE[get_region()]["warning_encoding_not_supported"]} \n * {filename}")
-        if verbose:
-            print(
-                LOCALIZE[get_region()]["warning_encoding_not_supported"],
-                "\n * ",
-                filename,
-                file=sys.stderr,
-            )
+        print_wrap(log_level=log_level,
+                   msg_level=LOG_LEVEL_VERBOSE,
+                   msg=f"{LOCALIZE[get_region()]["warning_encoding_not_supported"]} \n * {filename}")
+        # if verbose:
+        #     print(
+        #         LOCALIZE[get_region()]["warning_encoding_not_supported"],
+        #         "\n * ",
+        #         filename,
+        #         file=sys.stderr,
+        #     )
 
     return output, use_encoding
 
@@ -524,8 +525,8 @@ def get_encoding(
 
 # fmt: off
 @todoon_app.command(  # todoon
-    help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or "
-         "other development operations")  # todoon
+    help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or "  # todoon
+         "other development operations")
 def todoon(  # todoon
         files: Annotated[
             Optional[List[str]],
@@ -542,7 +543,7 @@ def todoon(  # todoon
             bool,
             typer.Option("--silent/", "-s/",
                          help="(No fail) If specified, todoon will not exit with an error code even "  # todoon
-                              "when TODOs and/or FIXMEs are detected")] = False,
+                              "when TODOs and/or FIXMEs are detected")] = False,  # todoon
         fail_closed_duplicates: Annotated[
             bool,
             typer.Option("--closed-duplicates-fail/", "-c/",
@@ -796,7 +797,7 @@ def todoon(  # todoon
         os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))  # todoon
 
         # Generate the hits for each target collected
-        hits, _enc = find_lines(target, verbose, "# todoon", ["todo", "fixme"])
+        hits, _enc = find_lines(target, verbose, "# todoon", ["todo", "fixme"], log_level=log_level)
 
         if _enc is None:
             number_of_encoding_failures += 1
