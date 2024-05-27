@@ -507,21 +507,21 @@ def todoon(  # todoon
             bool,
             typer.Option("--print/--issue", "-p/-i",
                          help="Whether to print the discovered TODOs and FIXMEs to stderr or to try"  # todoon
-                              " an generate GitHub issues")] = True,
+                              " generating GitHub issues")] = True,
         silent: Annotated[
             bool,
             typer.Option("--silent/", "-s/",
-                         help="If specified, todoon will not exit with an error code even when TODOs and/or "  # todoon
+                         help="(No fail) If specified, todoon will not exit with an error code even when TODOs and/or "  # todoon
                               "FIXMEs are detected")] = False,  # todoon
         fail_closed_duplicates: Annotated[
             bool,
             typer.Option("--closed-duplicates-fail/", "-c/",
-                         help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
+                         help="If specified, todoon will exit with error code if duplicate GitHub issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
         # todoon
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
-                         help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,
+                         help="(NOT RECOMMENDED) If specified, no .todo-ignore file will be used.")] = False,
         # todoon
         verbose: Annotated[
             bool,
