@@ -1,14 +1,14 @@
 import glob
-import os
-import json
 import hashlib
+import json
+import os
 import subprocess
 import sys
-
-from pathlib import Path
-import typer
-from typer import Option, run
 from typing import List, Optional, TextIO
+
+import typer
+from tqdm import tqdm
+from typer import run
 from typing_extensions import Annotated
 
 import todo_or_not  # todoon
@@ -16,12 +16,26 @@ from todo_or_not.localize import LOCALIZE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 
-
 todoon_app = typer.Typer(name="todoon")  # todoon
 
+LOG_LEVEL_NONE = 0
+LOG_LEVEL_SUMMARY_ONLY = 1
+LOG_LEVEL_NORMAL = 2
+LOG_LEVEL_VERBOSE = 3
 
-def version_callback():
-    print(f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})")  # todoon
+
+def print_wrap(
+        msg: str, msg_level=LOG_LEVEL_NORMAL, log_level=LOG_LEVEL_NORMAL, file=sys.stdout
+):
+    if msg_level <= log_level:
+        print(msg, file=file)
+
+
+def version_callback(log_level=LOG_LEVEL_NORMAL):
+    print_wrap(
+        log_level=log_level,
+        msg=f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})",  # todoon
+    )
     exit(0)
 
 
@@ -46,7 +60,7 @@ def get_max_issues():
 
     try:
         max_issues = int(_max_issues)
-    except:
+    except ValueError:
         max_issues = 8
 
     return max_issues
@@ -57,20 +71,20 @@ def get_pertinent_line_limit():
 
     try:
         pertinent_line_limit = int(_pertinent_line_limit)
-    except:
+    except ValueError:
         pertinent_line_limit = 8
 
     return pertinent_line_limit
 
 
-def get_region():
+def get_region(log_level=LOG_LEVEL_NORMAL):
     region = os.environ.get("REGION", "en_us")
 
     # Validate that we support the region, otherwise default to something we have
     if region not in LOCALIZE:
-        print(
-            LOCALIZE["en_us"]["warning_using_default_region"],
-            region,
+        print_wrap(
+            log_level=log_level,
+            msg=f"{LOCALIZE['en_us']['warning_using_default_region']} region",
             file=sys.stderr,
         )
         region = "en_us"
@@ -78,15 +92,15 @@ def get_region():
     return region
 
 
-def get_os():
+def get_os(log_level=LOG_LEVEL_NORMAL):
     _os = os.environ.get("OS", "default")
     _os = _os.lower()
 
     # Validate that we support the region, otherwise default to something we have
     if _os not in LOCALIZE:
-        print(
-            LOCALIZE[get_region()]["warning_using_default_os"],
-            _os,
+        print_wrap(
+            log_level=log_level,
+            msg=f"{LOCALIZE[get_region()]['warning_using_default_os']} _os",
             file=sys.stderr,
         )
         _os = "default"
@@ -207,7 +221,9 @@ class Hit:
     def generic_title(self):
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
-    def generate_issue(self, _test: bool = False) -> str or bool:
+    def generate_issue(
+            self, _test: bool = False, log_level=LOG_LEVEL_NORMAL
+    ) -> str or bool:
 
         repo_uri = f"https://github.com/None"
 
@@ -226,16 +242,32 @@ class Hit:
             missing_envs = []
 
             if github_ref == "$NONE":
-                print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REF_NAME", file=sys.stderr)
+                print_wrap(
+                    log_level=log_level,
+                    msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REF_NAME",
+                    file=sys.stderr,
+                )
                 missing_envs.append("GITHUB_REF_NAME")
             if triggered_by == "$NONE":
-                print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_TRIGGERING_ACTOR", file=sys.stderr)
+                print_wrap(
+                    log_level=log_level,
+                    msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_TRIGGERING_ACTOR",
+                    file=sys.stderr,
+                )
                 missing_envs.append("GITHUB_TRIGGERING_ACTOR")
             if owner == "$NONE":
-                print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr)
+                print_wrap(
+                    log_level=log_level,
+                    msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY",
+                    file=sys.stderr,
+                )
                 missing_envs.append("GITHUB_REPOSITORY")
             if repo == "$NONE":
-                print(f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr)
+                print_wrap(
+                    log_level=log_level,
+                    msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY",
+                    file=sys.stderr,
+                )
                 missing_envs.append("GITHUB_REPOSITORY")
 
             if len(missing_envs) > 0:
@@ -281,11 +313,11 @@ class Hit:
             try:
                 _output = subprocess.check_output(api_call)
             except subprocess.CalledProcessError as e:
-                print(e, file=sys.stderr)
+                print_wrap(log_level=log_level, msg=str(e), file=sys.stderr)
                 _output = False
         else:
             _output = True
-            print(api_call)
+            print_wrap(log_level=log_level, msg=str(api_call))
 
         return _output
 
@@ -297,14 +329,15 @@ def _hash(hit_str: str):
 
 
 def find_lines(
-        filename: str, verbose: bool, ignore_flag: str, *args
+        filename: str, verbose: bool, ignore_flag: str, ignore_keys: list, log_level=LOG_LEVEL_NORMAL
 ) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
     :param verbose: Print lengthy feedback which includes (encoding failures)
     :param ignore_flag: The flag which, when detected on a triggering line, will ignore that line
     :param filename: File to open() read-only
-    :param args: Keys to check each line for
+    :param ignore_keys: Keys to check each line for
+    :param log_level: The importance of any feedback prints (e.g. 0=NONE, 3=VERBOSE)
     :return:
      | List of lines of text and their line number that contain at least one key and the keys each contains
      | The detected encoding of the file or none if not found
@@ -328,7 +361,7 @@ def find_lines(
                 # Collect the found keys and their associated info
                 _found_keys = []
 
-                for key in args:
+                for key in ignore_keys:
                     if key.lower() in _line.lower():
                         _found_keys.append(key)
 
@@ -338,7 +371,9 @@ def find_lines(
 
                     # Look at lines before the pertinent line
                     _i = line_number - 1
-                    while abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0:
+                    while (
+                            abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0
+                    ):
                         _i -= 1
                         if len(lines[_i].strip()) > 0:
                             _pertinent_lines.insert(0, lines[_i])
@@ -370,13 +405,9 @@ def find_lines(
                     output.append(_hit)
 
     else:
-        if verbose:
-            print(
-                LOCALIZE[get_region()]["warning_encoding_not_supported"],
-                "\n * ",
-                filename,
-                file=sys.stderr,
-            )
+        print_wrap(log_level=log_level,
+                   msg_level=LOG_LEVEL_VERBOSE,
+                   msg=f"{LOCALIZE[get_region()]['warning_encoding_not_supported']} \n * {filename}")
 
     return output, use_encoding
 
@@ -400,7 +431,9 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     target_file.write("\n")
 
 
-def get_bot_submitted_issues(_test: bool = False) -> list[dict] or bool:
+def get_bot_submitted_issues(
+        _test: bool = False, log_level=LOG_LEVEL_NORMAL
+) -> list[dict] or bool:
     """
     Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a # todoon
     list of dicts
@@ -411,9 +444,11 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict] or bool:
     try:
         if not (get_is_debug() or _test):
             owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
-    except AttributeError as e:
-        print(
-            f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr
+    except AttributeError as _:
+        print_wrap(
+            log_level=log_level,
+            msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY",
+            file=sys.stderr,
         )
 
     query = [
@@ -430,7 +465,7 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict] or bool:
         try:
             response = subprocess.check_output(query)
         except subprocess.CalledProcessError as e:
-            print(e, file=sys.stderr)
+            print_wrap(log_level=log_level, msg=str(e), file=sys.stderr)
             return False
 
         _str = response.decode("utf-8")
@@ -438,21 +473,26 @@ def get_bot_submitted_issues(_test: bool = False) -> list[dict] or bool:
 
         return json.loads(_str)
     else:
-        print(query, file=sys.stderr)
+        print_wrap(log_level=log_level, msg=str(query), file=sys.stderr)
         return False
 
 
-def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or None:
+def get_encoding(
+        _target_path: str, _supported_encodings: list[str], log_level=LOG_LEVEL_NORMAL
+) -> str or None:
     """
     :param _target_path: A path-like string pointing to the file for which we want to get a valid encoding
     :param _supported_encodings: A list of supported encodings e.g. `['utf-8', 'iso-8859-1', 'iso']`
+    :param log_level: The importance of any feedback prints (e.g. 0=NONE, 3=VERBOSE)
     :return: The encoding of the target file if found, None if no supported encoding could be found
     """
     try:
         assert os.path.isfile(_target_path)
     except AssertionError:
-        print(
-            f"{LOCALIZE[get_region()]['error_is_not_file']}: {_target_path}", file=sys.stderr
+        print_wrap(
+            log_level=log_level,
+            msg=f"{LOCALIZE[get_region()]['error_is_not_file']}: {_target_path}",
+            file=sys.stderr,
         )
         return None
 
@@ -478,36 +518,52 @@ def get_encoding(_target_path: str, _supported_encodings: list[str]) -> str or N
 
 # fmt: off
 @todoon_app.command(  # todoon
-    help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or other development operations.")  # todoon
+    help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or "  # todoon
+         "other development operations")
 def todoon(  # todoon
         files: Annotated[
             Optional[List[str]],
             typer.Argument(
                 help="If specified, only these [FILES] will be scanned for TODOs and FIXMEs. "  # todoon
                      "Otherwise, all files in the current working directory except for those "
-                     "specified in .todo-ignore will be scanned.")] = None,  # todoon
+                     "specified in .todo-ignore will be scanned")] = None,  # todoon
         print_mode: Annotated[
             bool,
             typer.Option("--print/--issue", "-p/-i",
                          help="Whether to print the discovered TODOs and FIXMEs to stderr or to try"  # todoon
-                              " an generate GitHub issues")] = True,
+                              " generating GitHub issues")] = True,
         silent: Annotated[
             bool,
             typer.Option("--silent/", "-s/",
-                         help="If specified, todoon will not exit with an error code even when TODOs and/or "  # todoon
-                              "FIXMEs are detected")] = False,  # todoon
+                         help="(No fail) If specified, todoon will not exit with an error code even "  # todoon
+                              "when TODOs and/or FIXMEs are detected")] = False,  # todoon
         fail_closed_duplicates: Annotated[
             bool,
             typer.Option("--closed-duplicates-fail/", "-c/",
-                         help="If specified, todoon will exit with error code if duplicate issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,  # todoon
+                         help="If specified, todoon will exit with error code if duplicate GitHub issues "  # todoon
+                              "are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
-                         help="If specified, the .todo-ignore file will not be used. NOT RECOMMENDED")] = False,  # todoon
+                         help="(NOT RECOMMENDED) If specified, no .todo-ignore file will be used")] = False,  # todoon
         verbose: Annotated[
             bool,
             typer.Option("--verbose/", "-V/",
-                         help="If specified, todoon will not to print lengthy or numerous messages (like each encoding failure)")] = False,  # todoon
+                         help="If specified, todoon will not to print lengthy or numerous messages "  # todoon
+                              "(like each encoding failure)")] = False,
+        print_summary_only: Annotated[
+            bool,
+            typer.Option("--quiet/", "-q/",
+                         help="If specified, todoon will only print the summary")] = False,  # todoon
+        print_nothing: Annotated[
+            bool,
+            typer.Option("--very-quiet/", "-Q/",
+                         help="If specified, todoon will not print anything at all")] = False,  # todoon
+        show_progress_bar: Annotated[
+            bool,
+            typer.Option("--progress-bar/", "-P/",
+                         help="If specified, todoon will display a progress bar while scanning files. "  # todoon
+                              "NOTE: This adds a small amount of overhead (will take a little longer)")] = False,
         version: Annotated[
             bool,
             typer.Option("--version/", "-v/",
@@ -517,6 +573,14 @@ def todoon(  # todoon
     targets = []
     ignored_files = []
     ignored_dirs = []
+
+    log_level = LOG_LEVEL_NORMAL
+    if verbose:
+        log_level = LOG_LEVEL_VERBOSE
+    if print_summary_only:
+        log_level = LOG_LEVEL_SUMMARY_ONLY
+    if print_nothing:
+        log_level = LOG_LEVEL_NONE
 
     use_specified_files = False
 
@@ -548,16 +612,17 @@ def todoon(  # todoon
         os.environ["TODOON_STATUS"] = "parsing-todo-ignore"  # todoon
         # As long as we aren't foregoing the .todo-ignore... # todoon
         if not force:
-            # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level # todoon
+            # Unless --force is specified,
+            # a .todo-ignore in a supported encoding must be located at the project's top level # todoon
             use_encoding = get_encoding(
                 get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
             )
 
             # If we weren't able to find a file in a supported encoding, program must exit
             if use_encoding is None:
-                print(
-                    LOCALIZE[get_region()]["error_todo_ignore_not_supported"], file=sys.stderr  # todoon
-                )
+                print_wrap(log_level=log_level,
+                           msg=LOCALIZE[get_region()]["error_todo_ignore_not_supported"], file=sys.stderr  # todoon
+                           )
                 exit(1)
 
             # ... actually do the reading of the .todo-ignore # todoon
@@ -584,21 +649,21 @@ def todoon(  # todoon
                             ignored_dirs.append(cur_path)
 
                 if len(ignored_files) == 0 and len(ignored_dirs) == 0:
-                    print(
-                        LOCALIZE[get_region()][
-                            "warning_run_with_empty_todo_ignore"  # todoon
-                        ],
-                        file=sys.stderr,
-                    )
+                    print_wrap(log_level=log_level,
+                               msg=LOCALIZE[get_region()][
+                                   "warning_run_with_empty_todo_ignore"  # todoon
+                               ],
+                               file=sys.stderr,
+                               )
 
                 # Ignore the .todo-ignore itself # todoon
                 ignored_files.append(os.path.abspath(_ignore.name))
         else:
-            print(
-                f"{LOCALIZE[get_region()]['error_todo_ignore_not_found']}"  # todoon
-                f"[{LOCALIZE[get_os()]['shell_sigint']}]",
-                file=sys.stderr,
-            )
+            print_wrap(log_level=log_level,
+                       msg=f"{LOCALIZE[get_region()]['error_todo_ignore_not_found']}"  # todoon
+                           f"[{LOCALIZE[get_os()]['shell_sigint']}]",
+                       file=sys.stderr,
+                       )
 
     #############################################
     # Collect files to scan
@@ -665,9 +730,9 @@ def todoon(  # todoon
     # Warning if issues options are used when issue mode is not enabled
     if print_mode:
         if fail_closed_duplicates:
-            print(
-                f"{LOCALIZE[get_region()]['warning_nonissue_mode_closed_duplicate_used']}", file=sys.stderr
-            )
+            print_wrap(log_level=log_level,
+                       msg=f"{LOCALIZE[get_region()]['warning_nonissue_mode_closed_duplicate_used']}", file=sys.stderr
+                       )
 
     # When pinging for all queries their titles are hashed and saved here along with their state,
     # this is for checking for duplicate issues.
@@ -684,9 +749,9 @@ def todoon(  # todoon
             for issue in todoon_created_issues:  # todoon
                 existing_issues_hashed[_hash(issue["title"])] = issue["state"]
         else:
-            print(
-                f"{LOCALIZE[get_region()]['error_gh_issues_read_failed']}", file=sys.stderr
-            )
+            print_wrap(log_level=log_level,
+                       msg=f"{LOCALIZE[get_region()]['error_gh_issues_read_failed']}", file=sys.stderr
+                       )
 
     #############################################
     # Run todo-check # todoon
@@ -710,14 +775,22 @@ def todoon(  # todoon
     os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
     # For each target file discovered
     _i = 0
-    for target in targets:
+    _target_iterator = targets
+
+    # TODO NEW Localization 'progress_bar_run_unit' | "file" #localization
+    # TODO NEW Localization 'progress_bar_run_desc' | "scanning files" #localization
+    if show_progress_bar:
+        _target_iterator = tqdm(targets, unit=LOCALIZE[get_region()]['progress_bar_run_unit'],
+                                desc=LOCALIZE[get_region()]['progress_bar_run_desc'])
+
+    for target in _target_iterator:
 
         # Update progress
         _i += 1
         os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))  # todoon
 
         # Generate the hits for each target collected
-        hits, _enc = find_lines(target, verbose, "# todoon", "todo", "fixme")
+        hits, _enc = find_lines(target, verbose, "# todoon", ["todo", "fixme"], log_level=log_level)
 
         if _enc is None:
             number_of_encoding_failures += 1
@@ -747,37 +820,40 @@ def todoon(  # todoon
                             if output is not False:
                                 number_of_issues += 1
                             else:
-                                print(
-                                    f"{LOCALIZE[get_region()]['error_gh_issues_create_failed']}", file=sys.stderr
-                                )
+                                print_wrap(log_level=log_level,
+                                           msg=f"{LOCALIZE[get_region()]['error_gh_issues_create_failed']}",
+                                           file=sys.stderr
+                                           )
 
                         else:
-                            print(
-                                LOCALIZE[get_region()][
-                                    "error_exceeded_maximum_issues"
-                                ],
-                                file=sys.stderr,
-                            )
+                            print_wrap(log_level=log_level,
+                                       msg=LOCALIZE[get_region()][
+                                           "error_exceeded_maximum_issues"
+                                       ],
+                                       file=sys.stderr,
+                                       )
                             exit(1)
                     # If this title exists AND is closed, potentially fail the check
                     elif existing_issues_hashed[_this_hit_hashed] == "closed":
-                        print(
-                            f"{LOCALIZE[get_region()]['warning_duplicate_closed_issue']}: {hit}", file=sys.stderr
-                        )
+                        print_wrap(log_level=log_level,
+                                   msg=f"{LOCALIZE[get_region()]['warning_duplicate_closed_issue']}: {hit}",
+                                   file=sys.stderr
+                                   )
                         number_of_closed_issues += 1
                     # If this title already exists, notify but do not halt
                     else:
-                        print(
-                            f"{LOCALIZE[get_region()]['info_duplicate_issue_avoided']}: {hit}",
-                            file=sys.stderr,
-                        )
+                        print_wrap(log_level=log_level,
+                                   msg=f"{LOCALIZE[get_region()]['info_duplicate_issue_avoided']}: {hit}",
+                                   file=sys.stderr,
+                                   )
                         number_of_duplicate_issues_avoided += 1
 
                 #############################################
                 # If not in ISSUE mode, print hit to stderr
 
                 else:
-                    print(hit, file=sys.stderr)
+                    print_wrap(log_level=log_level,
+                               msg=str(hit), file=sys.stderr)
 
     #############################################
     # Summarize the run of todo-check  # todoon
@@ -838,12 +914,21 @@ def todoon(  # todoon
 
     summary += "##########################\n\n"
 
-    # Fail reasons
-    if number_of_hits > 0 and not silent:
-        summary += (f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n")
+    # Overall results of the run
+    if number_of_hits > 0:
+        if silent:
+            # TODO NEW Localization 'summary_found_issues_silent' | "INFO: New issues detected, but todoon ran in --silent mode" #localization
+            summary += f"  * {LOCALIZE[get_region()]['summary_found_issues_silent']}\n"
+        else:
+            summary += f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n"
 
     if number_of_closed_issues > 0 and fail_closed_duplicates:
-        summary += (f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
+        summary += f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n"
+
+    # Total success
+    if number_of_hits == 0:
+        # TODO NEW Localization 'summary_success' | "SUCCESS: No new issues detected" #localization
+        summary += f"  * {LOCALIZE[get_region()]['summary_success']}\n"
 
     os.environ["TODOON_STATUS"] = "finished"  # todoon
     os.environ["TODOON_PROGRESS"] = "100.0"  # todoon
@@ -859,7 +944,8 @@ def todoon(  # todoon
         number_of_closed_issues
     )
 
-    print(summary, file=sys.stderr)
+    print_wrap(log_level=log_level, msg_level=LOG_LEVEL_SUMMARY_ONLY,
+               msg=summary, file=sys.stderr)
 
     # Fail if any hits were found and we are not in silent mode
     if number_of_hits > 0 and not silent:
@@ -876,7 +962,8 @@ def todo_ignore_util(  # todoon
         sources: Annotated[
             Optional[List[str]],
             typer.Argument(
-                help="(default) [with -p] Files whose contents will be added to the .todo-ignore file.\n\n          "  # todoon
+                help="(default) [with -p] Files whose contents will be added to the "
+                     ".todo-ignore file.\n\n          "  # todoon
                      "[with -t] Lines of text to be added to the .todo-ignore file.")] = None,  # todoon
         create_mode: Annotated[
             bool,

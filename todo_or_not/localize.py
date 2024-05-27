@@ -18,6 +18,8 @@ LOCALIZE = {
         "summary_duplicate_closed_issues_singular": "Previously closed issue detected",
         "summary_duplicate_closed_issues_plural": "Previously closed issues detected",
         "summary_fail_duplicate_closed_issues": "FAIL: Closed duplicate issues detected",
+        "summary_found_issues_silent": "INFO: New issues detected, but todoon ran in --silent mode",
+        "summary_success": "SUCCESS: No new issues detected",
         "summary_fail_issues_no_silent": "FAIL: New issues detected",
         "info_duplicate_issue_avoided": "INFO: Duplicate issue avoided",
         "error_cannot_specify_ni_xi": "ERROR: Cannot specify both --ni and --xi",
@@ -37,7 +39,9 @@ LOCALIZE = {
         "warning_using_default_region": f"WARNING: Unsupported region detected, defaulting to en_us. Detected region:",
         "warning_using_default_os": f"WARNING: Unsupported OS detected, using default tips. Detected OS:",
         "warning_duplicate_closed_issue": f"WARNING: Found an issue that has already been closed",
-        "warning_nonissue_mode_closed_duplicate_used": "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode"
+        "warning_nonissue_mode_closed_duplicate_used": "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode",
+        "progress_bar_run_unit": "file",
+        "progress_bar_run_desc": "scanning files"
     },
     "ko_kr": {
         "general_done": "끝났습니다!",

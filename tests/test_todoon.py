@@ -290,6 +290,27 @@ class TestTodoon(unittest.TestCase):
         with self.assertRaises(SystemExit) as context:
             td.todoon(silent=True, version=True)
 
+    def test_todoon_progress_bar(self):
+        self._environment_up("no_todos")
+
+        td.todoon(verbose=True, print_mode=True, show_progress_bar=True)
+
+        self._environment_down()
+
+    def test_todoon_print_level_summary_only(self):
+        self._environment_up("no_todos")
+
+        td.todoon(verbose=True, print_mode=True, print_summary_only=True)
+
+        self._environment_down()
+
+    def test_todoon_print_level_none(self):
+        self._environment_up("no_todos")
+
+        td.todoon(verbose=True, print_mode=True, print_nothing=True)
+
+        self._environment_down()
+
 
 if __name__ == '__main__':
     unittest.main()
