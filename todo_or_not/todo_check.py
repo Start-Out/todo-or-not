@@ -407,14 +407,7 @@ def find_lines(
     else:
         print_wrap(log_level=log_level,
                    msg_level=LOG_LEVEL_VERBOSE,
-                   msg=f"{LOCALIZE[get_region()]["warning_encoding_not_supported"]} \n * {filename}")
-        # if verbose:
-        #     print(
-        #         LOCALIZE[get_region()]["warning_encoding_not_supported"],
-        #         "\n * ",
-        #         filename,
-        #         file=sys.stderr,
-        #     )
+                   msg=f"{LOCALIZE[get_region()]['warning_encoding_not_supported']} \n * {filename}")
 
     return output, use_encoding
 
