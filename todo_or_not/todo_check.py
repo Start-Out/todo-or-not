@@ -17,7 +17,6 @@ from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 
 todoon_app = typer.Typer(name="todoon")  # todoon
 
-
 LOG_LEVEL_NONE = 0
 LOG_LEVEL_SUMMARY_ONLY = 1
 LOG_LEVEL_NORMAL = 2
@@ -877,12 +876,22 @@ def todoon(  # todoon
 
     summary += "##########################\n\n"
 
-    # Fail reasons
-    if number_of_hits > 0 and not silent:
-        summary += (f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n")
+    # Overall results of the run
+    if number_of_hits > 0:
+        if silent:
+            # TODO NEW Localization 'summary_found_issues_silent' | "INFO: New issues detected, but todoon ran in --silent mode" #localization
+            summary += (f"  * {LOCALIZE[get_region()]['summary_found_issues_silent']}\n")
+        else:
+            summary += (f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n")
 
     if number_of_closed_issues > 0 and fail_closed_duplicates:
         summary += (f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
+
+    # Total success
+    if number_of_hits == 0:
+        # TODO NEW Localization 'summary_success' | "SUCCESS: No new issues detected" #localization
+        summary += (f"  * {LOCALIZE[get_region()]['summary_success']}\n")
+
 
     os.environ["TODOON_STATUS"] = "finished"  # todoon
     os.environ["TODOON_PROGRESS"] = "100.0"  # todoon

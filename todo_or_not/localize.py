@@ -18,6 +18,8 @@ LOCALIZE = {
         "summary_duplicate_closed_issues_singular": "Previously closed issue detected",
         "summary_duplicate_closed_issues_plural": "Previously closed issues detected",
         "summary_fail_duplicate_closed_issues": "FAIL: Closed duplicate issues detected",
+        "summary_found_issues_silent": "INFO: New issues detected, but todoon ran in --silent mode",
+        "summary_success": "SUCCESS: No new issues detected",
         "summary_fail_issues_no_silent": "FAIL: New issues detected",
         "info_duplicate_issue_avoided": "INFO: Duplicate issue avoided",
         "error_cannot_specify_ni_xi": "ERROR: Cannot specify both --ni and --xi",
