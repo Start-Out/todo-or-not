@@ -4,7 +4,6 @@ import json
 import os
 import subprocess
 import sys
-from enum import Enum
 from typing import List, Optional, TextIO
 
 import typer
@@ -19,19 +18,18 @@ from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 todoon_app = typer.Typer(name="todoon")  # todoon
 
 
-class OutputLevel(Enum):
-    NONE = 0
-    SUMMARY_ONLY = 1
-    NORMAL = 2
-    VERBOSE = 3
+LOG_LEVEL_NONE = 0
+LOG_LEVEL_SUMMARY_ONLY = 1
+LOG_LEVEL_NORMAL = 2
+LOG_LEVEL_VERBOSE = 3
 
 
-def print_wrap(msg: str, msg_level=OutputLevel.NORMAL, log_level=OutputLevel.NORMAL, file=sys.stdout):
+def print_wrap(msg: str, msg_level=LOG_LEVEL_NORMAL, log_level=LOG_LEVEL_NORMAL, file=sys.stdout):
     if msg_level <= log_level:
         print(msg, file=file)
 
 
-def version_callback(log_level=OutputLevel.NORMAL):
+def version_callback(log_level=LOG_LEVEL_NORMAL):
     print_wrap(log_level=log_level,
                msg=f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})")  # todoon
     exit(0)
@@ -75,7 +73,7 @@ def get_pertinent_line_limit():
     return pertinent_line_limit
 
 
-def get_region(log_level=OutputLevel.NORMAL):
+def get_region(log_level=LOG_LEVEL_NORMAL):
     region = os.environ.get("REGION", "en_us")
 
     # Validate that we support the region, otherwise default to something we have
@@ -89,7 +87,7 @@ def get_region(log_level=OutputLevel.NORMAL):
     return region
 
 
-def get_os(log_level=OutputLevel.NORMAL):
+def get_os(log_level=LOG_LEVEL_NORMAL):
     _os = os.environ.get("OS", "default")
     _os = _os.lower()
 
@@ -217,7 +215,7 @@ class Hit:
     def generic_title(self):
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
-    def generate_issue(self, _test: bool = False, log_level=OutputLevel.NORMAL) -> str or bool:
+    def generate_issue(self, _test: bool = False, log_level=LOG_LEVEL_NORMAL) -> str or bool:
 
         repo_uri = f"https://github.com/None"
 
@@ -312,15 +310,13 @@ def _hash(hit_str: str):
     return m.hexdigest()
 
 
-def find_lines(
-        filename: str, verbose: bool, ignore_flag: str, *args
-) -> tuple[list[Hit], str or None]:
+def find_lines(filename: str, verbose: bool, ignore_flag: str, ignore_keys: list) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
     :param verbose: Print lengthy feedback which includes (encoding failures)
     :param ignore_flag: The flag which, when detected on a triggering line, will ignore that line
     :param filename: File to open() read-only
-    :param args: Keys to check each line for
+    :param ignore_keys: Keys to check each line for
     :return:
      | List of lines of text and their line number that contain at least one key and the keys each contains
      | The detected encoding of the file or none if not found
@@ -344,7 +340,7 @@ def find_lines(
                 # Collect the found keys and their associated info
                 _found_keys = []
 
-                for key in args:
+                for key in ignore_keys:
                     if key.lower() in _line.lower():
                         _found_keys.append(key)
 
@@ -387,7 +383,7 @@ def find_lines(
 
     else:
         # print_wrap(log_level=log_level,
-        #            msg_level=OutputLevel.VERBOSE,
+        #            msg_level=LEVEL_VERBOSE,
         #            msg=f"{LOCALIZE[get_region()]["warning_encoding_not_supported"]} \n * {filename}")
         if verbose:
             print(
@@ -419,7 +415,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     target_file.write("\n")
 
 
-def get_bot_submitted_issues(_test: bool = False, log_level=OutputLevel.NORMAL) -> list[dict] or bool:
+def get_bot_submitted_issues(_test: bool = False, log_level=LOG_LEVEL_NORMAL) -> list[dict] or bool:
     """
     Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a # todoon
     list of dicts
@@ -463,7 +459,7 @@ def get_bot_submitted_issues(_test: bool = False, log_level=OutputLevel.NORMAL) 
         return False
 
 
-def get_encoding(_target_path: str, _supported_encodings: list[str], log_level=OutputLevel.NORMAL) -> str or None:
+def get_encoding(_target_path: str, _supported_encodings: list[str], log_level=LOG_LEVEL_NORMAL) -> str or None:
     """
     :param _target_path: A path-like string pointing to the file for which we want to get a valid encoding
     :param _supported_encodings: A list of supported encodings e.g. `['utf-8', 'iso-8859-1', 'iso']`
@@ -550,13 +546,13 @@ def todoon(  # todoon
     ignored_files = []
     ignored_dirs = []
 
-    log_level = OutputLevel.NORMAL
+    log_level = LOG_LEVEL_NORMAL
     if verbose:
-        log_level = OutputLevel.VERBOSE
+        log_level = LOG_LEVEL_VERBOSE
     if print_summary_only:
-        log_level = OutputLevel.SUMMARY_ONLY
+        log_level = LOG_LEVEL_SUMMARY_ONLY
     if print_nothing:
-        log_level = OutputLevel.NONE
+        log_level = LOG_LEVEL_NONE
 
     use_specified_files = False
 
@@ -757,7 +753,7 @@ def todoon(  # todoon
         os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))  # todoon
 
         # Generate the hits for each target collected
-        hits, _enc = find_lines(target, verbose, "# todoon", "todo", "fixme")
+        hits, _enc = find_lines(target, verbose, "# todoon", ["todo", "fixme"])
 
         if _enc is None:
             number_of_encoding_failures += 1
@@ -902,7 +898,7 @@ def todoon(  # todoon
         number_of_closed_issues
     )
 
-    print_wrap(log_level=log_level, msg_level=OutputLevel.SUMMARY_ONLY,
+    print_wrap(log_level=log_level, msg_level=LOG_LEVEL_SUMMARY_ONLY,
                msg=summary, file=sys.stderr)
 
     # Fail if any hits were found and we are not in silent mode
