@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "todo-or-not"
-version = "0.11.17"
+version = "0.12.0"
 description = "todoon integrates the TODOs in your codebase with your GitHub repository"
 authors = ["TrentonYo <trentonyo@gmail.com>"]
 license = "GPL-3.0-only"
@@ -15,6 +15,7 @@ python = "^3.11"
 typer = "^0.9.0"
 typing-extensions = "^4.10.0"
 
+tqdm = "^4.66.4"
 [tool.poetry.group.testing.dependencies]
 coveralls = "^3.3.1"
 pytest-cov = "^4.1.0"

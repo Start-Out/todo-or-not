@@ -7,6 +7,7 @@ import sys
 from typing import List, Optional, TextIO
 
 import typer
+from tqdm import tqdm
 from typer import run
 from typing_extensions import Annotated
 
@@ -24,7 +25,7 @@ LOG_LEVEL_VERBOSE = 3
 
 
 def print_wrap(
-    msg: str, msg_level=LOG_LEVEL_NORMAL, log_level=LOG_LEVEL_NORMAL, file=sys.stdout
+        msg: str, msg_level=LOG_LEVEL_NORMAL, log_level=LOG_LEVEL_NORMAL, file=sys.stdout
 ):
     if msg_level <= log_level:
         print(msg, file=file)
@@ -109,12 +110,12 @@ def get_os(log_level=LOG_LEVEL_NORMAL):
 
 class Hit:
     def __init__(
-        self,
-        source_file: str,
-        source_line: int,
-        found_keys: list[str],
-        pertinent_lines: list[str],
-        trigger_line_index: int,
+            self,
+            source_file: str,
+            source_line: int,
+            found_keys: list[str],
+            pertinent_lines: list[str],
+            trigger_line_index: int,
     ):
         self.found_keys = found_keys
         self.source_file = source_file
@@ -186,7 +187,7 @@ class Hit:
     def get_pertinent_lines(self):
         starting_line_number = self.source_line - self.trigger_line_index
         _max_line = self.source_line + (
-            len(self.pertinent_lines) - self.trigger_line_index
+                len(self.pertinent_lines) - self.trigger_line_index
         )
 
         def _parse_line_number(_l: int, star: bool = False) -> str:
@@ -221,7 +222,7 @@ class Hit:
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
     def generate_issue(
-        self, _test: bool = False, log_level=LOG_LEVEL_NORMAL
+            self, _test: bool = False, log_level=LOG_LEVEL_NORMAL
     ) -> str or bool:
 
         repo_uri = f"https://github.com/None"
@@ -328,7 +329,7 @@ def _hash(hit_str: str):
 
 
 def find_lines(
-    filename: str, verbose: bool, ignore_flag: str, ignore_keys: list
+        filename: str, verbose: bool, ignore_flag: str, ignore_keys: list
 ) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
@@ -370,7 +371,7 @@ def find_lines(
                     # Look at lines before the pertinent line
                     _i = line_number - 1
                     while (
-                        abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0
+                            abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0
                     ):
                         _i -= 1
                         if len(lines[_i].strip()) > 0:
@@ -437,7 +438,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
 
 
 def get_bot_submitted_issues(
-    _test: bool = False, log_level=LOG_LEVEL_NORMAL
+        _test: bool = False, log_level=LOG_LEVEL_NORMAL
 ) -> list[dict] or bool:
     """
     Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a # todoon
@@ -483,7 +484,7 @@ def get_bot_submitted_issues(
 
 
 def get_encoding(
-    _target_path: str, _supported_encodings: list[str], log_level=LOG_LEVEL_NORMAL
+        _target_path: str, _supported_encodings: list[str], log_level=LOG_LEVEL_NORMAL
 ) -> str or None:
     """
     :param _target_path: A path-like string pointing to the file for which we want to get a valid encoding
@@ -523,14 +524,15 @@ def get_encoding(
 
 # fmt: off
 @todoon_app.command(  # todoon
-    help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or other development operations.")  # todoon
+    help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or "
+         "other development operations")  # todoon
 def todoon(  # todoon
         files: Annotated[
             Optional[List[str]],
             typer.Argument(
                 help="If specified, only these [FILES] will be scanned for TODOs and FIXMEs. "  # todoon
                      "Otherwise, all files in the current working directory except for those "
-                     "specified in .todo-ignore will be scanned.")] = None,  # todoon
+                     "specified in .todo-ignore will be scanned")] = None,  # todoon
         print_mode: Annotated[
             bool,
             typer.Option("--print/--issue", "-p/-i",
@@ -539,23 +541,22 @@ def todoon(  # todoon
         silent: Annotated[
             bool,
             typer.Option("--silent/", "-s/",
-                         help="(No fail) If specified, todoon will not exit with an error code even when TODOs and/or "  # todoon
-                              "FIXMEs are detected")] = False,  # todoon
+                         help="(No fail) If specified, todoon will not exit with an error code even "  # todoon
+                              "when TODOs and/or FIXMEs are detected")] = False,
         fail_closed_duplicates: Annotated[
             bool,
             typer.Option("--closed-duplicates-fail/", "-c/",
-                         help="If specified, todoon will exit with error code if duplicate GitHub issues are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
-        # todoon
+                         help="If specified, todoon will exit with error code if duplicate GitHub issues "  # todoon
+                              "are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
-                         help="(NOT RECOMMENDED) If specified, no .todo-ignore file will be used.")] = False,
-        # todoon
+                         help="(NOT RECOMMENDED) If specified, no .todo-ignore file will be used")] = False,  # todoon
         verbose: Annotated[
             bool,
             typer.Option("--verbose/", "-V/",
-                         help="If specified, todoon will not to print lengthy or numerous messages (like each encoding failure)")] = False,
-        # todoon
+                         help="If specified, todoon will not to print lengthy or numerous messages "  # todoon
+                              "(like each encoding failure)")] = False,
         print_summary_only: Annotated[
             bool,
             typer.Option("--quiet/", "-q/",
@@ -564,6 +565,11 @@ def todoon(  # todoon
             bool,
             typer.Option("--very-quiet/", "-Q/",
                          help="If specified, todoon will not print anything at all")] = False,  # todoon
+        show_progress_bar: Annotated[
+            bool,
+            typer.Option("--progress-bar/", "-P/",
+                         help="If specified, todoon will display a progress bar while scanning files. "  # todoon
+                              "NOTE: This adds a small amount of overhead (will take a little longer)")] = False,
         version: Annotated[
             bool,
             typer.Option("--version/", "-v/",
@@ -612,7 +618,8 @@ def todoon(  # todoon
         os.environ["TODOON_STATUS"] = "parsing-todo-ignore"  # todoon
         # As long as we aren't foregoing the .todo-ignore... # todoon
         if not force:
-            # Unless --force is specified, a .todo-ignore in a supported encoding must be located at the project's top level # todoon
+            # Unless --force is specified,
+            # a .todo-ignore in a supported encoding must be located at the project's top level # todoon
             use_encoding = get_encoding(
                 get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
             )
@@ -774,7 +781,10 @@ def todoon(  # todoon
     os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
     # For each target file discovered
     _i = 0
-    for target in targets:
+    # TODO NEW Localization 'progress_bar_run_unit' | "file" #localization
+    # TODO NEW Localization 'progress_bar_run_desc' | "scanning files" #localization
+    for target in tqdm(targets, unit=LOCALIZE[get_region()]['progress_bar_run_unit'],
+                       desc=LOCALIZE[get_region()]['progress_bar_run_desc']):
 
         # Update progress
         _i += 1
@@ -953,7 +963,8 @@ def todo_ignore_util(  # todoon
         sources: Annotated[
             Optional[List[str]],
             typer.Argument(
-                help="(default) [with -p] Files whose contents will be added to the .todo-ignore file.\n\n          "  # todoon
+                help="(default) [with -p] Files whose contents will be added to the "
+                     ".todo-ignore file.\n\n          "  # todoon
                      "[with -t] Lines of text to be added to the .todo-ignore file.")] = None,  # todoon
         create_mode: Annotated[
             bool,

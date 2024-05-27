@@ -39,7 +39,9 @@ LOCALIZE = {
         "warning_using_default_region": f"WARNING: Unsupported region detected, defaulting to en_us. Detected region:",
         "warning_using_default_os": f"WARNING: Unsupported OS detected, using default tips. Detected OS:",
         "warning_duplicate_closed_issue": f"WARNING: Found an issue that has already been closed",
-        "warning_nonissue_mode_closed_duplicate_used": "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode"
+        "warning_nonissue_mode_closed_duplicate_used": "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode",
+        "progress_bar_run_unit": "file",
+        "progress_bar_run_desc": "scanning files"
     },
     "ko_kr": {
         "general_done": "끝났습니다!",
