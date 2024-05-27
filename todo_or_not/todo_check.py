@@ -781,10 +781,15 @@ def todoon(  # todoon
     os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
     # For each target file discovered
     _i = 0
+    _target_iterator = targets
+
     # TODO NEW Localization 'progress_bar_run_unit' | "file" #localization
     # TODO NEW Localization 'progress_bar_run_desc' | "scanning files" #localization
-    for target in tqdm(targets, unit=LOCALIZE[get_region()]['progress_bar_run_unit'],
-                       desc=LOCALIZE[get_region()]['progress_bar_run_desc']):
+    if show_progress_bar:
+        _target_iterator = tqdm(targets, unit=LOCALIZE[get_region()]['progress_bar_run_unit'],
+                                desc=LOCALIZE[get_region()]['progress_bar_run_desc'])
+
+    for target in _target_iterator:
 
         # Update progress
         _i += 1
