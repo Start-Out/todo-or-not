@@ -23,14 +23,18 @@ LOG_LEVEL_NORMAL = 2
 LOG_LEVEL_VERBOSE = 3
 
 
-def print_wrap(msg: str, msg_level=LOG_LEVEL_NORMAL, log_level=LOG_LEVEL_NORMAL, file=sys.stdout):
+def print_wrap(
+    msg: str, msg_level=LOG_LEVEL_NORMAL, log_level=LOG_LEVEL_NORMAL, file=sys.stdout
+):
     if msg_level <= log_level:
         print(msg, file=file)
 
 
 def version_callback(log_level=LOG_LEVEL_NORMAL):
-    print_wrap(log_level=log_level,
-               msg=f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})")  # todoon
+    print_wrap(
+        log_level=log_level,
+        msg=f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})",
+    )  # todoon
     exit(0)
 
 
@@ -55,7 +59,7 @@ def get_max_issues():
 
     try:
         max_issues = int(_max_issues)
-    except:
+    except ValueError:
         max_issues = 8
 
     return max_issues
@@ -66,7 +70,7 @@ def get_pertinent_line_limit():
 
     try:
         pertinent_line_limit = int(_pertinent_line_limit)
-    except:
+    except ValueError:
         pertinent_line_limit = 8
 
     return pertinent_line_limit
@@ -77,10 +81,11 @@ def get_region(log_level=LOG_LEVEL_NORMAL):
 
     # Validate that we support the region, otherwise default to something we have
     if region not in LOCALIZE:
-        print_wrap(log_level=log_level,
-                   msg=f"{LOCALIZE['en_us']['warning_using_default_region']} region",
-                   file=sys.stderr,
-                   )
+        print_wrap(
+            log_level=log_level,
+            msg=f"{LOCALIZE['en_us']['warning_using_default_region']} region",
+            file=sys.stderr,
+        )
         region = "en_us"
 
     return region
@@ -92,10 +97,11 @@ def get_os(log_level=LOG_LEVEL_NORMAL):
 
     # Validate that we support the region, otherwise default to something we have
     if _os not in LOCALIZE:
-        print_wrap(log_level=log_level,
-                   msg=f"{LOCALIZE[get_region()]["warning_using_default_os"]} _os",
-                   file=sys.stderr,
-                   )
+        print_wrap(
+            log_level=log_level,
+            msg=f"{LOCALIZE[get_region()]["warning_using_default_os"]} _os",
+            file=sys.stderr,
+        )
         _os = "default"
 
     return _os
@@ -103,12 +109,12 @@ def get_os(log_level=LOG_LEVEL_NORMAL):
 
 class Hit:
     def __init__(
-            self,
-            source_file: str,
-            source_line: int,
-            found_keys: list[str],
-            pertinent_lines: list[str],
-            trigger_line_index: int,
+        self,
+        source_file: str,
+        source_line: int,
+        found_keys: list[str],
+        pertinent_lines: list[str],
+        trigger_line_index: int,
     ):
         self.found_keys = found_keys
         self.source_file = source_file
@@ -180,7 +186,7 @@ class Hit:
     def get_pertinent_lines(self):
         starting_line_number = self.source_line - self.trigger_line_index
         _max_line = self.source_line + (
-                len(self.pertinent_lines) - self.trigger_line_index
+            len(self.pertinent_lines) - self.trigger_line_index
         )
 
         def _parse_line_number(_l: int, star: bool = False) -> str:
@@ -214,7 +220,9 @@ class Hit:
     def generic_title(self):
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
-    def generate_issue(self, _test: bool = False, log_level=LOG_LEVEL_NORMAL) -> str or bool:
+    def generate_issue(
+        self, _test: bool = False, log_level=LOG_LEVEL_NORMAL
+    ) -> str or bool:
 
         repo_uri = f"https://github.com/None"
 
@@ -233,20 +241,32 @@ class Hit:
             missing_envs = []
 
             if github_ref == "$NONE":
-                print_wrap(log_level=log_level,
-                           msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REF_NAME", file=sys.stderr)
+                print_wrap(
+                    log_level=log_level,
+                    msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REF_NAME",
+                    file=sys.stderr,
+                )
                 missing_envs.append("GITHUB_REF_NAME")
             if triggered_by == "$NONE":
-                print_wrap(log_level=log_level,
-                           msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_TRIGGERING_ACTOR", file=sys.stderr)
+                print_wrap(
+                    log_level=log_level,
+                    msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_TRIGGERING_ACTOR",
+                    file=sys.stderr,
+                )
                 missing_envs.append("GITHUB_TRIGGERING_ACTOR")
             if owner == "$NONE":
-                print_wrap(log_level=log_level,
-                           msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr)
+                print_wrap(
+                    log_level=log_level,
+                    msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY",
+                    file=sys.stderr,
+                )
                 missing_envs.append("GITHUB_REPOSITORY")
             if repo == "$NONE":
-                print_wrap(log_level=log_level,
-                           msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr)
+                print_wrap(
+                    log_level=log_level,
+                    msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY",
+                    file=sys.stderr,
+                )
                 missing_envs.append("GITHUB_REPOSITORY")
 
             if len(missing_envs) > 0:
@@ -292,13 +312,11 @@ class Hit:
             try:
                 _output = subprocess.check_output(api_call)
             except subprocess.CalledProcessError as e:
-                print_wrap(log_level=log_level,
-                           msg=str(e), file=sys.stderr)
+                print_wrap(log_level=log_level, msg=str(e), file=sys.stderr)
                 _output = False
         else:
             _output = True
-            print_wrap(log_level=log_level,
-                       msg=str(api_call))
+            print_wrap(log_level=log_level, msg=str(api_call))
 
         return _output
 
@@ -309,7 +327,9 @@ def _hash(hit_str: str):
     return m.hexdigest()
 
 
-def find_lines(filename: str, verbose: bool, ignore_flag: str, ignore_keys: list) -> tuple[list[Hit], str or None]:
+def find_lines(
+    filename: str, verbose: bool, ignore_flag: str, ignore_keys: list
+) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
     :param verbose: Print lengthy feedback which includes (encoding failures)
@@ -349,7 +369,9 @@ def find_lines(filename: str, verbose: bool, ignore_flag: str, ignore_keys: list
 
                     # Look at lines before the pertinent line
                     _i = line_number - 1
-                    while abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0:
+                    while (
+                        abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0
+                    ):
                         _i -= 1
                         if len(lines[_i].strip()) > 0:
                             _pertinent_lines.insert(0, lines[_i])
@@ -414,7 +436,9 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
     target_file.write("\n")
 
 
-def get_bot_submitted_issues(_test: bool = False, log_level=LOG_LEVEL_NORMAL) -> list[dict] or bool:
+def get_bot_submitted_issues(
+    _test: bool = False, log_level=LOG_LEVEL_NORMAL
+) -> list[dict] or bool:
     """
     Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a # todoon
     list of dicts
@@ -425,10 +449,12 @@ def get_bot_submitted_issues(_test: bool = False, log_level=LOG_LEVEL_NORMAL) ->
     try:
         if not (get_is_debug() or _test):
             owner, repo = os.environ.get("GITHUB_REPOSITORY").split("/")
-    except AttributeError as e:
-        print_wrap(log_level=log_level,
-                   msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY", file=sys.stderr
-                   )
+    except AttributeError as _:
+        print_wrap(
+            log_level=log_level,
+            msg=f"{LOCALIZE[get_region()]['error_no_env']}: GITHUB_REPOSITORY",
+            file=sys.stderr,
+        )
 
     query = [
         "gh",
@@ -444,8 +470,7 @@ def get_bot_submitted_issues(_test: bool = False, log_level=LOG_LEVEL_NORMAL) ->
         try:
             response = subprocess.check_output(query)
         except subprocess.CalledProcessError as e:
-            print_wrap(log_level=log_level,
-                       msg=str(e), file=sys.stderr)
+            print_wrap(log_level=log_level, msg=str(e), file=sys.stderr)
             return False
 
         _str = response.decode("utf-8")
@@ -453,23 +478,27 @@ def get_bot_submitted_issues(_test: bool = False, log_level=LOG_LEVEL_NORMAL) ->
 
         return json.loads(_str)
     else:
-        print_wrap(log_level=log_level,
-                   msg=str(query), file=sys.stderr)
+        print_wrap(log_level=log_level, msg=str(query), file=sys.stderr)
         return False
 
 
-def get_encoding(_target_path: str, _supported_encodings: list[str], log_level=LOG_LEVEL_NORMAL) -> str or None:
+def get_encoding(
+    _target_path: str, _supported_encodings: list[str], log_level=LOG_LEVEL_NORMAL
+) -> str or None:
     """
     :param _target_path: A path-like string pointing to the file for which we want to get a valid encoding
     :param _supported_encodings: A list of supported encodings e.g. `['utf-8', 'iso-8859-1', 'iso']`
+    :param log_level: The importance of any feedback prints (e.g. 0=NONE, 3=VERBOSE)
     :return: The encoding of the target file if found, None if no supported encoding could be found
     """
     try:
         assert os.path.isfile(_target_path)
     except AssertionError:
-        print_wrap(log_level=log_level,
-                   msg=f"{LOCALIZE[get_region()]['error_is_not_file']}: {_target_path}", file=sys.stderr
-                   )
+        print_wrap(
+            log_level=log_level,
+            msg=f"{LOCALIZE[get_region()]['error_is_not_file']}: {_target_path}",
+            file=sys.stderr,
+        )
         return None
 
     # Try to read the file in a supported encoding
@@ -880,18 +909,17 @@ def todoon(  # todoon
     if number_of_hits > 0:
         if silent:
             # TODO NEW Localization 'summary_found_issues_silent' | "INFO: New issues detected, but todoon ran in --silent mode" #localization
-            summary += (f"  * {LOCALIZE[get_region()]['summary_found_issues_silent']}\n")
+            summary += f"  * {LOCALIZE[get_region()]['summary_found_issues_silent']}\n"
         else:
-            summary += (f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n")
+            summary += f"  * {LOCALIZE[get_region()]['summary_fail_issues_no_silent']}\n"
 
     if number_of_closed_issues > 0 and fail_closed_duplicates:
-        summary += (f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n")
+        summary += f"  * {LOCALIZE[get_region()]['summary_fail_duplicate_closed_issues']}\n"
 
     # Total success
     if number_of_hits == 0:
         # TODO NEW Localization 'summary_success' | "SUCCESS: No new issues detected" #localization
-        summary += (f"  * {LOCALIZE[get_region()]['summary_success']}\n")
-
+        summary += f"  * {LOCALIZE[get_region()]['summary_success']}\n"
 
     os.environ["TODOON_STATUS"] = "finished"  # todoon
     os.environ["TODOON_PROGRESS"] = "100.0"  # todoon
