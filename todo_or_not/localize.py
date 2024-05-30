@@ -57,6 +57,8 @@ LOCALIZE = {
         "summary_duplicate_closed_issues_singular": "이전에 닫힌 깃허브 이슈가 탐지되었습니다",
         "summary_duplicate_closed_issues_plural": "이전에 닫힌 깃허브 이슈들이 탐지되었습니다",
         "summary_fail_duplicate_closed_issues": "실패: 이미 닫힌 중복 깃허브 이슈들이 탐지되었습니다",
+        "summary_found_issues_silent": "정보: 새 이슈들이 탐지되었으나 현재 todoon은 --silent 모드로 작동되고 있습니다",
+        "summary_success": "성공: 탐지된 새 이슈들이 없습니다",
         "summary_fail_issues_no_silent": "실패: 새로운 깃허브 이슈들이 탐지되었습니다",
         "summary_duplicate_issues_avoided_singular": "깃허브 이슈의 중복 생성이 방지되었습니다",
         "summary_duplicate_issues_avoided_plural": "깃허브 이슈들의 중복 생성이 방지되었습니다",
@@ -65,7 +67,7 @@ LOCALIZE = {
         "error_is_not_file": "오류: 해당 경로는 파일이 아닙니다",
         "error_file_already_exists": "오류: 이미 그 파일이 존재합니다",
         "error_no_env": "오류: 필요한 환경 변수를 찾을 수 없습니다",
-         "error_gh_issues_read_failed": "오류: todoon이 깃허브 이슈들을 읽는 것에 실패하였습니다",
+        "error_gh_issues_read_failed": "오류: todoon이 깃허브 이슈들을 읽는 것에 실패하였습니다",
         "error_gh_issues_create_failed": "오류: todoon이 새로운 깃허브 이슈를 생성하는 것에 실패하였습니다",
         "error_todo_ignore_not_found": "오류: .todo-ignore 를 찾을 수 없습니다! -i 를 사용하여 다른 .ignore를 복사하시거나 --force 를 사용하여 .todo-ignore 없이 실행할 수 있습니다(권장되지 않음)",
         "error_todo_ignore_not_supported": f"오류: .todo-ignore 가 지원되지 않는 인코딩(문자)을 사용하고 있거나 존재하지 않습니다! 지원되는 인코딩: {SUPPORTED_ENCODINGS_TODOIGNORE}",
@@ -78,7 +80,9 @@ LOCALIZE = {
         "warning_using_default_region": f"경고: 지원되지 않는 지역이 감지되었습니다, en_us(영어)를 기본값으로 둡니다. 감지된 지역:",
         "warning_using_default_os": f"경고: 지원되지 않는 운영체제가 감지되었습니다, 기본 단축키(Ctrl + C)를 사용합니다. 감지된 운영체제:",
         "warning_duplicate_closed_issue": f"경고: 이미 닫힌 깃허브 이슈를 찾았습니다",
-        "warning_nonissue_mode_closed_duplicate_used": "경고: 설정한 옵션 '--closed-duplicates-fail/-c'은 '--issue/-i' 모드가 아니라면 아무런 영향을 끼치지 못합니다"
+        "warning_nonissue_mode_closed_duplicate_used": "경고: 설정한 옵션 '--closed-duplicates-fail/-c'은 '--issue/-i' 모드가 아니라면 아무런 영향을 끼치지 못합니다",
+        "progress_bar_run_unit": "파일",
+        "progress_bar_run_desc": "파일들을 스캔하고 있음"
     },
     "bu_mm": {
         "general_done": "ပြီးပါပြီ။",
