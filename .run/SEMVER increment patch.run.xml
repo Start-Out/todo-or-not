@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CMD todoon" type="PythonConfigurationType" factoryName="Python" editBeforeRun="true">
+  <configuration default="false" name="SEMVER increment patch" type="PythonConfigurationType" factoryName="Python">
     <module name="todo-or-not" />
     <option name="ENV_FILES" value="" />
     <option name="INTERPRETER_OPTIONS" value="" />
@@ -8,13 +8,13 @@
       <env name="PYTHONUNBUFFERED" value="1" />
     </envs>
     <option name="SDK_HOME" value="" />
-    <option name="WORKING_DIRECTORY" value="C:\Users\trent\Documents\Projects\todo-or-not" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
     <option name="IS_MODULE_SDK" value="true" />
     <option name="ADD_CONTENT_ROOTS" value="true" />
     <option name="ADD_SOURCE_ROOTS" value="true" />
     <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/todo_or_not/todo_check.py" />
-    <option name="PARAMETERS" value="todoon" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/_update_versions.py" />
+    <option name="PARAMETERS" value="-p" />
     <option name="SHOW_COMMAND_LINE" value="false" />
     <option name="EMULATE_TERMINAL" value="false" />
     <option name="MODULE_MODE" value="false" />
