@@ -100,6 +100,8 @@ LOCALIZE = {
         "summary_duplicate_closed_issues_singular": "ယခင်က ပိတ်ထားသော ပြဿနာကို တွေ့ရှိခဲ့သည်",
         "summary_duplicate_closed_issues_plural": "ယခင်က ပိတ်ထားသော ပြဿနာများကို တွေ့ရှိခဲ့သည်",
         "summary_fail_duplicate_closed_issues": "မအောင်မြင်ပါ- ပိတ်ထားသော မိတ္တူပြဿနာများကို တွေ့ရှိပါသည်",
+        "summary_found_issues_silent": "အချက်အလက်- ပြဿနာအသစ်များကို တွေ့ရှိသော်လည်း todoon အသံတိတ် (silent) မုဒ်တွင် လုပ်ဆောင်ခဲ့သည်",
+        "summary_success": "အောင်မြင်မှု- ပြဿနာအသစ်မတွေ့ပါ",
         "summary_fail_issues_no_silent": "မအောင်မြင်ပါ- ပြဿနာအသစ်များကို တွေ့ရှိခဲ့သည်",
         "info_duplicate_issue_avoided": "အချက်အလက်- မိတ္တူပွားခြင်းပြဿနာကို ရှောင်ကြဉ်ပါ",
         "error_cannot_specify_ni_xi": "အမှား- _ni နှင့် _xi နှစ်မျိုးလုံးကို သတ်မှတ်၍မရပါ",
@@ -119,7 +121,10 @@ LOCALIZE = {
         "warning_using_default_region": f"သတိပေးချက်- ပံ့ပိုးမထားသော ဒေသကို တွေ့ရှိပြီး en_us သို့ ပုံသေသတ်မှတ်ထားသည်။ တွေ့ရှိထားသော ဒေသ-",
         "warning_using_default_os": f"သတိပေးချက်- ပံ့ပိုးမထားသော OS ကို တွေ့ရှိခဲ့ပြီး မပုံသေဖြတ်လမ်းကို အသုံးပြုပါမည်။ တွေ့ရှိထားသော OS-",
         "warning_duplicate_closed_issue": f"သတိပေးချက်- ပိတ်ထားပြီးသော ပြဿနာတစ်ခု တွေ့ရှိပါသည်",
-        "warning_nonissue_mode_closed_duplicate_used": "သတိပေးချက်- သတ်မှတ်ထားသော ရွေးချယ်မှု '--closed-duplicates-fail/-c' သည် '--issue/-i' မုဒ်တွင် မရှိ၍ အကျိုးသက်ရောက်မှုမှ မရှိပါ"
+        "warning_nonissue_mode_closed_duplicate_used": "သတိပေးချက်- သတ်မှတ်ထားသော ရွေးချယ်မှု '--closed-duplicates-fail/-c' သည် '--issue/-i' မုဒ်တွင် မရှိ၍ အကျိုးသက်ရောက်မှုမှ မရှိပါ",
+        "progress_bar_run_unit": "ဖိုင်",
+        "progress_bar_run_desc": "ဖိုင်များကိုစကင်န် ဖတ်နေပါသည်",
+
     },
     "default": {"shell_sigint": "CTRL + C"},
     "windows_nt": {"shell_sigint": "CTRL + C"},
