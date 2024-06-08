@@ -27,7 +27,7 @@ You can also integrate this tool into your GitHub workflow via actions, and auto
 FIXMEs. These generated issues will include a link to the file in GitHub as well as the surrounding lines. [Check out the wiki](wiki/Commands-‐-todoon#issues) for 
 more details on the GitHub Issues integration!
 
-[Try it out! (see on PyPi)](https://pypi.org/project/todo-or-not/)
+[Try it out! (see on PyPi)](https://pypi.org/project/todo-or-not/)  
 Or, if you are using arch linux, their is an [AUR Package](https://aur.archlinux.org/packages/python-todo-or-not) maintained by @mward25.
 
 ```bash
