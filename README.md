@@ -28,7 +28,7 @@ FIXMEs. These generated issues will include a link to the file in GitHub as well
 more details on the GitHub Issues integration!
 
 [Try it out! (see on PyPi)](https://pypi.org/project/todo-or-not/)  
-Or, if you are using Arch Linux, their is an [AUR Package](https://aur.archlinux.org/packages/python-todo-or-not) maintained by @mward25.
+Or, if you are using Arch Linux, there is an [AUR Package](https://aur.archlinux.org/packages/python-todo-or-not) maintained by @mward25.
 
 ```bash
 pip install --upgrade todo-or-not
