@@ -24,10 +24,11 @@
 TODO Or Not (todoon) is, in essence, a simple tool that checks your project for TODOs and FIXMEs and lets you know where they are. 
 
 You can also integrate this tool into your GitHub workflow via actions, and automate generating issues from the discovered TODOs and
-FIXMEs. These generated issues will include a link to the file in GitHub as well as the surrounding lines. [Check out the wiki](wiki/Commands-‐-todoon#issues) for 
+FIXMEs. These generated issues will include a link to the file in GitHub as well as the surrounding lines. [Check out the wiki](https://github.com/Start-Out/todo-or-not/wiki/Commands-%E2%80%90-todoignore%E2%80%90util) for 
 more details on the GitHub Issues integration!
 
-[Try it out! (see on PyPi)](https://pypi.org/project/todo-or-not/)
+[Try it out! (see on PyPi)](https://pypi.org/project/todo-or-not/)  
+Or, if you are using Arch Linux, there is an [AUR Package](https://aur.archlinux.org/packages/python-todo-or-not) maintained by @mward25.
 
 ```bash
 pip install --upgrade todo-or-not
@@ -88,7 +89,7 @@ Please target `dev/contribute` with your fork, and please use the appropriate PR
 
 ## Help
 
-[See the wiki!](wiki)
+[See the wiki!](https://github.com/Start-Out/todo-or-not/wiki)
 
 ## Fun Promo Video
 
