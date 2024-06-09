@@ -1,9 +1,11 @@
-from todo_or_not.todo_check import Hit
-
-import ply.lex as lex
-
 import re
 import sys
+
+import ply.lex as lex
+import ply.yacc as yacc
+
+from todo_or_not.todo_check import Hit
+
 
 comment_symbols = {
     "python": {
@@ -103,12 +105,57 @@ file_extensions = {
     ".sql": "sql",
 }
 
-code = """
-if __name__ == "__main__":
-if len(sys.argv) < 3:
-    print("Usage: python your_script.py <file extension> <input>")
-    exit(1)  # this is a comment with a #label
-"""
+# List of token names.   This is always required
+tokens = ("CODE_BEFORE_COMMENT", "COMMENT_UP_TO_KEY", "REST_OF_COMMENT")
+
+# Regular expression rules for simple tokens
+t_CODE_BEFORE_COMMENT = r"^[^#]*(?=[#])"
+t_COMMENT_UP_TO_KEY = r"[#].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])"
+t_REST_OF_COMMENT = r".+"
+
+
+# Define a rule so we can track line numbers
+def t_newline(t):
+    r"\n+"
+    t.lexer.lineno += len(t.value)
+
+
+t_ignore = " \t"
+
+
+# Error handling rule
+def t_error(t):
+    print("Illegal character '%s'" % t.value[0])
+    t.lexer.skip(1)
+
+
+# Build the lexer
+lexer = lex.lex()
+
+
+def p_todo_line_with_code(p):
+    """todo_line : CODE_BEFORE_COMMENT todo_line_comment_body"""
+    reconstructed_line = f"{p[1]} {p[2]["body"]}"
+    p[0] = Hit("file", 1, p[2]["keywords"], [reconstructed_line], 0)
+
+
+def p_todo_line_comment_body(p):
+    """todo_line_comment_body   : COMMENT_UP_TO_KEY REST_OF_COMMENT
+    | COMMENT_UP_TO_KEY"""
+
+    keywords = re.findall(r"(todo|fixme)", p[1].lower())
+    body = f"{p[1]} {p[2]}" if len(p) > 2 else p[1]
+
+    p[0] = {"keywords": keywords, "body": body}
+
+
+# Error rule for syntax errors
+def p_error(p):
+    print("Syntax error in input!")
+
+
+# Build the parser
+parser = yacc.yacc()
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -123,30 +170,12 @@ if __name__ == "__main__":
 
     tokens = "LINE_COMMENT"
 
-    r_COMMENT_TITLE = r"\<.*\>"
-    # t_LINE_COMMENT_BODY = symbol_set["line_comment"]
-    # t_BLOCK_COMMENT_BODY = symbol_set["block_comment"]
-    # t_LABEL = r"[#]\w+"
-    # t_CODE = r".+"
-
-    def t_COMMENT_BODY(t):
-        symbol_set["line_comment"]
-        t.lexer.todoon_hits.append(t)
-
-    def t_newline(t):
-        r"\n+"
-        t.lexer.lineno += len(t.value)
-
-    def t_error(t):
-        print("Illegal character '%s'" % t.value[0])
-        t.lexer.skip(1)
-
-    lexer = lex.lex()
-    lexer.todoon_hits = []
-    lexer.input(code)
-
-    parsed_tokens = []
-    for token in lexer:
-        parsed_tokens.append(token)
-
-    pass
+    while True:
+        try:
+            s = input("code > ")
+        except EOFError:
+            break
+        if not s:
+            continue
+        result = parser.parse(s)
+        print(result)
