@@ -10,14 +10,14 @@ class TestTodoignoreUtil(unittest.TestCase):
         self.source_files_list = [
             os.path.join("res", "a.txt"),
             os.path.join("res", "b.txt"),
-            os.path.join("res", "c.txt")
+            os.path.join("res", "c.txt"),
         ]
 
         self.source_text_list = [
             "hello_world.txt",
             "goodbye_world.txt",
             "directory/file.txt",
-            "directory/"
+            "directory/",
         ]
 
     def test_todoignore_util_copies_files_to_existing(self):
@@ -26,22 +26,19 @@ class TestTodoignoreUtil(unittest.TestCase):
         old_dir = os.getcwd()
         os.chdir(safe_dir)
 
-        with open(".todo-ignore", 'r') as _old:
+        with open(".todo-ignore", "r") as _old:
             old_todoignore = _old.read()
 
         # Run util
-        td.todo_ignore_util(self.source_files_list, create_mode=False, source_is_text=False)
+        td.todo_ignore_util(
+            self.source_files_list, create_mode=False, source_is_text=False
+        )
 
         # Check results
         results = []
-        expected = [
-            "existing.content",
-            "a",
-            "b",
-            "c"
-        ]
+        expected = ["existing.content", "a", "b", "c"]
 
-        with open(".todo-ignore", 'r') as _results:
+        with open(".todo-ignore", "r") as _results:
             for raw_line in _results.readlines():
                 raw_line = raw_line.strip()
 
@@ -51,7 +48,7 @@ class TestTodoignoreUtil(unittest.TestCase):
         self.assertEqual(results, expected)
 
         # Tear down
-        with open(".todo-ignore", 'w') as _new:
+        with open(".todo-ignore", "w") as _new:
             _new.write(old_todoignore)
 
         os.chdir(old_dir)
@@ -62,23 +59,21 @@ class TestTodoignoreUtil(unittest.TestCase):
         old_dir = os.getcwd()
         os.chdir(safe_dir)
 
-        with open(".todo-ignore", 'r') as _old:
+        with open(".todo-ignore", "r") as _old:
             old_todoignore = _old.read()
 
         os.remove(".todo-ignore")
 
         # Run util
-        td.todo_ignore_util(self.source_files_list, create_mode=True, source_is_text=False)
+        td.todo_ignore_util(
+            self.source_files_list, create_mode=True, source_is_text=False
+        )
 
         # Check results
         results = []
-        expected = [
-            "a",
-            "b",
-            "c"
-        ]
+        expected = ["a", "b", "c"]
 
-        with open(".todo-ignore", 'r') as _results:
+        with open(".todo-ignore", "r") as _results:
             for raw_line in _results.readlines():
                 raw_line = raw_line.strip()
 
@@ -88,7 +83,7 @@ class TestTodoignoreUtil(unittest.TestCase):
         self.assertEqual(results, expected)
 
         # Tear down
-        with open(".todo-ignore", 'w') as _new:
+        with open(".todo-ignore", "w") as _new:
             _new.write(old_todoignore)
 
         os.chdir(old_dir)
@@ -99,11 +94,13 @@ class TestTodoignoreUtil(unittest.TestCase):
         old_dir = os.getcwd()
         os.chdir(safe_dir)
 
-        with open(".todo-ignore", 'r') as _old:
+        with open(".todo-ignore", "r") as _old:
             old_todoignore = _old.read()
 
         # Run util
-        td.todo_ignore_util(self.source_text_list, create_mode=False, source_is_text=True)
+        td.todo_ignore_util(
+            self.source_text_list, create_mode=False, source_is_text=True
+        )
 
         # Check results
         results = []
@@ -112,10 +109,10 @@ class TestTodoignoreUtil(unittest.TestCase):
             "hello_world.txt",
             "goodbye_world.txt",
             "directory/file.txt",
-            "directory/"
+            "directory/",
         ]
 
-        with open(".todo-ignore", 'r') as _results:
+        with open(".todo-ignore", "r") as _results:
             for raw_line in _results.readlines():
                 raw_line = raw_line.strip()
 
@@ -125,7 +122,7 @@ class TestTodoignoreUtil(unittest.TestCase):
         self.assertEqual(results, expected)
 
         # Tear down
-        with open(".todo-ignore", 'w') as _new:
+        with open(".todo-ignore", "w") as _new:
             _new.write(old_todoignore)
 
         os.chdir(old_dir)
@@ -136,13 +133,15 @@ class TestTodoignoreUtil(unittest.TestCase):
         old_dir = os.getcwd()
         os.chdir(safe_dir)
 
-        with open(".todo-ignore", 'r') as _old:
+        with open(".todo-ignore", "r") as _old:
             old_todoignore = _old.read()
 
         os.remove(".todo-ignore")
 
         # Run util
-        td.todo_ignore_util(self.source_text_list, create_mode=True, source_is_text=True)
+        td.todo_ignore_util(
+            self.source_text_list, create_mode=True, source_is_text=True
+        )
 
         # Check results
         results = []
@@ -150,10 +149,10 @@ class TestTodoignoreUtil(unittest.TestCase):
             "hello_world.txt",
             "goodbye_world.txt",
             "directory/file.txt",
-            "directory/"
+            "directory/",
         ]
 
-        with open(".todo-ignore", 'r') as _results:
+        with open(".todo-ignore", "r") as _results:
             for raw_line in _results.readlines():
                 raw_line = raw_line.strip()
 
@@ -163,7 +162,7 @@ class TestTodoignoreUtil(unittest.TestCase):
         self.assertEqual(results, expected)
 
         # Tear down
-        with open(".todo-ignore", 'w') as _new:
+        with open(".todo-ignore", "w") as _new:
             _new.write(old_todoignore)
 
         os.chdir(old_dir)
@@ -174,7 +173,7 @@ class TestTodoignoreUtil(unittest.TestCase):
         old_dir = os.getcwd()
         os.chdir(safe_dir)
 
-        with open(".todo-ignore", 'r') as _old:
+        with open(".todo-ignore", "r") as _old:
             old_todoignore = _old.read()
 
         os.remove(".todo-ignore")
@@ -182,18 +181,17 @@ class TestTodoignoreUtil(unittest.TestCase):
         missing_files_list = [
             os.path.join("res", "none1.txt"),
             os.path.join("res", "none2.txt"),
-            os.path.join("res", "none3.txt")
+            os.path.join("res", "none3.txt"),
         ]
 
         # Run util
         td.todo_ignore_util(missing_files_list, create_mode=True, source_is_text=False)
 
         # Tear down
-        with open(".todo-ignore", 'w') as _new:
+        with open(".todo-ignore", "w") as _new:
             _new.write(old_todoignore)
 
         os.chdir(old_dir)
-
 
     def test_todoignore_util_does_not_override_in_create_mode(self):
         # Set up

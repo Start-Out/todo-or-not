@@ -41,7 +41,7 @@ LOCALIZE = {
         "warning_duplicate_closed_issue": f"WARNING: Found an issue that has already been closed",
         "warning_nonissue_mode_closed_duplicate_used": "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode",
         "progress_bar_run_unit": "file",
-        "progress_bar_run_desc": "scanning files"
+        "progress_bar_run_desc": "scanning files",
     },
     "ko_kr": {
         "general_done": "끝났습니다!",
@@ -65,7 +65,7 @@ LOCALIZE = {
         "error_is_not_file": "오류: 해당 경로는 파일이 아닙니다",
         "error_file_already_exists": "오류: 이미 그 파일이 존재합니다",
         "error_no_env": "오류: 필요한 환경 변수를 찾을 수 없습니다",
-         "error_gh_issues_read_failed": "오류: todoon이 깃허브 이슈들을 읽는 것에 실패하였습니다",
+        "error_gh_issues_read_failed": "오류: todoon이 깃허브 이슈들을 읽는 것에 실패하였습니다",
         "error_gh_issues_create_failed": "오류: todoon이 새로운 깃허브 이슈를 생성하는 것에 실패하였습니다",
         "error_todo_ignore_not_found": "오류: .todo-ignore 를 찾을 수 없습니다! -i 를 사용하여 다른 .ignore를 복사하시거나 --force 를 사용하여 .todo-ignore 없이 실행할 수 있습니다(권장되지 않음)",
         "error_todo_ignore_not_supported": f"오류: .todo-ignore 가 지원되지 않는 인코딩(문자)을 사용하고 있거나 존재하지 않습니다! 지원되는 인코딩: {SUPPORTED_ENCODINGS_TODOIGNORE}",
@@ -78,7 +78,7 @@ LOCALIZE = {
         "warning_using_default_region": f"경고: 지원되지 않는 지역이 감지되었습니다, en_us(영어)를 기본값으로 둡니다. 감지된 지역:",
         "warning_using_default_os": f"경고: 지원되지 않는 운영체제가 감지되었습니다, 기본 단축키(Ctrl + C)를 사용합니다. 감지된 운영체제:",
         "warning_duplicate_closed_issue": f"경고: 이미 닫힌 깃허브 이슈를 찾았습니다",
-        "warning_nonissue_mode_closed_duplicate_used": "경고: 설정한 옵션 '--closed-duplicates-fail/-c'은 '--issue/-i' 모드가 아니라면 아무런 영향을 끼치지 못합니다"
+        "warning_nonissue_mode_closed_duplicate_used": "경고: 설정한 옵션 '--closed-duplicates-fail/-c'은 '--issue/-i' 모드가 아니라면 아무런 영향을 끼치지 못합니다",
     },
     "bu_mm": {
         "general_done": "ပြီးပါပြီ။",
@@ -115,7 +115,7 @@ LOCALIZE = {
         "warning_using_default_region": f"သတိပေးချက်- ပံ့ပိုးမထားသော ဒေသကို တွေ့ရှိပြီး en_us သို့ ပုံသေသတ်မှတ်ထားသည်။ တွေ့ရှိထားသော ဒေသ-",
         "warning_using_default_os": f"သတိပေးချက်- ပံ့ပိုးမထားသော OS ကို တွေ့ရှိခဲ့ပြီး မပုံသေဖြတ်လမ်းကို အသုံးပြုပါမည်။ တွေ့ရှိထားသော OS-",
         "warning_duplicate_closed_issue": f"သတိပေးချက်- ပိတ်ထားပြီးသော ပြဿနာတစ်ခု တွေ့ရှိပါသည်",
-        "warning_nonissue_mode_closed_duplicate_used": "သတိပေးချက်- သတ်မှတ်ထားသော ရွေးချယ်မှု '--closed-duplicates-fail/-c' သည် '--issue/-i' မုဒ်တွင် မရှိ၍ အကျိုးသက်ရောက်မှုမှ မရှိပါ"
+        "warning_nonissue_mode_closed_duplicate_used": "သတိပေးချက်- သတ်မှတ်ထားသော ရွေးချယ်မှု '--closed-duplicates-fail/-c' သည် '--issue/-i' မုဒ်တွင် မရှိ၍ အကျိုးသက်ရောက်မှုမှ မရှိပါ",
     },
     "default": {"shell_sigint": "CTRL + C"},
     "windows_nt": {"shell_sigint": "CTRL + C"},

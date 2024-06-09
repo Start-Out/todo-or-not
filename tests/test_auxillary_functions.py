@@ -40,7 +40,5 @@ def test_get_encoding_file_not_exists():
     assert todo_or_not.todo_check.get_encoding("!*&^#(#)@@", []) is None
 
 
-
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -25,7 +25,7 @@ LOG_LEVEL_VERBOSE = 3
 
 
 def print_wrap(
-        msg: str, msg_level=LOG_LEVEL_NORMAL, log_level=LOG_LEVEL_NORMAL, file=sys.stdout
+    msg: str, msg_level=LOG_LEVEL_NORMAL, log_level=LOG_LEVEL_NORMAL, file=sys.stdout
 ):
     if msg_level <= log_level:
         print(msg, file=file)
@@ -110,12 +110,12 @@ def get_os(log_level=LOG_LEVEL_NORMAL):
 
 class Hit:
     def __init__(
-            self,
-            source_file: str,
-            source_line: int,
-            found_keys: list[str],
-            pertinent_lines: list[str],
-            trigger_line_index: int,
+        self,
+        source_file: str,
+        source_line: int,
+        found_keys: list[str],
+        pertinent_lines: list[str],
+        trigger_line_index: int,
     ):
         self.found_keys = found_keys
         self.source_file = source_file
@@ -187,7 +187,7 @@ class Hit:
     def get_pertinent_lines(self):
         starting_line_number = self.source_line - self.trigger_line_index
         _max_line = self.source_line + (
-                len(self.pertinent_lines) - self.trigger_line_index
+            len(self.pertinent_lines) - self.trigger_line_index
         )
 
         def _parse_line_number(_l: int, star: bool = False) -> str:
@@ -222,7 +222,7 @@ class Hit:
         return f"{self.get_found_keys()} - {self.get_triggering_line()}"
 
     def generate_issue(
-            self, _test: bool = False, log_level=LOG_LEVEL_NORMAL
+        self, _test: bool = False, log_level=LOG_LEVEL_NORMAL
     ) -> str or bool:
 
         repo_uri = f"https://github.com/None"
@@ -329,7 +329,11 @@ def _hash(hit_str: str):
 
 
 def find_lines(
-        filename: str, verbose: bool, ignore_flag: str, ignore_keys: list, log_level=LOG_LEVEL_NORMAL
+    filename: str,
+    verbose: bool,
+    ignore_flag: str,
+    ignore_keys: list,
+    log_level=LOG_LEVEL_NORMAL,
 ) -> tuple[list[Hit], str or None]:
     """
     Finds and returns each line of a file that contains a key
@@ -372,7 +376,7 @@ def find_lines(
                     # Look at lines before the pertinent line
                     _i = line_number - 1
                     while (
-                            abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0
+                        abs(line_number - _i) <= get_pertinent_line_limit() and _i >= 0
                     ):
                         _i -= 1
                         if len(lines[_i].strip()) > 0:
@@ -405,9 +409,11 @@ def find_lines(
                     output.append(_hit)
 
     else:
-        print_wrap(log_level=log_level,
-                   msg_level=LOG_LEVEL_VERBOSE,
-                   msg=f"{LOCALIZE[get_region()]['warning_encoding_not_supported']} \n * {filename}")
+        print_wrap(
+            log_level=log_level,
+            msg_level=LOG_LEVEL_VERBOSE,
+            msg=f"{LOCALIZE[get_region()]['warning_encoding_not_supported']} \n * {filename}",
+        )
 
     return output, use_encoding
 
@@ -432,7 +438,7 @@ def paste_contents_into_file(other_file_names: list[str], target_file: TextIO):
 
 
 def get_bot_submitted_issues(
-        _test: bool = False, log_level=LOG_LEVEL_NORMAL
+    _test: bool = False, log_level=LOG_LEVEL_NORMAL
 ) -> list[dict] or bool:
     """
     Makes a gh cli request for all issues submitted by app/todo-or-not, parses them, and returns them as a # todoon
@@ -478,7 +484,7 @@ def get_bot_submitted_issues(
 
 
 def get_encoding(
-        _target_path: str, _supported_encodings: list[str], log_level=LOG_LEVEL_NORMAL
+    _target_path: str, _supported_encodings: list[str], log_level=LOG_LEVEL_NORMAL
 ) -> str or None:
     """
     :param _target_path: A path-like string pointing to the file for which we want to get a valid encoding

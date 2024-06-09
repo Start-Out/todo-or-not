@@ -7,27 +7,36 @@ import todo_or_not.todo_check as td
 class TestTodoon(unittest.TestCase):
 
     def setUp(self):
-        os.environ["DEBUG"] = 'True'
+        os.environ["DEBUG"] = "True"
 
         self.other_files_list = [
             os.path.join("tests", "resources", "a.txt"),
             os.path.join("tests", "resources", "b.txt"),
-            os.path.join("tests", "resources", "c.txt")
+            os.path.join("tests", "resources", "c.txt"),
         ]
 
         self.specific_files_list = [
             os.path.join("tests", "resources", "a.txt"),
             os.path.join("tests", "resources", "b.txt"),
             os.path.join("tests", "resources", "c.txt"),
-            os.path.join("tests", "resources", "specific_files")
+            os.path.join("tests", "resources", "specific_files"),
         ]
 
-    def _environment_up(self, resource_dir: str, env_variables: list[tuple[str, str]] or None = None, disable_debug: bool = False):
+    def _environment_up(
+        self,
+        resource_dir: str,
+        env_variables: list[tuple[str, str]] or None = None,
+        disable_debug: bool = False,
+    ):
         # Preserve state
         with open(".todo-ignore", "r") as _before:
             self.todoignore_before = _before.read()
 
-        safe_dir = os.path.join("tests", "resources", resource_dir) if resource_dir != "." else None
+        safe_dir = (
+            os.path.join("tests", "resources", resource_dir)
+            if resource_dir != "."
+            else None
+        )
         self.old_dir = os.getcwd()
 
         if safe_dir is not None:
@@ -43,7 +52,7 @@ class TestTodoon(unittest.TestCase):
                 os.environ[key] = value
 
         if disable_debug:
-            os.environ["DEBUG"] = 'False'
+            os.environ["DEBUG"] = "False"
 
     def _environment_down(self):
         # Reset environment variables
@@ -54,7 +63,7 @@ class TestTodoon(unittest.TestCase):
                 del os.environ[key]
 
         # Restore state
-        os.environ["DEBUG"] = 'True'
+        os.environ["DEBUG"] = "True"
         os.chdir(self.old_dir)
 
         with open(".todo-ignore", "w+") as _after:
@@ -88,8 +97,12 @@ class TestTodoon(unittest.TestCase):
         TODOON_FIXMES_FOUND = os.environ.get("TODOON_FIXMES_FOUND")
         TODOON_ENCODING_ERRORS = os.environ.get("TODOON_ENCODING_ERRORS")
         TODOON_ISSUES_GENERATED = os.environ.get("TODOON_ISSUES_GENERATED")
-        TODOON_DUPLICATE_ISSUES_AVOIDED = os.environ.get("TODOON_DUPLICATE_ISSUES_AVOIDED")
-        TODOON_DUPLICATE_CLOSED_ISSUES = os.environ.get("TODOON_DUPLICATE_CLOSED_ISSUES")
+        TODOON_DUPLICATE_ISSUES_AVOIDED = os.environ.get(
+            "TODOON_DUPLICATE_ISSUES_AVOIDED"
+        )
+        TODOON_DUPLICATE_CLOSED_ISSUES = os.environ.get(
+            "TODOON_DUPLICATE_CLOSED_ISSUES"
+        )
 
         assert TODOON_STATUS == "finished"
         assert TODOON_PROGRESS == "100.0"
@@ -131,11 +144,10 @@ class TestTodoon(unittest.TestCase):
 
         self._environment_down()
 
-
     def test_todoon_takes_individual_targets(self):
         td.todoon(verbose=True, silent=True, files=self.specific_files_list)
 
-        self.assertEqual(os.environ.get("TODOON_FILES_SCANNED"), '6')
+        self.assertEqual(os.environ.get("TODOON_FILES_SCANNED"), "6")
 
     def test_todoignore_uses_wildcards(self):
         # Set up
@@ -147,7 +159,7 @@ class TestTodoon(unittest.TestCase):
         # Check results
         files_scanned = os.environ["TODOON_FILES_SCANNED"]
 
-        self.assertEqual(files_scanned, '8')
+        self.assertEqual(files_scanned, "8")
 
         # Tear down
         self._environment_down()
@@ -171,13 +183,13 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "github/gitignore"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
         self._environment_up("specific_files", env_variables=env, disable_debug=True)
 
         td.todoon(print_mode=False, silent=True)
 
-        assert os.environ["TODOON_ISSUES_GENERATED"] == '0'
+        assert os.environ["TODOON_ISSUES_GENERATED"] == "0"
 
         self._environment_down()
 
@@ -187,7 +199,7 @@ class TestTodoon(unittest.TestCase):
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
             ("GITHUB_TRIGGERING_ACTOR", "pytest"),
-            ("MAXIMUM_ISSUES_GENERATED", "1")
+            ("MAXIMUM_ISSUES_GENERATED", "1"),
         ]
         self._environment_up("specific_files", env_variables=env)
 
@@ -200,7 +212,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
         self._environment_up("closed_issue", env_variables=env, disable_debug=True)
 
@@ -213,7 +225,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
         self._environment_up("no_todos", env_variables=env, disable_debug=True)
 
@@ -225,7 +237,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
         self._environment_up("closed_issue", env_variables=env, disable_debug=True)
 
@@ -237,7 +249,7 @@ class TestTodoon(unittest.TestCase):
     def test_environment_variables(self):
         env = [
             ("MAXIMUM_ISSUES_GENERATED", "invalid"),
-            ("PERTINENT_LINE_LIMIT", "invalid")
+            ("PERTINENT_LINE_LIMIT", "invalid"),
         ]
         self._environment_up("no_todos", env_variables=env, disable_debug=True)
 
@@ -252,18 +264,18 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
         self._environment_up("singular", env_variables=env, disable_debug=True)
 
         td.todoon(print_mode=False, silent=True)
 
         # number of issues
-        assert os.environ["TODOON_ISSUES_GENERATED"] == '0'
+        assert os.environ["TODOON_ISSUES_GENERATED"] == "0"
         # number of duplicate issues
-        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == '1'
+        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "1"
         # number of closed issues
-        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == '1'
+        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "1"
 
         self._environment_down()
 
@@ -271,18 +283,18 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest")
+            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
         self._environment_up("plural", env_variables=env, disable_debug=True)
 
         td.todoon(print_mode=False, silent=True)
 
         # number of issues
-        assert os.environ["TODOON_ISSUES_GENERATED"] == '0'
+        assert os.environ["TODOON_ISSUES_GENERATED"] == "0"
         # number of duplicate issues
-        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == '2'
+        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "2"
         # number of closed issues
-        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == '2'
+        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "2"
 
         self._environment_down()
 
@@ -312,5 +324,5 @@ class TestTodoon(unittest.TestCase):
         self._environment_down()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
