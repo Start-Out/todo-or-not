@@ -1,79 +1,78 @@
+from todo_or_not.todo_check import Hit
+
 import ply.lex as lex
 
 import re
 import sys
 
-from pygments import lexer
-
 comment_symbols = {
     "python": {
-        "line_comment": re.compile(r"#.+"),
-        # "block_comment": {"start": re.compile(r"'''"), "end": re.compile(r"'''")},
-        "block_comment": re.compile(r"'''.+'''"),
+        "line_comment": r"[#].+",
+        "block_comment": r"'''.+'''",
     },
     "java": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "javascript": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "c": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "c++": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "php": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "swift": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "ruby": {
-        "line_comment": re.compile(r"#.+"),
-        "block_comment": {"start": re.compile(r"=begin"), "end": re.compile(r"=end")},
+        "line_comment": r"[#].+",
+        "block_comment": r"=begin.+=end",
     },
     "go": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "rust": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "kotlin": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "csharp": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "typescript": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "scala": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"//.+",
+        "block_comment": r"/\*.+\*/",
     },
     "shell": {
-        "line_comment": re.compile(r"#.+"),
-        "block_comment": {"start": re.compile(r": '"), "end": re.compile(r"'")},
+        "line_comment": r"[#].+",
+        "block_comment": r": '.+'",
     },
     "pascal": {
-        "line_comment": re.compile(r"//.+"),
-        "block_comment": {"start": re.compile(r"{"), "end": re.compile(r"}")},
+        "line_comment": r"//.+",
+        "block_comment": r"{.+}",
     },
     "sql": {
-        "line_comment": re.compile(r"--.+"),
-        "block_comment": {"start": re.compile(r"/\*"), "end": re.compile(r"\*/")},
+        "line_comment": r"--.+",
+        "block_comment": r"/\*.+\*/",
     },
 }
 
@@ -104,6 +103,13 @@ file_extensions = {
     ".sql": "sql",
 }
 
+code = '''
+if __name__ == "__main__":
+if len(sys.argv) < 3:
+    print("Usage: python your_script.py <file extension> <input>")
+    exit(1)  # this is a comment with a #label
+'''
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python your_script.py <file extension> <input>")
@@ -116,31 +122,33 @@ if __name__ == "__main__":
     symbol_set = comment_symbols[language]
 
     tokens = (
-        "COMMENT_TITLE",
-        "LINE_COMMENT_BODY",
-        "BLOCK_COMMENT_CHAR_START",
-        "BLOCK_COMMENT_CHAR_END",
-        "BLOCK_COMMENT_BODY",
-        "BLOCK_COMMENT_TITLE",
-        "LABEL",
-        "CODE",
+        "LINE_COMMENT"
     )
 
-    t_COMMENT_TITLE = r"\<.*\>"
-    t_LINE_COMMENT_BODY = symbol_set["line_comment"]
-    t_BLOCK_COMMENT_CHAR_START = symbol_set["block_comment"]["start"]
-    t_BLOCK_COMMENT_CHAR_END = symbol_set["block_comment"]["end"]
-    t_BLOCK_COMMENT_BODY = r"BLOCK_COMMENT_BODY"
-    t_BLOCK_COMMENT_TITLE = r"BLOCK_COMMENT_TITLE"
-    t_LABEL = r"#\w+"
-    t_CODE = r"CODE"
+    r_COMMENT_TITLE = r"\<.*\>"
+    # t_LINE_COMMENT_BODY = symbol_set["line_comment"]
+    # t_BLOCK_COMMENT_BODY = symbol_set["block_comment"]
+    # t_LABEL = r"[#]\w+"
+    # t_CODE = r".+"
+
+    def t_COMMENT_BODY(t):
+        symbol_set["line_comment"]
+        t.lexer.todoon_hits.append(t)
+
+    def t_newline(t):
+        r'\n+'
+        t.lexer.lineno += len(t.value)
+
+    def t_error(t):
+        print("Illegal character '%s'" % t.value[0])
+        t.lexer.skip(1)
 
     lexer = lex.lex()
-    lexer.input(user_input)
+    lexer.todoon_hits = []
+    lexer.input(code)
 
-    code = '''
-if __name__ == "__main__":
-if len(sys.argv) < 3:
-    print("Usage: python your_script.py <file extension> <input>")
-    exit(1)  # this is a comment with a #label
-    '''
+    parsed_tokens = []
+    for token in lexer:
+        parsed_tokens.append(token)
+
+    pass
