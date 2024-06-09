@@ -13,67 +13,67 @@ comment_symbols = {
         "block_comment": r"'''.+'''",
     },
     "java": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "javascript": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "c": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "c++": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "php": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "swift": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "ruby": {
-        "line_comment": r"[#].+",
+        "line_comment": "[#]",
         "block_comment": r"=begin.+=end",
     },
     "go": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "rust": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "kotlin": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "csharp": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "typescript": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "scala": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"/\*.+\*/",
     },
     "shell": {
-        "line_comment": r"[#].+",
+        "line_comment": "[#]",
         "block_comment": r": '.+'",
     },
     "pascal": {
-        "line_comment": r"//.+",
+        "line_comment": "//",
         "block_comment": r"{.+}",
     },
     "sql": {
-        "line_comment": r"--.+",
+        "line_comment": "--",
         "block_comment": r"/\*.+\*/",
     },
 }
@@ -109,14 +109,16 @@ file_extensions = {
 
 
 class TodoGrammar:
+    def __init__(self, file_extension: str):
+        self.language = file_extensions[file_extension]
 
-    # List of token names.   This is always required
-    tokens = ("CODE_BEFORE_COMMENT", "COMMENT_UP_TO_KEY", "REST_OF_COMMENT")
+        # List of token names.   This is always required
+        self.tokens = ("CODE_BEFORE_COMMENT", "COMMENT_UP_TO_KEY", "REST_OF_COMMENT")
 
-    # Regular expression rules for simple tokens
-    t_CODE_BEFORE_COMMENT = r"^[^#]*(?=[#])"
-    t_COMMENT_UP_TO_KEY = r"[#].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])"
-    t_REST_OF_COMMENT = r".+"
+        # Regular expression rules for simple tokens
+        self.t_CODE_BEFORE_COMMENT = f'^[^{comment_symbols[self.language]["line_comment"]}]*(?=[{comment_symbols[self.language]["line_comment"]}])'
+        self.t_COMMENT_UP_TO_KEY = f'[{comment_symbols[self.language]["line_comment"]}].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])'
+        self.t_REST_OF_COMMENT = f'.+'
 
     # Define a rule so we can track line numbers
     def t_newline(self, t):
@@ -161,7 +163,7 @@ class TodoGrammar:
 
 
 if __name__ == "__main__":
-    g = TodoGrammar()
+    g = TodoGrammar("sql")
     g.build()
 
     while True:
