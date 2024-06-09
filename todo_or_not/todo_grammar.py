@@ -143,6 +143,10 @@ class TodoGrammar:
         """pre_todo_comment : CODE_BEFORE_COMMENT"""
         p[0] = p[1]
 
+    def p_empty_pre_todo_comment(self, p):
+        """pre_todo_comment :"""
+        pass
+
     def p_todo_line_comment_body(self, p):
         """todo_line_comment_body   : COMMENT_UP_TO_KEY REST_OF_COMMENT
         | COMMENT_UP_TO_KEY"""
