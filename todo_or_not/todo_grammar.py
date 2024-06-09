@@ -103,12 +103,12 @@ file_extensions = {
     ".sql": "sql",
 }
 
-code = '''
+code = """
 if __name__ == "__main__":
 if len(sys.argv) < 3:
     print("Usage: python your_script.py <file extension> <input>")
     exit(1)  # this is a comment with a #label
-'''
+"""
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
@@ -121,9 +121,7 @@ if __name__ == "__main__":
     language = file_extensions[f".{extension}"]
     symbol_set = comment_symbols[language]
 
-    tokens = (
-        "LINE_COMMENT"
-    )
+    tokens = "LINE_COMMENT"
 
     r_COMMENT_TITLE = r"\<.*\>"
     # t_LINE_COMMENT_BODY = symbol_set["line_comment"]
@@ -136,7 +134,7 @@ if __name__ == "__main__":
         t.lexer.todoon_hits.append(t)
 
     def t_newline(t):
-        r'\n+'
+        r"\n+"
         t.lexer.lineno += len(t.value)
 
     def t_error(t):
