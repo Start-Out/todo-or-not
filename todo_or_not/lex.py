@@ -8,6 +8,7 @@ t_CODE_BEFORE_COMMENT = r"^[^#]*(?=[#])"
 t_COMMENT_UP_TO_KEY = r"[#].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])"
 t_REST_OF_COMMENT = r".+"
 
+
 # Define a rule so we can track line numbers
 def t_newline(t):
     r"\n+"
