@@ -105,59 +105,65 @@ file_extensions = {
     "sql": "sql",
 }
 
-# List of token names.   This is always required
-tokens = ("CODE_BEFORE_COMMENT", "COMMENT_UP_TO_KEY", "REST_OF_COMMENT")
-
-# Regular expression rules for simple tokens
-t_CODE_BEFORE_COMMENT = r"^[^#]*(?=[#])"
-t_COMMENT_UP_TO_KEY = r"[#].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])"
-t_REST_OF_COMMENT = r".+"
+###########################
 
 
-# Define a rule so we can track line numbers
-def t_newline(t):
-    r"\n+"
-    t.lexer.lineno += len(t.value)
+class TodoGrammar:
 
+    # List of token names.   This is always required
+    tokens = ("CODE_BEFORE_COMMENT", "COMMENT_UP_TO_KEY", "REST_OF_COMMENT")
 
-t_ignore = " \t"
+    # Regular expression rules for simple tokens
+    t_CODE_BEFORE_COMMENT = r"^[^#]*(?=[#])"
+    t_COMMENT_UP_TO_KEY = r"[#].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])"
+    t_REST_OF_COMMENT = r".+"
 
+    # Define a rule so we can track line numbers
+    def t_newline(self, t):
+        r"\n+"
+        t.lexer.lineno += len(t.value)
 
-# Error handling rule
-def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
-    t.lexer.skip(1)
+    t_ignore = " \t"
 
+    # Error handling rule
+    def t_error(self, t):
+        print("Illegal character '%s'" % t.value[0])
+        t.lexer.skip(1)
 
-# Build the lexer
-lexer = lex.lex()
+    # Build the lexer
+    def _build_lexer(self, **kwargs):
+        self.lexer = lex.lex(module=self, **kwargs)
 
+    def p_todo_line_with_code(self, p):
+        """todo_line : CODE_BEFORE_COMMENT todo_line_comment_body"""
+        reconstructed_line = f"{p[1]} {p[2]['body']}"
+        p[0] = Hit("file", 1, p[2]["keywords"], [reconstructed_line], 0)
 
-def p_todo_line_with_code(p):
-    """todo_line : CODE_BEFORE_COMMENT todo_line_comment_body"""
-    reconstructed_line = f"{p[1]} {p[2]['body']}"
-    p[0] = Hit("file", 1, p[2]["keywords"], [reconstructed_line], 0)
+    def p_todo_line_comment_body(self, p):
+        """todo_line_comment_body   : COMMENT_UP_TO_KEY REST_OF_COMMENT
+        | COMMENT_UP_TO_KEY"""
 
+        keywords = re.findall(r"(todo|fixme)", p[1].lower())
+        body = f"{p[1]} {p[2]}" if len(p) > 2 else p[1]
 
-def p_todo_line_comment_body(p):
-    """todo_line_comment_body   : COMMENT_UP_TO_KEY REST_OF_COMMENT
-    | COMMENT_UP_TO_KEY"""
+        p[0] = {"keywords": keywords, "body": body}
 
-    keywords = re.findall(r"(todo|fixme)", p[1].lower())
-    body = f"{p[1]} {p[2]}" if len(p) > 2 else p[1]
+    # Error rule for syntax errors
+    def p_error(self, p):
+        print("Syntax error in input!")
 
-    p[0] = {"keywords": keywords, "body": body}
+    # Build the parser
+    def build(self, **kwargs):
+        self._build_lexer(**kwargs)
+        self.parser = yacc.yacc(module=self, **kwargs)
 
+    ####################
 
-# Error rule for syntax errors
-def p_error(p):
-    print("Syntax error in input!")
-
-
-# Build the parser
-parser = yacc.yacc()
 
 if __name__ == "__main__":
+    g = TodoGrammar()
+    g.build()
+
     while True:
         try:
             s = input("code > ")
@@ -165,5 +171,5 @@ if __name__ == "__main__":
             break
         if not s:
             continue
-        result = parser.parse(s)
+        result = g.parser.parse(s)
         print(result)
