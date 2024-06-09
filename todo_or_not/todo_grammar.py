@@ -116,7 +116,7 @@ class TodoGrammar:
         # Regular expression rules for simple tokens
         self.t_CODE_BEFORE_COMMENT = f'^[^{comment_symbols[self.language]["line_comment"]}]*(?=[{comment_symbols[self.language]["line_comment"]}])'
         self.t_COMMENT_UP_TO_KEY = f'[{comment_symbols[self.language]["line_comment"]}].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])'
-        self.t_REST_OF_COMMENT = f'.+'
+        self.t_REST_OF_COMMENT = f".+"
 
     # Define a rule so we can track line numbers
     def t_newline(self, t):
@@ -139,6 +139,9 @@ class TodoGrammar:
         reconstructed_line = f"{p[1]}{p[2]['body']}"
         p[0] = Hit("file", 1, p[2]["keywords"], [reconstructed_line], 0)
 
+        if p[2]["labels"] is not None:
+            p[0].structured_labels = p[2]["labels"]
+
     def p_pre_todo_comment(self, p):
         """pre_todo_comment : CODE_BEFORE_COMMENT"""
         p[0] = p[1]
@@ -153,8 +156,11 @@ class TodoGrammar:
 
         keywords = re.findall(r"(todo|fixme)", p[1].lower())
         body = f"{p[1]} {p[2]}" if len(p) > 2 else p[1]
+        labels = re.findall(r"(?<=#)(?![tT][oO][dD][oO]|[fF][iI][xX][mM][eE]\b)\w+", body)
+        if len(labels) == 0:
+            labels = None
 
-        p[0] = {"keywords": keywords, "body": body}
+        p[0] = {"keywords": keywords, "body": body, "labels": labels}
 
     # Error rule for syntax errors
     def p_error(self, p):
