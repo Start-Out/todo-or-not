@@ -9,7 +9,7 @@ from todo_or_not.todo_check import Hit
 
 comment_symbols = {
     "python": {
-        "line_comment": r"[#].+",
+        "line_comment": "#",
         "block_comment": r"'''.+'''",
     },
     "java": {
@@ -79,30 +79,30 @@ comment_symbols = {
 }
 
 file_extensions = {
-    ".py": "python",
-    ".java": "java",
-    ".js": "javascript",
-    ".c": "c",
-    ".cpp": "c++",
-    ".hpp": "c++",
-    ".cc": "c++",
-    ".cxx": "c++",
-    ".php": "php",
-    ".swift": "swift",
-    ".rb": "ruby",
-    ".go": "go",
-    ".rs": "rust",
-    ".kt": "kotlin",
-    ".kts": "kotlin",
-    ".cs": "csharp",
-    ".ts": "typescript",
-    ".scala": "scala",
-    ".sc": "scala",
-    ".sh": "shell",
-    ".bash": "shell",
-    ".pas": "pascal",
-    ".pp": "pascal",
-    ".sql": "sql",
+    "py": "python",
+    "java": "java",
+    "js": "javascript",
+    "c": "c",
+    "cpp": "c++",
+    "hpp": "c++",
+    "cc": "c++",
+    "cxx": "c++",
+    "php": "php",
+    "swift": "swift",
+    "rb": "ruby",
+    "go": "go",
+    "rs": "rust",
+    "kt": "kotlin",
+    "kts": "kotlin",
+    "cs": "csharp",
+    "ts": "typescript",
+    "scala": "scala",
+    "sc": "scala",
+    "sh": "shell",
+    "bash": "shell",
+    "pas": "pascal",
+    "pp": "pascal",
+    "sql": "sql",
 }
 
 # List of token names.   This is always required
@@ -135,7 +135,7 @@ lexer = lex.lex()
 
 def p_todo_line_with_code(p):
     """todo_line : CODE_BEFORE_COMMENT todo_line_comment_body"""
-    reconstructed_line = f"{p[1]} {p[2]["body"]}"
+    reconstructed_line = f"{p[1]} {p[2]['body']}"
     p[0] = Hit("file", 1, p[2]["keywords"], [reconstructed_line], 0)
 
 
@@ -158,18 +158,6 @@ def p_error(p):
 parser = yacc.yacc()
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("Usage: python your_script.py <file extension> <input>")
-        exit(1)
-
-    extension = sys.argv[1]
-    user_input = " ".join(sys.argv[2:])
-
-    language = file_extensions[f".{extension}"]
-    symbol_set = comment_symbols[language]
-
-    tokens = "LINE_COMMENT"
-
     while True:
         try:
             s = input("code > ")
