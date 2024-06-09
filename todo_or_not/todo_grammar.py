@@ -136,7 +136,7 @@ class TodoGrammar:
 
     def p_todo_line_with_code(self, p):
         """todo_line : pre_todo_comment todo_line_comment_body"""
-        reconstructed_line = f"{p[1]} {p[2]['body']}"
+        reconstructed_line = f"{p[1]}{p[2]['body']}"
         p[0] = Hit("file", 1, p[2]["keywords"], [reconstructed_line], 0)
 
     def p_pre_todo_comment(self, p):
@@ -145,7 +145,7 @@ class TodoGrammar:
 
     def p_empty_pre_todo_comment(self, p):
         """pre_todo_comment :"""
-        pass
+        p[0] = ""
 
     def p_todo_line_comment_body(self, p):
         """todo_line_comment_body   : COMMENT_UP_TO_KEY REST_OF_COMMENT
