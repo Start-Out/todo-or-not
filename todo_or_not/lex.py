@@ -1,12 +1,12 @@
 import ply.lex as lex
 
 # List of token names.   This is always required
-tokens = ("PRE_LINE_COMMENT", "TODO_FLAG", "ELSE")
+tokens = ("CODE_BEFORE_COMMENT", "COMMENT_UP_TO_KEY", "REST_OF_COMMENT")
 
 # Regular expression rules for simple tokens
-t_PRE_LINE_COMMENT = r"^[^#]*(?=[#])"
-t_TODO_FLAG = r"[#].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])"
-t_ELSE = r".+"
+t_CODE_BEFORE_COMMENT = r"^[^#]*(?=[#])"
+t_COMMENT_UP_TO_KEY = r"[#].*([tT][oO][dD][oO]|[fF][iI][xX][mM][eE])"
+t_REST_OF_COMMENT = r".+"
 
 # Define a rule so we can track line numbers
 def t_newline(t):
