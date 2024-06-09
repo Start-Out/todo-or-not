@@ -8,7 +8,8 @@ from todo_or_not.todo_check import Hit
 
 def p_todo_line(p):
     'todo_line : LINE_COMMENT_CHAR TODO_FLAG ELSE'
-    p[0] = Hit("file", 1, [p[2].lower()], [p[2]], 0)
+    reconstructed_line = f'{p[3]}'
+    p[0] = Hit("file", 1, [p[2].lower()], [reconstructed_line], 0)
 
 # Error rule for syntax errors
 def p_error(p):
