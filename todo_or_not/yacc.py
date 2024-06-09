@@ -1,4 +1,5 @@
 # Yacc example
+import re
 
 import ply.yacc as yacc
 
@@ -14,18 +15,13 @@ def p_todo_line_with_code(p):
 
 
 def p_todo_line_comment_body(p):
-    "todo_line_comment_body : TODO_FLAG ELSE"
-    find_keywords = p[1].lower().split()
+    """todo_line_comment_body   : TODO_FLAG ELSE
+                                | TODO_FLAG"""
 
-    keywords = []
+    keywords = re.findall(r'(todo|fixme)', p[1].lower())
+    body = f"{p[1]} {p[2]}" if len(p) > 2 else p[1]
 
-    if "todo" in find_keywords:
-        keywords.append("todo")
-    if "fixme" in find_keywords:
-        keywords.append("fixme")
-
-    p[0] = {"keywords": keywords, "body": f"{p[1]} {p[2]}"}
-
+    p[0] = {"keywords": keywords, "body": body}
 
 # Error rule for syntax errors
 def p_error(p):

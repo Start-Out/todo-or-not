@@ -1,7 +1,7 @@
 import ply.lex as lex
 
 # List of token names.   This is always required
-tokens = ("PRE_LINE_COMMENT", "TODO_FLAG", "NOT_FLAG", "ELSE")
+tokens = ("PRE_LINE_COMMENT", "TODO_FLAG", "ELSE")
 
 # Regular expression rules for simple tokens
 t_PRE_LINE_COMMENT = r"^[^#]*(?=[#])"
