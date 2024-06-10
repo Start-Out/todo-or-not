@@ -166,15 +166,25 @@ class TodoGrammar:
         structured_title, structured_body = None, None
         if len(_structured) > 1:
             structured_title, structured_body = _structured
-            structured_title = structured_title.strip(comment_symbols[self.language]["line_comment"]).strip()
+            structured_title = structured_title.strip(
+                comment_symbols[self.language]["line_comment"]
+            ).strip()
             structured_body = structured_body.strip()
 
         _body = body if structured_title is None else structured_body
-        labels = re.findall(r"(?<=#)(?![tT][oO][dD][oO]|[fF][iI][xX][mM][eE]\b)[^\s]+", _body)
+        labels = re.findall(
+            r"(?<=#)(?![tT][oO][dD][oO]|[fF][iI][xX][mM][eE]\b)[^\s]+", _body
+        )
         if len(labels) == 0:
             labels = None
 
-        p[0] = {"keywords": keywords, "body": body, "labels": labels, "structured_title": structured_title, "structured_body": structured_body}
+        p[0] = {
+            "keywords": keywords,
+            "body": body,
+            "labels": labels,
+            "structured_title": structured_title,
+            "structured_body": structured_body,
+        }
 
     # Error rule for syntax errors
     def p_error(self, p):
