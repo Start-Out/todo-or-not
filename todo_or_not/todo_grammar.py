@@ -141,6 +141,10 @@ class TodoGrammar:
 
         if p[2]["labels"] is not None:
             p[0].structured_labels = p[2]["labels"]
+        if p[2]["structured_title"] is not None:
+            p[0].structured_title = p[2]["structured_title"]
+        if p[2]["structured_body"] is not None:
+            p[0].structured_body = p[2]["structured_body"]
 
     def p_pre_todo_comment(self, p):
         """pre_todo_comment : CODE_BEFORE_COMMENT"""
@@ -156,11 +160,21 @@ class TodoGrammar:
 
         keywords = re.findall(r"(todo|fixme)", p[1].lower())
         body = f"{p[1]} {p[2]}" if len(p) > 2 else p[1]
-        labels = re.findall(r"(?<=#)(?![tT][oO][dD][oO]|[fF][iI][xX][mM][eE]\b)[^\s]+", body)
+
+        _structured = body.split("|", 1)
+
+        structured_title, structured_body = None, None
+        if len(_structured) > 1:
+            structured_title, structured_body = _structured
+            structured_title = structured_title.strip(comment_symbols[self.language]["line_comment"]).strip()
+            structured_body = structured_body.strip()
+
+        _body = body if structured_title is None else structured_body
+        labels = re.findall(r"(?<=#)(?![tT][oO][dD][oO]|[fF][iI][xX][mM][eE]\b)[^\s]+", _body)
         if len(labels) == 0:
             labels = None
 
-        p[0] = {"keywords": keywords, "body": body, "labels": labels}
+        p[0] = {"keywords": keywords, "body": body, "labels": labels, "structured_title": structured_title, "structured_body": structured_body}
 
     # Error rule for syntax errors
     def p_error(self, p):

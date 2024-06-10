@@ -154,3 +154,23 @@ class TestTodoGrammarPython(unittest.TestCase):
         expected_hit.structured_labels = ["alpha", "charlie_delta"]
         result = self.grammar.parser.parse(code)
         assert expected_hit == result
+
+    def test_structured_comments(self):
+        code = "123 # Title | a todo z"
+        expected_hit = Hit("file", 1, ["todo"], [code], 0)
+        expected_hit.structured_title = "Title"
+        result = self.grammar.parser.parse(code)
+        assert expected_hit == result
+
+        code = "123 #Title | a todo z"
+        expected_hit = Hit("file", 1, ["todo"], [code], 0)
+        expected_hit.structured_title = "Title"
+        result = self.grammar.parser.parse(code)
+        assert expected_hit == result
+
+        code = "123 #Title | a todo z #label"
+        expected_hit = Hit("file", 1, ["todo"], [code], 0)
+        expected_hit.structured_title = "Title"
+        expected_hit.structured_labels = ["label"]
+        result = self.grammar.parser.parse(code)
+        assert expected_hit == result
