@@ -156,7 +156,7 @@ class TodoGrammar:
 
         keywords = re.findall(r"(todo|fixme)", p[1].lower())
         body = f"{p[1]} {p[2]}" if len(p) > 2 else p[1]
-        labels = re.findall(r"(?<=#)(?![tT][oO][dD][oO]|[fF][iI][xX][mM][eE]\b)\w+", body)
+        labels = re.findall(r"(?<=#)(?![tT][oO][dD][oO]|[fF][iI][xX][mM][eE]\b)[^\s]+", body)
         if len(labels) == 0:
             labels = None
 

@@ -135,3 +135,21 @@ class TestTodoGrammarPython(unittest.TestCase):
         expected_hit = Hit("file", 1, ["fixme", "todo"], [code], 0)
         result = self.grammar.parser.parse(code)
         assert expected_hit == result
+
+    def test_complex_comment_with_labels(self):  # TODO that
+        code = "123 # a todo z #bug"
+        expected_hit = Hit("file", 1, ["todo"], [code], 0)
+        expected_hit.structured_labels = ["bug"]
+        result = self.grammar.parser.parse(code)
+        assert expected_hit == result
+
+        code = "123 # #$@1aF_98 a fixme z"
+        expected_hit = Hit("file", 1, ["fixme"], [code], 0)
+        expected_hit.structured_labels = ["$@1aF_98"]
+        result = self.grammar.parser.parse(code)
+        assert expected_hit == result
+
+        code = "123 # a fixme z todo"
+        expected_hit = Hit("file", 1, ["fixme", "todo"], [code], 0)
+        result = self.grammar.parser.parse(code)
+        assert expected_hit == result
