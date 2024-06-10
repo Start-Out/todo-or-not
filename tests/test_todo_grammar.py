@@ -149,7 +149,8 @@ class TestTodoGrammarPython(unittest.TestCase):
         result = self.grammar.parser.parse(code)
         assert expected_hit == result
 
-        code = "123 # a fixme z todo"
+        code = "123 # a fixme z todo #alpha bravo #charlie_delta # echo"
         expected_hit = Hit("file", 1, ["fixme", "todo"], [code], 0)
+        expected_hit.structured_labels = ["alpha", "charlie_delta"]
         result = self.grammar.parser.parse(code)
         assert expected_hit == result
