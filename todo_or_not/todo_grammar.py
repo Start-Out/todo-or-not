@@ -6,64 +6,32 @@ import ply.yacc as yacc
 
 from todo_or_not.todo_check import Hit
 
+C_LIKE = {
+    "line_comment": "//",
+    "block_comment": r"/\*.+\*/",
+}
 
 comment_symbols = {
     "python": {
         "line_comment": "#",
         "block_comment": r"'''.+'''",
     },
-    "java": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "javascript": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "c": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "c++": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "php": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "swift": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
+    "java": C_LIKE,
+    "javascript": C_LIKE,
+    "c": C_LIKE,
+    "c++": C_LIKE,
+    "php": C_LIKE,
+    "swift": C_LIKE,
     "ruby": {
         "line_comment": "[#]",
         "block_comment": r"=begin.+=end",
     },
-    "go": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "rust": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "kotlin": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "csharp": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "typescript": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
-    "scala": {
-        "line_comment": "//",
-        "block_comment": r"/\*.+\*/",
-    },
+    "go": C_LIKE,
+    "rust": C_LIKE,
+    "kotlin": C_LIKE,
+    "csharp": C_LIKE,
+    "typescript": C_LIKE,
+    "scala": C_LIKE,
     "shell": {
         "line_comment": "[#]",
         "block_comment": r": '.+'",
@@ -76,6 +44,7 @@ comment_symbols = {
         "line_comment": "--",
         "block_comment": r"/\*.+\*/",
     },
+    "x_default": C_LIKE
 }
 
 file_extensions = {
@@ -108,7 +77,10 @@ file_extensions = {
 
 class TodoGrammar:
     def __init__(self, file_extension: str):
-        self.language = file_extensions[file_extension]
+        try:
+            self.language = file_extensions[file_extension]
+        except KeyError:
+            self.language = "x_default"
 
         # List of token names.   This is always required
         self.tokens = ("CODE_BEFORE_COMMENT", "COMMENT_UP_TO_KEY", "REST_OF_COMMENT")
