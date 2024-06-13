@@ -4,7 +4,7 @@ import sys
 import ply.lex as lex
 import ply.yacc as yacc
 
-from todo_or_not.todo_check import Hit
+from todo_or_not.todo_hit import Hit
 
 C_LIKE = {"line_comment": "//", "block_comment": {"start": r"/\*", "end": r"\*/"}}
 
@@ -150,11 +150,18 @@ class TodoGrammar:
     # Error rule for syntax errors
     def p_error(self, p):
         print("Syntax error in input!")
+        raise SyntaxError(f'\n== Invalid syntax: \n-- [parser state] {self.parser.state} \n-- [stack state] {self.parser.symstack}')
 
     # Build the parser
     def build(self, **kwargs):
         self._build_lexer(**kwargs)
         self.parser = yacc.yacc(module=self, **kwargs)
+
+    def safe_parse(self, input: str):
+        try:
+            return self.parser.parse(input)
+        except SyntaxError:
+            return None
 
 
 if __name__ == "__main__":

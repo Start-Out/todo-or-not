@@ -14,6 +14,7 @@ import todo_or_not.utility as util
 from todo_or_not.localize import LOCALIZE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
+from todo_or_not.todo_grammar import find_language, TodoGrammar
 # from todo_or_not.todo_grammar import find_language, TodoGrammar
 from todo_or_not.todo_hit import Hit
 
@@ -46,14 +47,15 @@ def find_hits(
         with open(filename, "r", encoding=use_encoding) as file:
             # Get the extension of this file and parse its language, note that several extensions may be associated
             # with a single language, so we must find the language common to those extensions.
-        # file_extension = filename.rsplit(".", 1)[-1]
-        # file_language = find_language(file_extension)
+            file_extension = filename.rsplit(".", 1)[-1]
+            file_language = find_language(file_extension)
 
             # If that language does not yet have a parser built, we must build one (note that calling the TodoGrammar
             # constructor with the file_extension will functional identically between different file extensions for
             # the same language)
-        # if file_language not in parsers.keys():
-        #     parsers[file_language] = TodoGrammar(file_extension)
+            if file_language not in parsers.keys():
+                parsers[file_language] = TodoGrammar(file_extension)
+                parsers[file_language].build()
 
             line_number = 0
             lines = file.readlines()
@@ -61,22 +63,22 @@ def find_hits(
             for _line in lines:
                 line_number += 1
 
-                # If this line contains the ignore flag, simply move on
-                if ignore_flag.lower() in _line.lower():
-                    continue
+            # # If this line contains the ignore flag, simply move on
+            # if ignore_flag.lower() in _line.lower():
+            #     continue
+            #
+            # # Collect the found keys and their associated info
+            # _found_keys = []
+            #
+            # for key in ["todo", "fixme"]:
+            #     if key.lower() in _line.lower():
+            #         _found_keys.append(key)
+            #
+            # if len(_found_keys) > 0:
+                _use_parser = parsers[file_language]
+                _potential_hit = _use_parser.parser.parse(_line)
 
-                # Collect the found keys and their associated info
-                _found_keys = []
-
-                for key in ["todo", "fixme"]:
-                    if key.lower() in _line.lower():
-                        _found_keys.append(key)
-
-                if len(_found_keys) > 0:
-            # _use_parser = parsers[file_language]
-            # _potential_hit = _use_parser.parse(_line)
-
-            # if False:
+                if _potential_hit:
                     # Collect surrounding lines that may be pertinent
                     _pertinent_lines = []
 
@@ -109,8 +111,8 @@ def find_hits(
                     _hit = Hit(
                         os.path.relpath(filename, os.getcwd()),
                         line_number,
-                        # {"status": "I'm not done yet"},
-                        _found_keys,
+                        {"status": "I'm not done yet"},
+                        # _found_keys,
                         _pertinent_lines,
                         _trigger_line,
                     )
