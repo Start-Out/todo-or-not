@@ -2,6 +2,7 @@ import os
 import unittest
 
 import todo_or_not.todo_check as td
+import todo_or_not.utility
 
 
 class TestTodoon(unittest.TestCase):
@@ -255,8 +256,8 @@ class TestTodoon(unittest.TestCase):
 
         td.todoon(print_mode=False, silent=True)
 
-        assert td.get_max_issues() == 8
-        assert td.get_pertinent_line_limit() == 8
+        assert todo_or_not.utility.get_max_issues() == 8
+        assert todo_or_not.utility.get_pertinent_line_limit() == 8
 
         self._environment_down()
 
