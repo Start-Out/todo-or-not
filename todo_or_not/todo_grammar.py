@@ -137,12 +137,16 @@ class TodoGrammar:
             r"(?<=#)(?![tT][oO][dD][oO]|[fF][iI][xX][mM][eE]\b)[^\s]+", _body
         )
         if len(labels) == 0:
-            labels = None
+            unique_labels = None
+        else:
+            unique_labels = list(set(labels))
+
+        unique_keywords = list(set(keywords))
 
         p[0] = {
-            "keywords": keywords,
+            "keywords": unique_keywords,
             "body": body,
-            "labels": labels,
+            "labels": unique_labels,
             "structured_title": structured_title,
             "structured_body": structured_body,
         }

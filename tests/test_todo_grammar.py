@@ -179,6 +179,12 @@ class TestTodoGrammarPython(unittest.TestCase):
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
+    def test_structured_comment_with_no_code(self):
+        code = "    # TODO Closed Issues are helpful! | This issue is closed, but the TODO string is still in the codebase!"
+        expected_hit = Hit("file", 1, ["todo"], [code.strip()], 0)
+        expected_hit.structured_title = "TODO Closed Issues are helpful!"
+        result = self.grammar.safe_parse(code)
+        assert expected_hit == result
 
 class TestTodoGrammarC(unittest.TestCase):
     def setUp(self):

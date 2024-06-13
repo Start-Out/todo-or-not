@@ -76,7 +76,7 @@ def find_hits(
             #
             # if len(_found_keys) > 0:
                 _use_parser = parsers[file_language]
-                _potential_hit = _use_parser.parser.parse(_line)
+                _potential_hit = _use_parser.safe_parse(_line)
 
                 if _potential_hit:
                     # Collect surrounding lines that may be pertinent
