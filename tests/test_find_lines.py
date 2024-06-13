@@ -20,7 +20,7 @@ class TestFindLines(unittest.TestCase):
         )
 
     def test_find_lines(self):
-        hits, encoding = todo_or_not.todo_check.find_lines(
+        hits, encoding = todo_or_not.todo_check.find_hits(
             self.hit_tests, False, "# todoon", ["todo", "fixme"]
         )
 
@@ -62,7 +62,7 @@ class TestFindLines(unittest.TestCase):
 
     @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
     def test_non_verbose_print(self, stderr):
-        _, _ = todo_or_not.todo_check.find_lines(
+        _, _ = todo_or_not.todo_check.find_hits(
             self.unsupported_encoding_test, False, "# todoon", ["todo", "fixme"]
         )
 
@@ -70,7 +70,7 @@ class TestFindLines(unittest.TestCase):
 
     @unittest.mock.patch("sys.stderr", new_callable=io.StringIO)
     def test_verbose_print(self, stderr):
-        _, _ = todo_or_not.todo_check.find_lines(
+        _, _ = todo_or_not.todo_check.find_hits(
             self.unsupported_encoding_test, True, "# todoon", ["todo", "fixme"]
         )
 
@@ -83,19 +83,19 @@ class TestFindLines(unittest.TestCase):
         self.assertEqual(printed_value, expected_value)
 
     def test_unsupported_encoding(self):
-        _, _ = todo_or_not.todo_check.find_lines(
+        _, _ = todo_or_not.todo_check.find_hits(
             self.unsupported_encoding_test, False, "# todoon", ["todo", "fixme"]
         )
 
     def test_broken_file_appears_utf(self):
-        hits, encoding = todo_or_not.todo_check.find_lines(
+        hits, encoding = todo_or_not.todo_check.find_hits(
             self.broken_encoding_test, False, "# todoon", ["todo", "fixme"]
         )
 
         assert len(hits) == 0
         assert encoding == "utf-8"
 
-        hits, encoding = todo_or_not.todo_check.find_lines(
+        hits, encoding = todo_or_not.todo_check.find_hits(
             self.really_broken_encoding_test, False, "# todoon", ["todo", "fixme"]
         )
 

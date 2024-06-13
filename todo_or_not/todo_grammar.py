@@ -60,14 +60,18 @@ file_extensions = {
 }
 
 
+def find_language(file_extension: str):
+    try:
+        return file_extensions[file_extension]
+    except KeyError:
+        return "x_default"
+
+
 class TodoGrammar:
     def __init__(self, file_extension: str):
-        try:
-            self.language = file_extensions[file_extension]
-        except KeyError:
-            self.language = "x_default"
+        self.language = find_language(file_extension)
 
-        # List of token names.   This is always required
+        # List of token names. This is always required
         self.tokens = ("CODE_BEFORE_COMMENT", "COMMENT_UP_TO_KEY", "REST_OF_COMMENT")
 
         # Regular expression rules for simple tokens

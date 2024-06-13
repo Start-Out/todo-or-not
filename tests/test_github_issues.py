@@ -4,11 +4,13 @@ import unittest
 import pytest
 
 import todo_or_not.todo_check
+import todo_or_not.todo_hit
+import todo_or_not.utility
 
 
 @pytest.fixture
 def example_hit_todo():
-    return todo_or_not.todo_check.Hit(
+    return todo_or_not.todo_hit.Hit(
         "tests\\resources\\example.txt",
         6,
         ["todo"],
@@ -112,7 +114,7 @@ def test_formatted_hits_are_formatted(
 
 class TestIssueHelperFunctions(unittest.TestCase):
     def test_hash(self):
-        output = todo_or_not.todo_check._hash("test")
+        output = todo_or_not.utility._hash("test")
         self.assertEqual(
             output, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
         )  # add assertion here
