@@ -6,16 +6,10 @@ import ply.yacc as yacc
 
 from todo_or_not.todo_check import Hit
 
-C_LIKE = {
-    "line_comment": "//",
-    "block_comment": r"/\*.+\*/",
-}
+C_LIKE = {"line_comment": "//", "block_comment": {"start": r"/\*", "end": r"\*/"}}
 
 comment_symbols = {
-    "python": {
-        "line_comment": "#",
-        "block_comment": r"'''.+'''",
-    },
+    "python": {"line_comment": "#", "block_comment": {"start": "'''", "end": "'''"}},
     "java": C_LIKE,
     "javascript": C_LIKE,
     "c": C_LIKE,
@@ -24,7 +18,7 @@ comment_symbols = {
     "swift": C_LIKE,
     "ruby": {
         "line_comment": "[#]",
-        "block_comment": r"=begin.+=end",
+        "block_comment": {"start": "=begin", "end": "=end"},
     },
     "go": C_LIKE,
     "rust": C_LIKE,
@@ -32,19 +26,10 @@ comment_symbols = {
     "csharp": C_LIKE,
     "typescript": C_LIKE,
     "scala": C_LIKE,
-    "shell": {
-        "line_comment": "[#]",
-        "block_comment": r": '.+'",
-    },
-    "pascal": {
-        "line_comment": "//",
-        "block_comment": r"{.+}",
-    },
-    "sql": {
-        "line_comment": "--",
-        "block_comment": r"/\*.+\*/",
-    },
-    "x_default": C_LIKE
+    "shell": {"line_comment": "[#]", "block_comment": {"start": ": '", "end": "'"}},
+    "pascal": {"line_comment": "//", "block_comment": {"start": "{", "end": "}"}},
+    "sql": {"line_comment": "--", "block_comment": {"start": "/*", "end": "*/"}},
+    "x_default": C_LIKE,
 }
 
 file_extensions = {
