@@ -41,7 +41,7 @@ LOCALIZE = {
         "warning_duplicate_closed_issue": f"WARNING: Found an issue that has already been closed",
         "warning_nonissue_mode_closed_duplicate_used": "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode",
         "progress_bar_run_unit": "file",
-        "progress_bar_run_desc": "scanning files"
+        "progress_bar_run_desc": "scanning files",
     },
     "ko_kr": {
         "general_done": "끝났습니다!",
@@ -124,7 +124,6 @@ LOCALIZE = {
         "warning_nonissue_mode_closed_duplicate_used": "သတိပေးချက်- သတ်မှတ်ထားသော ရွေးချယ်မှု '--closed-duplicates-fail/-c' သည် '--issue/-i' မုဒ်တွင် မရှိ၍ အကျိုးသက်ရောက်မှုမှ မရှိပါ",
         "progress_bar_run_unit": "ဖိုင်",
         "progress_bar_run_desc": "ဖိုင်များကိုစကင်န် ဖတ်နေပါသည်",
-
     },
     "default": {"shell_sigint": "CTRL + C"},
     "windows_nt": {"shell_sigint": "CTRL + C"},
