@@ -82,7 +82,7 @@ LOCALIZE = {
         "warning_duplicate_closed_issue": f"경고: 이미 닫힌 깃허브 이슈를 찾았습니다",
         "warning_nonissue_mode_closed_duplicate_used": "경고: 설정한 옵션 '--closed-duplicates-fail/-c'은 '--issue/-i' 모드가 아니라면 아무런 영향을 끼치지 못합니다",
         "progress_bar_run_unit": "파일",
-        "progress_bar_run_desc": "파일들을 스캔하고 있음"
+        "progress_bar_run_desc": "파일들을 스캔하고 있음",
     },
     "bu_mm": {
         "general_done": "ပြီးပါပြီ။",
