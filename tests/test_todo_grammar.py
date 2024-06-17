@@ -109,7 +109,7 @@ class TestTodoGrammarPython(unittest.TestCase):
         assert expected_hit == result
 
         code = "    return c / 0  # FIXME I just don't know why this doesn't work!"
-        expected_hit = Hit("file", 1, ["fixme"], [code], 0)
+        expected_hit = Hit("file", 1, ["fixme"], [code.strip()], 0)
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
@@ -168,18 +168,21 @@ class TestTodoGrammarPython(unittest.TestCase):
         code = "123 # Title | a todo z"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z"
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
         code = "123 #Title | a todo z"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z"
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
         code = "123 #Title | a todo z #label"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z #label"
         expected_hit.structured_labels = ["label"]
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
@@ -188,6 +191,7 @@ class TestTodoGrammarPython(unittest.TestCase):
         code = "    # TODO Closed Issues are helpful! | This issue is closed, but the TODO string is still in the codebase!"
         expected_hit = Hit("file", 1, ["todo"], [code.strip()], 0)
         expected_hit.structured_title = "TODO Closed Issues are helpful!"
+        expected_hit.structured_body = "This issue is closed, but the TODO string is still in the codebase!"
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
@@ -347,18 +351,21 @@ class TestTodoGrammarC(unittest.TestCase):
         code = "123 // Title | a todo z"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z"
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
         code = "123 //Title | a todo z"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z"
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
         code = "123 //Title | a todo z #label"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z #label"
         expected_hit.structured_labels = ["label"]
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
@@ -520,18 +527,21 @@ class TestTodoGrammarUndefinedLanguage(unittest.TestCase):
         code = "123 // Title | a todo z"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z"
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
         code = "123 //Title | a todo z"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z"
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
         code = "123 //Title | a todo z #label"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_title = "Title"
+        expected_hit.structured_body = "a todo z #label"
         expected_hit.structured_labels = ["label"]
         result = self.grammar.safe_parse(code)
         assert expected_hit == result

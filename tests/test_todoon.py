@@ -1,4 +1,5 @@
 import os
+import sys
 import unittest
 
 import todo_or_not.todo_check as td
@@ -41,7 +42,11 @@ class TestTodoon(unittest.TestCase):
         self.old_dir = os.getcwd()
 
         if safe_dir is not None:
-            os.chdir(safe_dir)
+            try:
+                os.chdir(safe_dir)
+            except FileNotFoundError as e:
+                print(f'ERROR: Setting up test directory {safe_dir} failed, CWD: {os.getcwd()}', file=sys.stderr)
+                raise e
 
         # Set environment variables
         self.active_env_variables = env_variables
@@ -274,7 +279,7 @@ class TestTodoon(unittest.TestCase):
         # number of issues
         assert os.environ["TODOON_ISSUES_GENERATED"] == "0"
         # number of duplicate issues
-        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "1"
+        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "0"
         # number of closed issues
         assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "1"
 
