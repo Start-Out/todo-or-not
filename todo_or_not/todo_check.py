@@ -482,8 +482,6 @@ def todoon(
     _i = 0
     _target_iterator = targets
 
-    # TODO NEW Localization 'progress_bar_run_unit' | "file" #localization
-    # TODO NEW Localization 'progress_bar_run_desc' | "scanning files" #localization
     if show_progress_bar:
         _target_iterator = tqdm(targets, unit=LOCALIZE[util.get_region()]['progress_bar_run_unit'],
                                 desc=LOCALIZE[util.get_region()]['progress_bar_run_desc'])
@@ -624,7 +622,6 @@ def todoon(
     # Overall results of the run
     if number_of_hits > 0:
         if silent:
-            # TODO NEW Localization 'summary_found_issues_silent' | "INFO: New issues detected, but todoon ran in --silent mode" #localization
             summary += f"  * {LOCALIZE[util.get_region()]['summary_found_issues_silent']}\n"
         else:
             summary += f"  * {LOCALIZE[util.get_region()]['summary_fail_issues_no_silent']}\n"
@@ -634,7 +631,6 @@ def todoon(
 
     # Total success
     if number_of_hits == 0:
-        # TODO NEW Localization 'summary_success' | "SUCCESS: No new issues detected" #localization
         summary += f"  * {LOCALIZE[util.get_region()]['summary_success']}\n"
 
     os.environ["TODOON_STATUS"] = "finished"

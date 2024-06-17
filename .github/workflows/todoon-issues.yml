@@ -38,4 +38,5 @@ jobs:
           MAXIMUM_ISSUES_GENERATED: 10
         run: |
           echo "Generate GitHub issues for each problem found, but don't fail the workflow unless one is found that has already been closed."
-          todoon -sic
+          todoon -si
+          [ "$TODOON_DUPLICATE_CLOSED_ISSUES" != "1" ] && echo "Detected $TODOON_DUPLICATE_CLOSED_ISSUES duplicate closed issues where we expected exactly one (an example), failing this workflow!" && exit 1
