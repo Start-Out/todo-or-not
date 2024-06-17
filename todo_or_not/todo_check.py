@@ -49,9 +49,9 @@ def find_hits(
             file_extension = filename.rsplit(".", 1)[-1]
             file_language = find_language(file_extension)
 
-            # If that language does not yet have a parser built, we must build one (note that calling the TodoGrammar
-            # constructor with the file_extension will functional identically between different file extensions for
-            # the same language)
+            # If that language does not yet have a parser built, we must build one (note that calling the
+            # TodoGrammar constructor with the file_extension will functional identically between different  # todoon
+            # file extensions for the same language)
             if file_language not in parsers.keys():
                 parsers[file_language] = TodoGrammar(file_extension)
                 parsers[file_language].build()
@@ -574,7 +574,7 @@ def todoon(
         summary += "# (ISSUE MODE)\n"
 
     # Number of TODOs and FIXMEs found
-    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
+    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
 
     # Number of encoding failures
     if number_of_encoding_failures > 1:
