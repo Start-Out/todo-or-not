@@ -45,7 +45,10 @@ class TestTodoon(unittest.TestCase):
             try:
                 os.chdir(safe_dir)
             except FileNotFoundError as e:
-                print(f'ERROR: Setting up test directory {safe_dir} failed, CWD: {os.getcwd()}', file=sys.stderr)
+                print(
+                    f"ERROR: Setting up test directory {safe_dir} failed, CWD: {os.getcwd()}",
+                    file=sys.stderr,
+                )
                 raise e
 
         # Set environment variables

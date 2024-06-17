@@ -153,7 +153,9 @@ class TodoGrammar:
 
     # Error rule for syntax errors
     def p_error(self, p):
-        raise SyntaxError(f'\n== Invalid syntax: \n-- [parser state] {self.parser.state} \n-- [stack state] {self.parser.symstack}')
+        raise SyntaxError(
+            f"\n== Invalid syntax: \n-- [parser state] {self.parser.state} \n-- [stack state] {self.parser.symstack}"
+        )
 
     # Build the parser
     def build(self, **kwargs):
@@ -167,18 +169,3 @@ class TodoGrammar:
             return tmp
         except SyntaxError:
             return None
-
-
-if __name__ == "__main__":
-    g = TodoGrammar("py")
-    g.build()
-
-    while True:
-        try:
-            s = input("code > ")
-        except EOFError:
-            break
-        if not s:
-            continue
-        result = g.parser.parse(s)
-        print(result)

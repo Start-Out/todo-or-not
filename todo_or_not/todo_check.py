@@ -15,7 +15,6 @@ from todo_or_not.localize import LOCALIZE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
 from todo_or_not.todo_grammar import find_language, TodoGrammar
-# from todo_or_not.todo_grammar import find_language, TodoGrammar
 from todo_or_not.todo_hit import Hit
 
 todoon_app = typer.Typer(name="todoon")  # todoon
@@ -77,7 +76,8 @@ def find_hits(
                     # Look at lines before the pertinent line
                     _i = line_number - 1
                     while (
-                        abs(line_number - _i) <= util.get_pertinent_line_limit() and _i >= 0
+                        abs(line_number - _i) <= util.get_pertinent_line_limit()
+                        and _i >= 0
                     ):
                         _i -= 1
                         if len(lines[_i].strip()) > 0:

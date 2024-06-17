@@ -191,9 +191,12 @@ class TestTodoGrammarPython(unittest.TestCase):
         code = "    # TODO Closed Issues are helpful! | This issue is closed, but the TODO string is still in the codebase!"
         expected_hit = Hit("file", 1, ["todo"], [code.strip()], 0)
         expected_hit.structured_title = "TODO Closed Issues are helpful!"
-        expected_hit.structured_body = "This issue is closed, but the TODO string is still in the codebase!"
+        expected_hit.structured_body = (
+            "This issue is closed, but the TODO string is still in the codebase!"
+        )
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
+
 
 class TestTodoGrammarC(unittest.TestCase):
     def setUp(self):
