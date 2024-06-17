@@ -24,33 +24,6 @@ class Hit:
         self.structured_body = None
         self.structured_labels = None
 
-        ####################################################################
-        # DEPRECATED: Formatting hits is now handled at todo_grammar.py
-        ####################################################################
-
-        # If this is a structured comment, parse out the title, body, and labels
-        # if "|" in self.pertinent_lines[trigger_line_index]:
-        #     head, body = self.pertinent_lines[trigger_line_index].split("|", 1)
-        #
-        #     self.structured_title = head.strip()
-        #     self.structured_body = body.strip()
-        #
-        #     # If there is an # in the body, there may be labels to find
-        #     if "#" in self.structured_body:
-        #         self.structured_labels = []
-        #
-        #         _potential_tags = self.structured_body.split("#")
-        #
-        #         # Skip the first item in this list, because the labels will come after the #
-        #         for _potential in _potential_tags[1:]:
-        #             _label = _potential.split(" ", 1)[0]
-        #
-        #             if len(_label) > 0:
-        #                 self.structured_labels.append(_label)
-        #
-        #         if len(self.structured_labels) == 0:
-        #             self.structured_labels = None
-
     def __repr__(self):
 
         if self.structured_title is not None:

@@ -37,5 +37,11 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
           MAXIMUM_ISSUES_GENERATED: 10
         run: |
-          echo "Generate GitHub issues for each problem found, but don't fail the workflow"
-          todoon -is
+          echo "Generate GitHub issues for each problem found, but don't fail the workflow unless one is found that has already been closed."
+          todoon -si
+      - name: Check duplicate closed issues
+        run: |
+          if [ "${{ env.TODOON_DUPLICATE_CLOSED_ISSUES }}" != "1" ]; then
+            echo "Detected ${{ env.TODOON_DUPLICATE_CLOSED_ISSUES }} duplicate closed issues where we expected exactly one (an example), failing this workflow!"
+            exit 1
+          fi

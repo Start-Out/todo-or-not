@@ -49,9 +49,9 @@ def find_hits(
             file_extension = filename.rsplit(".", 1)[-1]
             file_language = find_language(file_extension)
 
-            # If that language does not yet have a parser built, we must build one (note that calling the TodoGrammar
-            # constructor with the file_extension will functional identically between different file extensions for
-            # the same language)
+            # If that language does not yet have a parser built, we must build one (note that calling the
+            # TodoGrammar constructor with the file_extension will functional identically between different  # todoon
+            # file extensions for the same language)
             if file_language not in parsers.keys():
                 parsers[file_language] = TodoGrammar(file_extension)
                 parsers[file_language].build()
@@ -482,8 +482,6 @@ def todoon(
     _i = 0
     _target_iterator = targets
 
-    # TODO NEW Localization 'progress_bar_run_unit' | "file" #localization
-    # TODO NEW Localization 'progress_bar_run_desc' | "scanning files" #localization
     if show_progress_bar:
         _target_iterator = tqdm(targets, unit=LOCALIZE[util.get_region()]['progress_bar_run_unit'],
                                 desc=LOCALIZE[util.get_region()]['progress_bar_run_desc'])
@@ -573,8 +571,8 @@ def todoon(
     else:
         summary += "# (ISSUE MODE)\n"
 
-    # Number of TODOs and FIXMEs found
-    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
+    # Number of TODOs and FIXMEs found  # todoon
+    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
 
     # Number of encoding failures
     if number_of_encoding_failures > 1:
@@ -624,7 +622,6 @@ def todoon(
     # Overall results of the run
     if number_of_hits > 0:
         if silent:
-            # TODO NEW Localization 'summary_found_issues_silent' | "INFO: New issues detected, but todoon ran in --silent mode" #localization
             summary += f"  * {LOCALIZE[util.get_region()]['summary_found_issues_silent']}\n"
         else:
             summary += f"  * {LOCALIZE[util.get_region()]['summary_fail_issues_no_silent']}\n"
@@ -634,7 +631,6 @@ def todoon(
 
     # Total success
     if number_of_hits == 0:
-        # TODO NEW Localization 'summary_success' | "SUCCESS: No new issues detected" #localization
         summary += f"  * {LOCALIZE[util.get_region()]['summary_success']}\n"
 
     os.environ["TODOON_STATUS"] = "finished"
@@ -650,6 +646,16 @@ def todoon(
     os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] = str(
         number_of_closed_issues
     )
+
+    os.system(f'TODOON_STATUS={"finished"} >> $GITHUB_ENV')
+    os.system(f'TODOON_PROGRESS={"100.0"} >> $GITHUB_ENV')
+    os.system(f'TODOON_FILES_SCANNED={str(number_of_files_scanned)} >> $GITHUB_ENV')
+    os.system(f'TODOON_TODOS_FOUND={str(number_of_todo)} >> $GITHUB_ENV')
+    os.system(f'TODOON_FIXMES_FOUND={str(number_of_fixme)} >> $GITHUB_ENV')
+    os.system(f'TODOON_ENCODING_ERRORS={str(number_of_encoding_failures)} >> $GITHUB_ENV')
+    os.system(f'TODOON_ISSUES_GENERATED={str(number_of_issues)} >> $GITHUB_ENV')
+    os.system(f'TODOON_DUPLICATE_ISSUES_AVOIDED={str(number_of_duplicate_issues_avoided)} >> $GITHUB_ENV')
+    os.system(f'TODOON_DUPLICATE_CLOSED_ISSUES={str(number_of_closed_issues)} >> $GITHUB_ENV')
 
     util.print_wrap(log_level=log_level, msg_level=util.LOG_LEVEL_SUMMARY_ONLY,
                msg=summary, file=sys.stderr)

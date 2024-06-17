@@ -301,9 +301,9 @@ class TestTodoon(unittest.TestCase):
         # number of issues
         assert os.environ["TODOON_ISSUES_GENERATED"] == "0"
         # number of duplicate issues
-        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "2"
+        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "3"
         # number of closed issues
-        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "2"
+        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "1"
 
         self._environment_down()
 
