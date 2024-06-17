@@ -75,10 +75,10 @@ class Hit:
             return NotImplemented
 
         return (
-            self.found_keys == other.found_keys
+            set(self.found_keys) == set(other.found_keys)
             and self.source_file == other.source_file
             and self.source_line == other.source_line
-            and self.pertinent_lines == other.pertinent_lines
+            and set(self.pertinent_lines) == set(other.pertinent_lines)
             and self.trigger_line_index == other.trigger_line_index
             and self.structured_title == other.structured_title
             and self.structured_body == other.structured_body

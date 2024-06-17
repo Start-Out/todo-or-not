@@ -63,18 +63,10 @@ def find_hits(
             for _line in lines:
                 line_number += 1
 
-            # # If this line contains the ignore flag, simply move on
-            # if ignore_flag.lower() in _line.lower():
-            #     continue
-            #
-            # # Collect the found keys and their associated info
-            # _found_keys = []
-            #
-            # for key in ["todo", "fixme"]:
-            #     if key.lower() in _line.lower():
-            #         _found_keys.append(key)
-            #
-            # if len(_found_keys) > 0:
+                # Ignore this line if the ignore flag is present
+                if ignore_flag in _line:
+                    continue
+
                 _use_parser = parsers[file_language]
                 _potential_hit = _use_parser.safe_parse(_line)
 
@@ -108,15 +100,12 @@ def find_hits(
                             break
                         _i += 1
 
-                    _hit = Hit(
-                        os.path.relpath(filename, os.getcwd()),
-                        line_number,
-                        {"status": "I'm not done yet"},
-                        # _found_keys,
-                        _pertinent_lines,
-                        _trigger_line,
-                    )
-                    output.append(_hit)
+                    _potential_hit.source_file = os.path.relpath(filename, os.getcwd())
+                    _potential_hit.source_line = line_number
+                    _potential_hit.pertinent_lines = _pertinent_lines
+                    _potential_hit.trigger_line_index = _trigger_line
+
+                    output.append(_potential_hit)
 
     else:
         util.print_wrap(

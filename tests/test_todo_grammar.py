@@ -108,6 +108,11 @@ class TestTodoGrammarPython(unittest.TestCase):
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
+        code = "    return c / 0  # FIXME I just don't know why this doesn't work!"
+        expected_hit = Hit("file", 1, ["fixme"], [code], 0)
+        result = self.grammar.safe_parse(code)
+        assert expected_hit == result
+
     def test_leading_code_line_comment_with_trailing_comment(self):
         code = "123 # todo z"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
