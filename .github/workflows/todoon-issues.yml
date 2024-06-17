@@ -39,4 +39,9 @@ jobs:
         run: |
           echo "Generate GitHub issues for each problem found, but don't fail the workflow unless one is found that has already been closed."
           todoon -si
-          [ "$TODOON_DUPLICATE_CLOSED_ISSUES" != "1" ] && echo "Detected $TODOON_DUPLICATE_CLOSED_ISSUES duplicate closed issues where we expected exactly one (an example), failing this workflow!" && exit 1
+      - name: Check duplicate closed issues
+        run: |
+          if [ "$TODOON_DUPLICATE_CLOSED_ISSUES" != "1" ]; then
+            echo "Detected $TODOON_DUPLICATE_CLOSED_ISSUES duplicate closed issues where we expected exactly one (an example), failing this workflow!"
+            exit 1
+          fi

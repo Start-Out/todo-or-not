@@ -647,6 +647,16 @@ def todoon(
         number_of_closed_issues
     )
 
+    os.system(f'TODOON_STATUS={"finished"} >> $GITHUB_ENV')
+    os.system(f'TODOON_PROGRESS={"100.0"} >> $GITHUB_ENV')
+    os.system(f'TODOON_FILES_SCANNED={str(number_of_files_scanned)} >> $GITHUB_ENV')
+    os.system(f'TODOON_TODOS_FOUND={str(number_of_todo)} >> $GITHUB_ENV')
+    os.system(f'TODOON_FIXMES_FOUND={str(number_of_fixme)} >> $GITHUB_ENV')
+    os.system(f'TODOON_ENCODING_ERRORS={str(number_of_encoding_failures)} >> $GITHUB_ENV')
+    os.system(f'TODOON_ISSUES_GENERATED={str(number_of_issues)} >> $GITHUB_ENV')
+    os.system(f'TODOON_DUPLICATE_ISSUES_AVOIDED={str(number_of_duplicate_issues_avoided)} >> $GITHUB_ENV')
+    os.system(f'TODOON_DUPLICATE_CLOSED_ISSUES={str(number_of_closed_issues)} >> $GITHUB_ENV')
+
     util.print_wrap(log_level=log_level, msg_level=util.LOG_LEVEL_SUMMARY_ONLY,
                msg=summary, file=sys.stderr)
 
