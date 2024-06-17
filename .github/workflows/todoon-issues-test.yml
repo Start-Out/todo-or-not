@@ -15,7 +15,11 @@ jobs:
       - name: Install UNSTABLE TODO-or-not from test.PyPi
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -i https://test.pypi.org/simple/ todo-or-not      - name: Generate GH Token for todoon app
+          python -m pip install typer==0.12.3
+          python -m pip install typing-extensions==4.10.0
+          python -m pip install tqdm==4.66.4
+          python -m pip install ply==3.11
+          python -m pip install -i https://test.pypi.org/simple/ todo-or-not --no-deps
       - name: Generate GH Token for todoon app
         id: generate-token
         uses: actions/create-github-app-token@v1
