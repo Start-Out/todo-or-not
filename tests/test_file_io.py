@@ -10,7 +10,9 @@ class TestFileEncoding(unittest.TestCase):
         use = "utf-8"
         use_path = os.path.join("tests", "resources", f"{use}.txt")
 
-        encoding = todo_or_not.todo_check.get_encoding(use_path, todo_or_not.localize.SUPPORTED_ENCODINGS_TODOIGNORE)
+        encoding = todo_or_not.todo_check.get_encoding(
+            use_path, todo_or_not.localize.SUPPORTED_ENCODINGS_TODOIGNORE
+        )
         encoding = encoding.lower()
 
         self.assertEqual(use, encoding)
@@ -18,8 +20,9 @@ class TestFileEncoding(unittest.TestCase):
     def test_todoignore_encoding_fail(self):
         use_path = os.path.join("tests", "resources", "logo.png")
 
-        encoding = todo_or_not.todo_check.get_encoding(use_path,
-                                                       todo_or_not.localize.SUPPORTED_ENCODINGS_TODOIGNORE)
+        encoding = todo_or_not.todo_check.get_encoding(
+            use_path, todo_or_not.localize.SUPPORTED_ENCODINGS_TODOIGNORE
+        )
 
         self.assertIsNone(encoding)
 
@@ -27,7 +30,9 @@ class TestFileEncoding(unittest.TestCase):
         use = "utf-8"
         use_path = os.path.join("tests", "resources", f"{use}.txt")
 
-        encoding = todo_or_not.todo_check.get_encoding(use_path, todo_or_not.localize.SUPPORTED_ENCODINGS_TODO_CHECK)
+        encoding = todo_or_not.todo_check.get_encoding(
+            use_path, todo_or_not.localize.SUPPORTED_ENCODINGS_TODO_CHECK
+        )
         encoding = encoding.lower()
 
         self.assertEqual(use, encoding)
@@ -35,8 +40,9 @@ class TestFileEncoding(unittest.TestCase):
     def test_todo_check_encoding_fail(self):
         use_path = os.path.join("tests", "resources", "logo.png")
 
-        encoding = todo_or_not.todo_check.get_encoding(use_path,
-                                                       todo_or_not.localize.SUPPORTED_ENCODINGS_TODO_CHECK)
+        encoding = todo_or_not.todo_check.get_encoding(
+            use_path, todo_or_not.localize.SUPPORTED_ENCODINGS_TODO_CHECK
+        )
 
         self.assertIsNone(encoding)
 
@@ -65,7 +71,7 @@ class TestTodoIgnoreHelpers(unittest.TestCase):
                 if len(line) > 0:
                     _result.append(line)
 
-            self.assertEqual(['a', 'b', 'c'], _result)
+            self.assertEqual(["a", "b", "c"], _result)
 
         os.remove(dest)
 
@@ -86,7 +92,7 @@ class TestTodoIgnoreHelpers(unittest.TestCase):
                 if len(line) > 0:
                     _result.append(line)
 
-            self.assertEqual(['a', 'b', 'c'], _result)
+            self.assertEqual(["a", "b", "c"], _result)
 
         os.remove(dest)
 
@@ -102,5 +108,5 @@ class TestTodoIgnoreHelpers(unittest.TestCase):
         self.assertIsNotNone(context.exception)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,13 +1,13 @@
-def an_unfinished_function():
-    # TODO Finish documenting todo-or-not
+void an_unfinished_function():
+    // TODO Finish documenting todo-or-not
     print("Hello, I'm not quite done, there's more to do!")
     print("Look at all these things I have to do!")
-    a = 1 + 1
-    b = a * 2
+    int a = 1 + 1
+    int b = a * 2
     print("Okay I'm done!")
 
 
-def a_closed_example():
-    # TODO Closed Issues are helpful! | This issue is closed, but the TODO string is still in the codebase!
+void a_closed_example():
+    // TODO Closed Issues are helpful! | This issue is closed, but the TODO string is still in the codebase!
     print("This should be a red flag, because if the issue is still in the code then something isn't done yet")
     print("(Though it may simply be that the comment hasn't been removed)")

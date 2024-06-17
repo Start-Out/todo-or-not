@@ -1,0 +1,41 @@
+name: Generate issues with UNSTABLE VERSION of TODO-or-not from test.PyPi
+
+on:
+  workflow_dispatch:
+jobs:
+  run_todoon:
+    runs-on: ubuntu-latest
+    environment: testing
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11.7
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.11.7"
+      - name: Install UNSTABLE TODO-or-not from test.PyPi
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install typer==0.12.3
+          python -m pip install typing-extensions==4.10.0
+          python -m pip install tqdm==4.66.4
+          python -m pip install ply==3.11
+          python -m pip install -i https://test.pypi.org/simple/ todo-or-not --no-deps
+      - name: Generate GH Token for todoon app
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: 853479
+          private-key: ${{ secrets.TODOON_CLIENT_PEM }}
+      - name: Run TODO-or-not
+        env:
+          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
+          MAXIMUM_ISSUES_GENERATED: 10
+        run: |
+          echo "Generate GitHub issues for each problem found, but don't fail the workflow unless one is found that has already been closed."
+          todoon -si
+      - name: Check duplicate closed issues
+        run: |
+          if [ "${{ env.TODOON_DUPLICATE_CLOSED_ISSUES }}" != "1" ]; then
+            echo "Detected ${{ env.TODOON_DUPLICATE_CLOSED_ISSUES }} duplicate closed issues where we expected exactly one (an example), failing this workflow!"
+            exit 1
+          fi
