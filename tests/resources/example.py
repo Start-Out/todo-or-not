@@ -29,12 +29,13 @@ def a_broken_function():
 
 def a_skipping_example():
     # Since the line below has `# todoon` in it, the checker will give it a pass even though it has the magic words!
-    print("Sometimes you really have to write TODO or FIXME, like this!")  # todoon
+    print("Sometimes you really have to write TODO or FIXME, like this!")  # Remember to update your todo list! # todoon
 
 
 def a_very_pretty_example():
     # TODO Titled Issue! | In this format, you can define a title and a body! Also labels like #example or #enhancement
     print("Check this out!")
+
 
 def a_closed_example():
     # TODO Closed Issues are helpful! | This issue is closed, but the TODO string is still in the codebase!

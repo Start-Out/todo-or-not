@@ -24,28 +24,32 @@ class Hit:
         self.structured_body = None
         self.structured_labels = None
 
+        ####################################################################
+        # DEPRECATED: Formatting hits is now handled at todo_grammar.py
+        ####################################################################
+
         # If this is a structured comment, parse out the title, body, and labels
-        if "|" in self.pertinent_lines[trigger_line_index]:
-            head, body = self.pertinent_lines[trigger_line_index].split("|", 1)
-
-            self.structured_title = head.strip()
-            self.structured_body = body.strip()
-
-            # If there is an # in the body, there may be labels to find
-            if "#" in self.structured_body:
-                self.structured_labels = []
-
-                _potential_tags = self.structured_body.split("#")
-
-                # Skip the first item in this list, because the labels will come after the #
-                for _potential in _potential_tags[1:]:
-                    _label = _potential.split(" ", 1)[0]
-
-                    if len(_label) > 0:
-                        self.structured_labels.append(_label)
-
-                if len(self.structured_labels) == 0:
-                    self.structured_labels = None
+        # if "|" in self.pertinent_lines[trigger_line_index]:
+        #     head, body = self.pertinent_lines[trigger_line_index].split("|", 1)
+        #
+        #     self.structured_title = head.strip()
+        #     self.structured_body = body.strip()
+        #
+        #     # If there is an # in the body, there may be labels to find
+        #     if "#" in self.structured_body:
+        #         self.structured_labels = []
+        #
+        #         _potential_tags = self.structured_body.split("#")
+        #
+        #         # Skip the first item in this list, because the labels will come after the #
+        #         for _potential in _potential_tags[1:]:
+        #             _label = _potential.split(" ", 1)[0]
+        #
+        #             if len(_label) > 0:
+        #                 self.structured_labels.append(_label)
+        #
+        #         if len(self.structured_labels) == 0:
+        #             self.structured_labels = None
 
     def __repr__(self):
 
@@ -74,16 +78,20 @@ class Hit:
             # don't attempt to compare against unrelated types
             return NotImplemented
 
-        return (
-            set(self.found_keys) == set(other.found_keys)
-            and self.source_file == other.source_file
-            and self.source_line == other.source_line
-            and set(self.pertinent_lines) == set(other.pertinent_lines)
-            and self.trigger_line_index == other.trigger_line_index
-            and self.structured_title == other.structured_title
-            and self.structured_body == other.structured_body
-            and self.structured_labels == other.structured_labels
-        )
+        if self.structured_labels is not None and other.structured_labels is not None:
+            return set(self.structured_labels) == set(other.structured_labels)
+
+        # Forgive this monstrosity, it helps find what is different during debugging sessions.
+        a = True
+        a = False if not set(self.found_keys) == set(other.found_keys) else a
+        a = False if not self.source_file == other.source_file else a
+        a = False if not self.source_line == other.source_line else a
+        a = False if not set(self.pertinent_lines) == set(other.pertinent_lines) else a
+        a = False if not self.trigger_line_index == other.trigger_line_index else a
+        a = False if not self.structured_title == other.structured_title else a
+        a = False if not self.structured_body == other.structured_body else a
+
+        return a
 
     def get_triggering_line(self):
         return self.pertinent_lines[self.trigger_line_index]

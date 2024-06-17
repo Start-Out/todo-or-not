@@ -153,7 +153,6 @@ class TodoGrammar:
 
     # Error rule for syntax errors
     def p_error(self, p):
-        print("Syntax error in input!")
         raise SyntaxError(f'\n== Invalid syntax: \n-- [parser state] {self.parser.state} \n-- [stack state] {self.parser.symstack}')
 
     # Build the parser
@@ -161,9 +160,11 @@ class TodoGrammar:
         self._build_lexer(**kwargs)
         self.parser = yacc.yacc(module=self, **kwargs)
 
-    def safe_parse(self, input: str):
+    def safe_parse(self, _input: str):
         try:
-            return self.parser.parse(input)
+            _input = _input.strip()
+            tmp = self.parser.parse(_input)
+            return tmp
         except SyntaxError:
             return None
 
