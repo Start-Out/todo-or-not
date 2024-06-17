@@ -11,13 +11,13 @@ from typer import run
 from typing_extensions import Annotated
 
 import todo_or_not.utility as util
-from todo_or_not.localize import LOCALIZE  # todoon
-from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
-from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK  # todoon
+from todo_or_not.localize import LOCALIZE
+from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE
+from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK
 from todo_or_not.todo_grammar import find_language, TodoGrammar
 from todo_or_not.todo_hit import Hit
 
-todoon_app = typer.Typer(name="todoon")  # todoon
+todoon_app = typer.Typer(name="todoon")
 
 
 def find_hits(
@@ -40,7 +40,7 @@ def find_hits(
     """
     output = []
 
-    use_encoding = get_encoding(filename, SUPPORTED_ENCODINGS_TODO_CHECK)  # todoon
+    use_encoding = get_encoding(filename, SUPPORTED_ENCODINGS_TODO_CHECK)
 
     if use_encoding is not None:
         with open(filename, "r", encoding=use_encoding) as file:
@@ -163,7 +163,7 @@ def get_bot_submitted_issues(
         "Accept: application/vnd.github+json",
         "-H",
         "X-GitHub-Api-Version: 2022-11-28",
-        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not&state=all",  # todoon
+        f"/repos/{owner}/{repo}/issues?creator=app%2Ftodo-or-not&state=all",
     ]
 
     if not (util.get_is_debug() or _test):
@@ -222,52 +222,52 @@ def get_encoding(
 
 
 # fmt: off
-@todoon_app.command(  # todoon
-    help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or "  # todoon
+@todoon_app.command(
+    help="Checks files for occurrences of TODO or FIXME and reports them for use with automation or "  
          "other development operations")
-def todoon(  # todoon
+def todoon(
         files: Annotated[
             Optional[List[str]],
             typer.Argument(
-                help="If specified, only these [FILES] will be scanned for TODOs and FIXMEs. "  # todoon
+                help="If specified, only these [FILES] will be scanned for TODOs and FIXMEs. "  
                      "Otherwise, all files in the current working directory except for those "
-                     "specified in .todo-ignore will be scanned")] = None,  # todoon
+                     "specified in .todo-ignore will be scanned")] = None,
         print_mode: Annotated[
             bool,
             typer.Option("--print/--issue", "-p/-i",
-                         help="Whether to print the discovered TODOs and FIXMEs to stderr or to try"  # todoon
+                         help="Whether to print the discovered TODOs and FIXMEs to stderr or to try"  
                               " generating GitHub issues")] = True,
         silent: Annotated[
             bool,
             typer.Option("--silent/", "-s/",
-                         help="(No fail) If specified, todoon will not exit with an error code even "  # todoon
-                              "when TODOs and/or FIXMEs are detected")] = False,  # todoon
+                         help="(No fail) If specified, todoon will not exit with an error code even "  
+                              "when TODOs and/or FIXMEs are detected")] = False,
         fail_closed_duplicates: Annotated[
             bool,
             typer.Option("--closed-duplicates-fail/", "-c/",
-                         help="If specified, todoon will exit with error code if duplicate GitHub issues "  # todoon
+                         help="If specified, todoon will exit with error code if duplicate GitHub issues "  
                               "are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
-                         help="(NOT RECOMMENDED) If specified, no .todo-ignore file will be used")] = False,  # todoon
+                         help="(NOT RECOMMENDED) If specified, no .todo-ignore file will be used")] = False,
         verbose: Annotated[
             bool,
             typer.Option("--verbose/", "-V/",
-                         help="If specified, todoon will not to print lengthy or numerous messages "  # todoon
+                         help="If specified, todoon will not to print lengthy or numerous messages "  
                               "(like each encoding failure)")] = False,
         print_summary_only: Annotated[
             bool,
             typer.Option("--quiet/", "-q/",
-                         help="If specified, todoon will only print the summary")] = False,  # todoon
+                         help="If specified, todoon will only print the summary")] = False,
         print_nothing: Annotated[
             bool,
             typer.Option("--very-quiet/", "-Q/",
-                         help="If specified, todoon will not print anything at all")] = False,  # todoon
+                         help="If specified, todoon will not print anything at all")] = False,
         show_progress_bar: Annotated[
             bool,
             typer.Option("--progress-bar/", "-P/",
-                         help="If specified, todoon will display a progress bar while scanning files. "  # todoon
+                         help="If specified, todoon will display a progress bar while scanning files. "  
                               "NOTE: This adds a small amount of overhead (will take a little longer)")] = False,
         version: Annotated[
             bool,
@@ -299,14 +299,14 @@ def todoon(  # todoon
     # Handle settings
     #############################################
 
-    os.environ["TODOON_STATUS"] = "starting"  # todoon
-    os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
-    os.environ["TODOON_FILES_SCANNED"] = "0"  # todoon
-    os.environ["TODOON_TODOS_FOUND"] = "0"  # todoon
-    os.environ["TODOON_FIXMES_FOUND"] = "0"  # todoon
-    os.environ["TODOON_ENCODING_ERRORS"] = "0"  # todoon
-    os.environ["TODOON_ISSUES_GENERATED"] = "0"  # todoon
-    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"  # todoon
+    os.environ["TODOON_STATUS"] = "starting"
+    os.environ["TODOON_PROGRESS"] = "0.0"
+    os.environ["TODOON_FILES_SCANNED"] = "0"
+    os.environ["TODOON_TODOS_FOUND"] = "0"
+    os.environ["TODOON_FIXMES_FOUND"] = "0"
+    os.environ["TODOON_ENCODING_ERRORS"] = "0"
+    os.environ["TODOON_ISSUES_GENERATED"] = "0"
+    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"
 
     #############################################
     # Parse .todo-ignore # todoon
@@ -314,25 +314,25 @@ def todoon(  # todoon
 
     # If using specific files, no todo-ignore parsing is necessary # todoon
     if not use_specified_files:
-        os.environ["TODOON_STATUS"] = "parsing-todo-ignore"  # todoon
+        os.environ["TODOON_STATUS"] = "parsing-todo-ignore"
         # As long as we aren't foregoing the .todo-ignore... # todoon
         if not force:
             # Unless --force is specified,
             # a .todo-ignore in a supported encoding must be located at the project's top level # todoon
             use_encoding = get_encoding(
-                util.get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE  # todoon
+                util.get_todo_ignore_path(), SUPPORTED_ENCODINGS_TODOIGNORE
             )
 
             # If we weren't able to find a file in a supported encoding, program must exit
             if use_encoding is None:
                 util.print_wrap(log_level=log_level,
-                           msg=LOCALIZE[util.get_region()]["error_todo_ignore_not_supported"], file=sys.stderr  # todoon
+                           msg=LOCALIZE[util.get_region()]["error_todo_ignore_not_supported"], file=sys.stderr
                            )
                 exit(1)
 
             # ... actually do the reading of the .todo-ignore # todoon
             with open(
-                    util.get_todo_ignore_path(), "r", encoding=use_encoding  # todoon
+                    util.get_todo_ignore_path(), "r", encoding=use_encoding
             ) as _ignore:
                 for line in _ignore.readlines():
                     if not line.startswith("#") and len(line) > 1:
@@ -356,7 +356,7 @@ def todoon(  # todoon
                 if len(ignored_files) == 0 and len(ignored_dirs) == 0:
                     util.print_wrap(log_level=log_level,
                                msg=LOCALIZE[util.get_region()][
-                                   "warning_run_with_empty_todo_ignore"  # todoon
+                                   "warning_run_with_empty_todo_ignore"
                                ],
                                file=sys.stderr,
                                )
@@ -365,7 +365,7 @@ def todoon(  # todoon
                 ignored_files.append(os.path.abspath(_ignore.name))
         else:
             util.print_wrap(log_level=log_level,
-                       msg=f"{LOCALIZE[util.get_region()]['error_todo_ignore_not_found']}"  # todoon
+                       msg=f"{LOCALIZE[util.get_region()]['error_todo_ignore_not_found']}"  
                            f"[{LOCALIZE[util.get_os()]['shell_sigint']}]",
                        file=sys.stderr,
                        )
@@ -376,7 +376,7 @@ def todoon(  # todoon
 
     # If using specific files, we will just parse them instead of walking
     if not use_specified_files:
-        os.environ["TODOON_STATUS"] = "collecting-targets"  # todoon
+        os.environ["TODOON_STATUS"] = "collecting-targets"
         # Ignore this script if in DEBUG
         if util.get_is_debug():
             ignored_files.append(__file__)
@@ -447,11 +447,11 @@ def todoon(  # todoon
     # Collect all the issues that the bot has so far submitted to check for duplicates
     if not print_mode:
 
-        os.environ["TODOON_STATUS"] = "collecting-issues"  # todoon
-        todoon_created_issues = get_bot_submitted_issues()  # todoon
+        os.environ["TODOON_STATUS"] = "collecting-issues"
+        todoon_created_issues = get_bot_submitted_issues()
 
-        if todoon_created_issues is not False:  # todoon
-            for issue in todoon_created_issues:  # todoon
+        if todoon_created_issues is not False:
+            for issue in todoon_created_issues:
                 existing_issues_hashed[util._hash(issue["title"])] = issue["state"]
         else:
             util.print_wrap(log_level=log_level,
@@ -474,10 +474,10 @@ def todoon(  # todoon
     )  # Tracks the files attempted to be read, regardless of errors
 
     # Used for summary
-    number_of_todo, number_of_fixme = 0, 0  # todoon
+    number_of_todo, number_of_fixme = 0, 0
 
-    os.environ["TODOON_STATUS"] = "scanning-files"  # todoon
-    os.environ["TODOON_PROGRESS"] = "0.0"  # todoon
+    os.environ["TODOON_STATUS"] = "scanning-files"
+    os.environ["TODOON_PROGRESS"] = "0.0"
     # For each target file discovered
     _i = 0
     _target_iterator = targets
@@ -492,7 +492,7 @@ def todoon(  # todoon
 
         # Update progress
         _i += 1
-        os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))  # todoon
+        os.environ["TODOON_PROGRESS"] = str(round(_i / (len(targets)), 1))
 
         parsers = {}
 
@@ -508,8 +508,8 @@ def todoon(  # todoon
             # Handle each hit that was detected
             for hit in hits:
                 number_of_hits += 1
-                number_of_todo += 1 if "todo" in hit.found_keys else 0  # todoon
-                number_of_fixme += 1 if "fixme" in hit.found_keys else 0  # todoon
+                number_of_todo += 1 if "todo" in hit.found_keys else 0
+                number_of_fixme += 1 if "fixme" in hit.found_keys else 0
 
                 #############################################
                 # Special handling for the ISSUE mode
@@ -573,8 +573,8 @@ def todoon(  # todoon
     else:
         summary += "# (ISSUE MODE)\n"
 
-    # Number of TODOs and FIXMEs found  # todoon
-    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
+    # Number of TODOs and FIXMEs found
+    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"
 
     # Number of encoding failures
     if number_of_encoding_failures > 1:
@@ -637,17 +637,17 @@ def todoon(  # todoon
         # TODO NEW Localization 'summary_success' | "SUCCESS: No new issues detected" #localization
         summary += f"  * {LOCALIZE[util.get_region()]['summary_success']}\n"
 
-    os.environ["TODOON_STATUS"] = "finished"  # todoon
-    os.environ["TODOON_PROGRESS"] = "100.0"  # todoon
-    os.environ["TODOON_FILES_SCANNED"] = str(number_of_files_scanned)  # todoon
-    os.environ["TODOON_TODOS_FOUND"] = str(number_of_todo)  # todoon
-    os.environ["TODOON_FIXMES_FOUND"] = str(number_of_fixme)  # todoon
-    os.environ["TODOON_ENCODING_ERRORS"] = str(number_of_encoding_failures)  # todoon
-    os.environ["TODOON_ISSUES_GENERATED"] = str(number_of_issues)  # todoon
-    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(  # todoon
+    os.environ["TODOON_STATUS"] = "finished"
+    os.environ["TODOON_PROGRESS"] = "100.0"
+    os.environ["TODOON_FILES_SCANNED"] = str(number_of_files_scanned)
+    os.environ["TODOON_TODOS_FOUND"] = str(number_of_todo)
+    os.environ["TODOON_FIXMES_FOUND"] = str(number_of_fixme)
+    os.environ["TODOON_ENCODING_ERRORS"] = str(number_of_encoding_failures)
+    os.environ["TODOON_ISSUES_GENERATED"] = str(number_of_issues)
+    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(
         number_of_duplicate_issues_avoided
     )
-    os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] = str(  # todoon
+    os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] = str(
         number_of_closed_issues
     )
 
@@ -664,23 +664,23 @@ def todoon(  # todoon
 
 
 # fmt: off
-@todoon_app.command(help="Small utility for generating a .todo-ignore file")  # todoon
-def todo_ignore_util(  # todoon
+@todoon_app.command(help="Small utility for generating a .todo-ignore file")
+def todo_ignore_util(
         sources: Annotated[
             Optional[List[str]],
             typer.Argument(
                 help="(default) [with -p] Files whose contents will be added to the "
-                     ".todo-ignore file.\n\n          "  # todoon
-                     "[with -t] Lines of text to be added to the .todo-ignore file.")] = None,  # todoon
+                     ".todo-ignore file.\n\n          "  
+                     "[with -t] Lines of text to be added to the .todo-ignore file.")] = None,
         create_mode: Annotated[
             bool,
             typer.Option("--create/--update", "-c/-u",
-                         help="Whether to create a new .todo-ignore file or update an existing one")] = True,  # todoon
+                         help="Whether to create a new .todo-ignore file or update an existing one")] = True,
         source_is_text: Annotated[bool, typer.Option("--source-text/--source-paths", "-t/-p",
                                                      help="Whether to treat SOURCES as text or as file paths.")] = True
 ):
     # fmt: on
-    todoignore_path = os.path.join(os.getcwd(), ".todo-ignore")  # todoon
+    todoignore_path = os.path.join(os.getcwd(), ".todo-ignore")
     output = []
 
     if create_mode:
@@ -709,7 +709,7 @@ def todo_ignore_util(  # todoon
                     print(LOCALIZE[util.get_region()]["warning_file_does_not_exist"], _path, file=sys.stderr)
 
     try:
-        with open(todoignore_path, access_mode) as target:  # todoon
+        with open(todoignore_path, access_mode) as target:
             previous = None
             for line in output:
                 if previous != line[0]:
@@ -719,20 +719,20 @@ def todo_ignore_util(  # todoon
                 target.write(f"{line}\n")
     except FileExistsError:
         print(
-            LOCALIZE[util.get_region()]["error_file_already_exists"], todoignore_path, file=sys.stderr  # todoon
+            LOCALIZE[util.get_region()]["error_file_already_exists"], todoignore_path, file=sys.stderr
         )
         exit(1)
 
     print(LOCALIZE[util.get_region()]["general_done"])
 
 
-def typer_todoon():  # todoon
-    run(todoon)  # todoon
+def typer_todoon():
+    run(todoon)
 
 
-def typer_todo_ignore_util():  # todoon
-    run(todo_ignore_util)  # todoon
+def typer_todo_ignore_util():
+    run(todo_ignore_util)
 
 
 if __name__ == "__main__":
-    todoon_app()  # todoon
+    todoon_app()
