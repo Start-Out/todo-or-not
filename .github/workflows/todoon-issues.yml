@@ -37,5 +37,5 @@ jobs:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
           MAXIMUM_ISSUES_GENERATED: 10
         run: |
-          echo "Generate GitHub issues for each problem found, but don't fail the workflow"
-          todoon -is
+          echo "Generate GitHub issues for each problem found, but don't fail the workflow unless one is found that has already been closed."
+          todoon -sic

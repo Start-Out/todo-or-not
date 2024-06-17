@@ -573,7 +573,7 @@ def todoon(
     else:
         summary += "# (ISSUE MODE)\n"
 
-    # Number of TODOs and FIXMEs found
+    # Number of TODOs and FIXMEs found  # todoon
     summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
 
     # Number of encoding failures
