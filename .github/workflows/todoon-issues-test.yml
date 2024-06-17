@@ -16,6 +16,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           python -m pip install -i https://test.pypi.org/simple/ todo-or-not      - name: Generate GH Token for todoon app
+      - name: Generate GH Token for todoon app
         id: generate-token
         uses: actions/create-github-app-token@v1
         with:
