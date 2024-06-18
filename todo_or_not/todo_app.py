@@ -2,11 +2,13 @@ import os
 
 from todo_or_not.utility import loc
 
+
 class TodoRun:
     def __init__(self, settings: dict):
         self.fail_closed_duplicates = settings["fail_closed_duplicates"]
         self.silent = settings["silent"]
         self.print_mode = settings["print_mode"]
+        self.push_github_env_vars = settings["push_github_env_vars"]
 
         # Tracks the files attempted to be read, regardless of errors
         self.number_of_files_scanned = 0
@@ -39,6 +41,44 @@ class TodoRun:
         os.environ["TODOON_ISSUES_GENERATED"] = "0"
         os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"
 
+    def report_environment_variables(self):
+        os.environ["TODOON_STATUS"] = "finished"
+        os.environ["TODOON_PROGRESS"] = "100.0"
+        os.environ["TODOON_FILES_SCANNED"] = str(self.number_of_files_scanned)
+        os.environ["TODOON_TODOS_FOUND"] = str(self.number_of_todo)
+        os.environ["TODOON_FIXMES_FOUND"] = str(self.number_of_fixme)
+        os.environ["TODOON_ENCODING_ERRORS"] = str(self.number_of_encoding_failures)
+        os.environ["TODOON_ISSUES_GENERATED"] = str(self.number_of_issues)
+        os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(
+            self.number_of_duplicate_issues_avoided
+        )
+        os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] = str(self.number_of_closed_issues)
+
+        if self.push_github_env_vars:
+            os.system(f'echo TODOON_STATUS={"finished"} >> $GITHUB_ENV')
+            os.system(f'echo TODOON_PROGRESS={"100.0"} >> $GITHUB_ENV')
+            os.system(
+                f"echo TODOON_FILES_SCANNED={str(self.number_of_files_scanned)} >> $GITHUB_ENV"
+            )
+            os.system(
+                f"echo TODOON_TODOS_FOUND={str(self.number_of_todo)} >> $GITHUB_ENV"
+            )
+            os.system(
+                f"echo TODOON_FIXMES_FOUND={str(self.number_of_fixme)} >> $GITHUB_ENV"
+            )
+            os.system(
+                f"echo TODOON_ENCODING_ERRORS={str(self.number_of_encoding_failures)} >> $GITHUB_ENV"
+            )
+            os.system(
+                f"echo TODOON_ISSUES_GENERATED={str(self.number_of_issues)} >> $GITHUB_ENV"
+            )
+            os.system(
+                f"echo TODOON_DUPLICATE_ISSUES_AVOIDED={str(self.number_of_duplicate_issues_avoided)} >> $GITHUB_ENV"
+            )
+            os.system(
+                f"echo TODOON_DUPLICATE_CLOSED_ISSUES={str(self.number_of_closed_issues)} >> $GITHUB_ENV"
+            )
+
     def generate_summary_message(self):
         summary = f"\n##########################\n# {loc('summary_title')}\n"
         # Mode the tool was run in
@@ -48,7 +88,9 @@ class TodoRun:
             summary += "# (ISSUE MODE)\n"
 
         # Number of TODOs and FIXMEs found  # todoon
-        summary += f"# {self.number_of_todo} TODO | {self.number_of_fixme} FIXME\n"  # todoon
+        summary += (
+            f"# {self.number_of_todo} TODO | {self.number_of_fixme} FIXME\n"  # todoon
+        )
 
         # Number of encoding failures
         if self.number_of_encoding_failures > 1:
@@ -58,40 +100,55 @@ class TodoRun:
 
         # Total number of files scanned
         if self.number_of_files_scanned > 1:
-            summary += (f"# {self.number_of_files_scanned} "
-                        f"{loc('summary_files_scanned_plural')}\n")
+            summary += (
+                f"# {self.number_of_files_scanned} "
+                f"{loc('summary_files_scanned_plural')}\n"
+            )
         elif self.number_of_files_scanned == 1:
-            summary += (f"# {self.number_of_files_scanned} "
-                        f"{loc('summary_files_scanned_singular')}\n")
+            summary += (
+                f"# {self.number_of_files_scanned} "
+                f"{loc('summary_files_scanned_singular')}\n"
+            )
 
             # Number of issues (if any) that were generated
         if not self.print_mode:
             # Total number of issues generated
             if self.number_of_issues > 1:
-                summary += (f"# {self.number_of_issues} "
-                            f"{loc('summary_issues_generated_plural')}\n")
+                summary += (
+                    f"# {self.number_of_issues} "
+                    f"{loc('summary_issues_generated_plural')}\n"
+                )
             elif self.number_of_issues == 1:
-                summary += (f"# {self.number_of_issues} "
-                            f"{loc('summary_issues_generated_singular')}\n")
+                summary += (
+                    f"# {self.number_of_issues} "
+                    f"{loc('summary_issues_generated_singular')}\n"
+                )
             else:
-                summary += (f"# "
-                            f"{loc('summary_issues_generated_none')}\n")
+                summary += f"# " f"{loc('summary_issues_generated_none')}\n"
 
             # Total number of duplicate issues avoided
             if self.number_of_duplicate_issues_avoided > 1:
-                summary += (f"# {self.number_of_duplicate_issues_avoided} "
-                            f"{loc('summary_duplicate_issues_avoided_plural')}\n")
+                summary += (
+                    f"# {self.number_of_duplicate_issues_avoided} "
+                    f"{loc('summary_duplicate_issues_avoided_plural')}\n"
+                )
             elif self.number_of_duplicate_issues_avoided == 1:
-                summary += (f"# {self.number_of_duplicate_issues_avoided} "
-                            f"{loc('summary_duplicate_issues_avoided_singular')}\n")
+                summary += (
+                    f"# {self.number_of_duplicate_issues_avoided} "
+                    f"{loc('summary_duplicate_issues_avoided_singular')}\n"
+                )
 
             # Total number of duplicate closed issues
             if self.number_of_closed_issues > 1:
-                summary += (f"# {self.number_of_closed_issues} "
-                            f"{loc('summary_duplicate_closed_issues_plural')}\n")
+                summary += (
+                    f"# {self.number_of_closed_issues} "
+                    f"{loc('summary_duplicate_closed_issues_plural')}\n"
+                )
             elif self.number_of_closed_issues == 1:
-                summary += (f"# {self.number_of_closed_issues} "
-                            f"{loc('summary_duplicate_closed_issues_singular')}\n")
+                summary += (
+                    f"# {self.number_of_closed_issues} "
+                    f"{loc('summary_duplicate_closed_issues_singular')}\n"
+                )
 
         summary += "##########################\n\n"
 
