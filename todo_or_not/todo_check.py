@@ -247,6 +247,11 @@ def todoon(
             typer.Option("--closed-duplicates-fail/", "-c/",
                          help="If specified, todoon will exit with error code if duplicate GitHub issues "  
                               "are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
+        push_github_env_vars: Annotated[
+            bool,
+            typer.Option("--github-env/",
+                         help="If specified, todoon will push environment variables to the special $GITHUB_ENV "  
+                              "file. This allows the variables to persist across steps in a workflow.")] = False,
         force: Annotated[
             bool,
             typer.Option("--force/", "-f/",
@@ -647,15 +652,16 @@ def todoon(
         number_of_closed_issues
     )
 
-    os.system(f'echo TODOON_STATUS={"finished"} >> $GITHUB_ENV')
-    os.system(f'echo TODOON_PROGRESS={"100.0"} >> $GITHUB_ENV')
-    os.system(f'echo TODOON_FILES_SCANNED={str(number_of_files_scanned)} >> $GITHUB_ENV')
-    os.system(f'echo TODOON_TODOS_FOUND={str(number_of_todo)} >> $GITHUB_ENV')
-    os.system(f'echo TODOON_FIXMES_FOUND={str(number_of_fixme)} >> $GITHUB_ENV')
-    os.system(f'echo TODOON_ENCODING_ERRORS={str(number_of_encoding_failures)} >> $GITHUB_ENV')
-    os.system(f'echo TODOON_ISSUES_GENERATED={str(number_of_issues)} >> $GITHUB_ENV')
-    os.system(f'echo TODOON_DUPLICATE_ISSUES_AVOIDED={str(number_of_duplicate_issues_avoided)} >> $GITHUB_ENV')
-    os.system(f'echo TODOON_DUPLICATE_CLOSED_ISSUES={str(number_of_closed_issues)} >> $GITHUB_ENV')
+    if push_github_env_vars:
+        os.system(f'echo TODOON_STATUS={"finished"} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_PROGRESS={"100.0"} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_FILES_SCANNED={str(number_of_files_scanned)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_TODOS_FOUND={str(number_of_todo)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_FIXMES_FOUND={str(number_of_fixme)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_ENCODING_ERRORS={str(number_of_encoding_failures)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_ISSUES_GENERATED={str(number_of_issues)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_DUPLICATE_ISSUES_AVOIDED={str(number_of_duplicate_issues_avoided)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_DUPLICATE_CLOSED_ISSUES={str(number_of_closed_issues)} >> $GITHUB_ENV')
 
     util.print_wrap(log_level=log_level, msg_level=util.LOG_LEVEL_SUMMARY_ONLY,
                msg=summary, file=sys.stderr)

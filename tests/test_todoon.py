@@ -31,8 +31,12 @@ class TestTodoon(unittest.TestCase):
         disable_debug: bool = False,
     ):
         # Preserve state
-        with open(".todo-ignore", "r") as _before:
-            self.todoignore_before = _before.read()
+        try:
+            with open(".todo-ignore", "r") as _before:
+                self.todoignore_before = _before.read()
+        except FileNotFoundError as e:
+            print(e, "\nTIP: Check working directory", file=sys.stderr)
+            sys.exit(1)
 
         safe_dir = (
             os.path.join("tests", "resources", resource_dir)
@@ -329,6 +333,41 @@ class TestTodoon(unittest.TestCase):
         self._environment_up("no_todos")
 
         td.todoon(verbose=True, print_mode=True, print_nothing=True)
+
+        self._environment_down()
+
+    def test_todoon_push_to_github_env_vars(self):
+        env = [("GITHUB_ENV", "github_environment.txt")]
+        self._environment_up("no_todos", env_variables=env)
+
+        td.todoon(push_github_env_vars=True)
+
+        with open("github_environment.txt", "r") as github_env_file:
+            lines = github_env_file.readlines()
+            expected_lines = [
+                "TODOON_STATUS=finished\n",
+                "TODOON_PROGRESS=100.0\n",
+                "TODOON_FILES_SCANNED=1\n",
+                "TODOON_TODOS_FOUND=0\n",
+                "TODOON_FIXMES_FOUND=0\n",
+                "TODOON_ENCODING_ERRORS=0\n",
+                "TODOON_ISSUES_GENERATED=0\n",
+                "TODOON_DUPLICATE_ISSUES_AVOIDED=0\n",
+                "TODOON_DUPLICATE_CLOSED_ISSUES=0\n",
+                "TODOON_STATUS=finished\n",
+                "TODOON_PROGRESS=100.0\n",
+                "TODOON_FILES_SCANNED=2\n",
+                "TODOON_TODOS_FOUND=0\n",
+                "TODOON_FIXMES_FOUND=0\n",
+                "TODOON_ENCODING_ERRORS=0\n",
+                "TODOON_ISSUES_GENERATED=0\n",
+                "TODOON_DUPLICATE_ISSUES_AVOIDED=0\n",
+                "TODOON_DUPLICATE_CLOSED_ISSUES=0\n",
+            ]
+
+            assert set(lines) == set(expected_lines)
+
+        os.remove("github_environment.txt")
 
         self._environment_down()
 
