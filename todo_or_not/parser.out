@@ -1,0 +1,84 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> todo_line
+Rule 1     todo_line -> pre_todo_comment todo_line_comment_body
+Rule 2     pre_todo_comment -> CODE_BEFORE_COMMENT
+Rule 3     pre_todo_comment -> <empty>
+Rule 4     todo_line_comment_body -> COMMENT_UP_TO_KEY REST_OF_COMMENT
+Rule 5     todo_line_comment_body -> COMMENT_UP_TO_KEY
+
+Terminals, with rules where they appear
+
+CODE_BEFORE_COMMENT  : 2
+COMMENT_UP_TO_KEY    : 4 5
+REST_OF_COMMENT      : 4
+error                : 
+
+Nonterminals, with rules where they appear
+
+pre_todo_comment     : 1
+todo_line            : 0
+todo_line_comment_body : 1
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . todo_line
+    (1) todo_line -> . pre_todo_comment todo_line_comment_body
+    (2) pre_todo_comment -> . CODE_BEFORE_COMMENT
+    (3) pre_todo_comment -> .
+
+    CODE_BEFORE_COMMENT shift and go to state 3
+    COMMENT_UP_TO_KEY reduce using rule 3 (pre_todo_comment -> .)
+
+    todo_line                      shift and go to state 1
+    pre_todo_comment               shift and go to state 2
+
+state 1
+
+    (0) S' -> todo_line .
+
+
+
+state 2
+
+    (1) todo_line -> pre_todo_comment . todo_line_comment_body
+    (4) todo_line_comment_body -> . COMMENT_UP_TO_KEY REST_OF_COMMENT
+    (5) todo_line_comment_body -> . COMMENT_UP_TO_KEY
+
+    COMMENT_UP_TO_KEY shift and go to state 5
+
+    todo_line_comment_body         shift and go to state 4
+
+state 3
+
+    (2) pre_todo_comment -> CODE_BEFORE_COMMENT .
+
+    COMMENT_UP_TO_KEY reduce using rule 2 (pre_todo_comment -> CODE_BEFORE_COMMENT .)
+
+
+state 4
+
+    (1) todo_line -> pre_todo_comment todo_line_comment_body .
+
+    $end            reduce using rule 1 (todo_line -> pre_todo_comment todo_line_comment_body .)
+
+
+state 5
+
+    (4) todo_line_comment_body -> COMMENT_UP_TO_KEY . REST_OF_COMMENT
+    (5) todo_line_comment_body -> COMMENT_UP_TO_KEY .
+
+    REST_OF_COMMENT shift and go to state 6
+    $end            reduce using rule 5 (todo_line_comment_body -> COMMENT_UP_TO_KEY .)
+
+
+state 6
+
+    (4) todo_line_comment_body -> COMMENT_UP_TO_KEY REST_OF_COMMENT .
+
+    $end            reduce using rule 4 (todo_line_comment_body -> COMMENT_UP_TO_KEY REST_OF_COMMENT .)
+
