@@ -7,7 +7,7 @@ import datetime
 #
 #####################################################
 
-__version__ = "0.13.12"
-iso_string = "2024-06-16"
+__version__ = "0.13.14"
+iso_string = "2024-06-18"
 
 version_date = datetime.date.fromisoformat(iso_string)
