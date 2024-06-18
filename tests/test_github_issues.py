@@ -93,7 +93,7 @@ def test_unformatted_hits_not_formatted(
 
 class TestIssueHelperFunctions(unittest.TestCase):
     def test_hash(self):
-        output = todo_or_not.utility._hash("test")
+        output = todo_or_not.utility.sha1_hash("test")
         self.assertEqual(
             output, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
         )  # add assertion here

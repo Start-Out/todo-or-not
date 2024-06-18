@@ -1,5 +1,5 @@
 import datetime
-        
+
 #####################################################
 # VITAL: SEE /scripts/_update_versions.py !!!
 #
@@ -7,7 +7,7 @@ import datetime
 #
 #####################################################
 
-__version__ = "0.13.17"
+__version__ = "0.13.18"
 iso_string = "2024-06-18"
 
 version_date = datetime.date.fromisoformat(iso_string)
