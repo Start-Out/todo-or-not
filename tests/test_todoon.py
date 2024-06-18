@@ -312,7 +312,7 @@ class TestTodoon(unittest.TestCase):
         self._environment_down()
 
     def test_todoon_version_print(self):
-        with self.assertRaises(SystemExit) as context:
+        with self.assertRaises(SystemExit) as _:
             td.todoon(silent=True, version=True)
 
     def test_todoon_progress_bar(self):
@@ -345,6 +345,17 @@ class TestTodoon(unittest.TestCase):
         assert os.path.isfile("github_environment.txt")
 
         os.remove("github_environment.txt")
+
+        self._environment_down()
+
+    def test_todoon_with_multiple_languages(self):
+        self._environment_up("multilanguage")
+
+        with self.assertRaises(SystemExit) as _:
+            td.todoon()
+
+        assert os.environ["TODOON_TODOS_FOUND"] == "3"
+        assert os.environ["TODOON_FIXMES_FOUND"] == "1"
 
         self._environment_down()
 
