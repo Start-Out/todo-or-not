@@ -12,6 +12,7 @@ from typing_extensions import Annotated
 
 import todo_or_not.utility as util
 from todo_or_not.utility import loc
+from todo_or_not.todo_app import TodoRun
 from todo_or_not.localize import LOCALIZE
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODOIGNORE
 from todo_or_not.localize import SUPPORTED_ENCODINGS_TODO_CHECK
@@ -276,6 +277,20 @@ def todoon(
                          help="Show the application version and exit.")] = False
 ):
     # fmt: on
+    this_run = TodoRun({
+        "files": files,
+        "print_mode": print_mode,
+        "silent": silent,
+        "fail_closed_duplicates": fail_closed_duplicates,
+        "push_github_env_vars": push_github_env_vars,
+        "force": force,
+        "verbose": verbose,
+        "print_summary_only": print_summary_only,
+        "print_nothing": print_nothing,
+        "show_progress_bar": show_progress_bar,
+        "version": version
+    })
+
     targets = []
     ignored_files = []
     ignored_dirs = []
@@ -300,14 +315,7 @@ def todoon(
     # Handle settings
     #############################################
 
-    os.environ["TODOON_STATUS"] = "starting"
-    os.environ["TODOON_PROGRESS"] = "0.0"
-    os.environ["TODOON_FILES_SCANNED"] = "0"
-    os.environ["TODOON_TODOS_FOUND"] = "0"
-    os.environ["TODOON_FIXMES_FOUND"] = "0"
-    os.environ["TODOON_ENCODING_ERRORS"] = "0"
-    os.environ["TODOON_ISSUES_GENERATED"] = "0"
-    os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = "0"
+    this_run.initialize_environment_variables()
 
     #############################################
     # Parse .todo-ignore # todoon
@@ -357,9 +365,7 @@ def todoon(
 
                 if len(ignored_files) == 0 and len(ignored_dirs) == 0:
                     util.print_wrap(log_level=log_level,
-                                    msg=loc(
-                                        "warning_run_with_empty_todo_ignore"
-                                    ),
+                                    msg=loc("warning_run_with_empty_todo_ignore"),
                                     file=sys.stderr,
                                     )
 
@@ -465,19 +471,10 @@ def todoon(
     # Run todo-check # todoon
     #############################################
 
-    number_of_hits = 0  # Tracks the number of targets found
-    number_of_issues = 0  # Tracks the number of issues generated
-    number_of_duplicate_issues_avoided = (
-        0  # Tracks the number of issues avoided because they are already mentioned
-    )
-    number_of_closed_issues = 0
-    number_of_encoding_failures = 0  # Tracks the files unread due to encoding error
-    number_of_files_scanned = len(
+    # Tracks the files attempted to be read, regardless of errors
+    this_run.number_of_files_scanned = len(
         targets
-    )  # Tracks the files attempted to be read, regardless of errors
-
-    # Used for summary
-    number_of_todo, number_of_fixme = 0, 0
+    )
 
     os.environ["TODOON_STATUS"] = "scanning-files"
     os.environ["TODOON_PROGRESS"] = "0.0"
@@ -501,16 +498,16 @@ def todoon(
         hits, _enc = find_hits(target, "# todoon", parsers, log_level=log_level)
 
         if _enc is None:
-            number_of_encoding_failures += 1
+            this_run.number_of_encoding_failures += 1
 
         # If any hits were detected...
         if len(hits) > 0:
 
             # Handle each hit that was detected
             for hit in hits:
-                number_of_hits += 1
-                number_of_todo += 1 if "todo" in hit.found_keys else 0
-                number_of_fixme += 1 if "fixme" in hit.found_keys else 0
+                this_run.number_of_hits += 1
+                this_run.number_of_todo += 1 if "todo" in hit.found_keys else 0
+                this_run.number_of_fixme += 1 if "fixme" in hit.found_keys else 0
 
                 #############################################
                 # Special handling for the ISSUE mode
@@ -522,11 +519,11 @@ def todoon(
                     if _this_hit_hashed not in existing_issues_hashed:
 
                         # Limit the number of issues created in one run
-                        if number_of_issues < util.get_max_issues():
+                        if this_run.number_of_issues < util.get_max_issues():
                             output = hit.generate_issue()
 
                             if output is not False:
-                                number_of_issues += 1
+                                this_run.number_of_issues += 1
                             else:
                                 util.print_wrap(log_level=log_level,
                                                 msg=f"{loc('error_gh_issues_create_failed')}",
@@ -535,9 +532,7 @@ def todoon(
 
                         else:
                             util.print_wrap(log_level=log_level,
-                                            msg=loc(
-                                                "error_exceeded_maximum_issues"
-                                            ),
+                                            msg=loc("error_exceeded_maximum_issues"),
                                             file=sys.stderr,
                                             )
                             exit(1)
@@ -547,14 +542,14 @@ def todoon(
                                         msg=f"{loc('warning_duplicate_closed_issue')}: {hit}",
                                         file=sys.stderr
                                         )
-                        number_of_closed_issues += 1
+                        this_run.number_of_closed_issues += 1
                     # If this title already exists, notify but do not halt
                     else:
                         util.print_wrap(log_level=log_level,
                                         msg=f"{loc('info_duplicate_issue_avoided')}: {hit}",
                                         file=sys.stderr,
                                         )
-                        number_of_duplicate_issues_avoided += 1
+                        this_run.number_of_duplicate_issues_avoided += 1
 
                 #############################################
                 # If not in ISSUE mode, print hit to stderr
@@ -567,109 +562,111 @@ def todoon(
     # Summarize the run of todo-check  # todoon
     #############################################
 
-    summary = f"\n##########################\n# {loc('summary_title')}\n"
-    # Mode the tool was run in
-    if print_mode:
-        summary += "# (PRINT MODE)\n"
-    else:
-        summary += "# (ISSUE MODE)\n"
+    # summary = f"\n##########################\n# {loc('summary_title')}\n"
+    # # Mode the tool was run in
+    # if print_mode:
+    #     summary += "# (PRINT MODE)\n"
+    # else:
+    #     summary += "# (ISSUE MODE)\n"
+    #
+    # # Number of TODOs and FIXMEs found  # todoon
+    # summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
+    #
+    # # Number of encoding failures
+    # if number_of_encoding_failures > 1:
+    #     summary += f"# {number_of_encoding_failures} {loc('summary_encoding_unsupported_plural')}\n"
+    # elif number_of_encoding_failures == 1:
+    #     summary += f"# {number_of_encoding_failures} {loc('summary_encoding_unsupported_singular')}\n"
+    #
+    # # Total number of files scanned
+    # if number_of_files_scanned > 1:
+    #     summary += (f"# {number_of_files_scanned} "
+    #                 f"{loc('summary_files_scanned_plural')}\n")
+    # elif number_of_files_scanned == 1:
+    #     summary += (f"# {number_of_files_scanned} "
+    #                 f"{loc('summary_files_scanned_singular')}\n")
+    #
+    #     # Number of issues (if any) that were generated
+    # if not print_mode:
+    #     # Total number of issues generated
+    #     if number_of_issues > 1:
+    #         summary += (f"# {number_of_issues} "
+    #                     f"{loc('summary_issues_generated_plural')}\n")
+    #     elif number_of_issues == 1:
+    #         summary += (f"# {number_of_issues} "
+    #                     f"{loc('summary_issues_generated_singular')}\n")
+    #     else:
+    #         summary += (f"# "
+    #                     f"{loc('summary_issues_generated_none')}\n")
+    #
+    #     # Total number of duplicate issues avoided
+    #     if number_of_duplicate_issues_avoided > 1:
+    #         summary += (f"# {number_of_duplicate_issues_avoided} "
+    #                     f"{loc('summary_duplicate_issues_avoided_plural')}\n")
+    #     elif number_of_duplicate_issues_avoided == 1:
+    #         summary += (f"# {number_of_duplicate_issues_avoided} "
+    #                     f"{loc('summary_duplicate_issues_avoided_singular')}\n")
+    #
+    #     # Total number of duplicate closed issues
+    #     if number_of_closed_issues > 1:
+    #         summary += (f"# {number_of_closed_issues} "
+    #                     f"{loc('summary_duplicate_closed_issues_plural')}\n")
+    #     elif number_of_closed_issues == 1:
+    #         summary += (f"# {number_of_closed_issues} "
+    #                     f"{loc('summary_duplicate_closed_issues_singular')}\n")
+    #
+    # summary += "##########################\n\n"
+    #
+    # # Overall results of the run
+    # if number_of_hits > 0:
+    #     if silent:
+    #         summary += f"  * {loc('summary_found_issues_silent')}\n"
+    #     else:
+    #         summary += f"  * {loc('summary_fail_issues_no_silent')}\n"
+    #
+    # if number_of_closed_issues > 0 and fail_closed_duplicates:
+    #     summary += f"  * {loc('summary_fail_duplicate_closed_issues')}\n"
+    #
+    # # Total success
+    # if number_of_hits == 0:
+    #     summary += f"  * {loc('summary_success')}\n"
 
-    # Number of TODOs and FIXMEs found  # todoon
-    summary += f"# {number_of_todo} TODO | {number_of_fixme} FIXME\n"  # todoon
-
-    # Number of encoding failures
-    if number_of_encoding_failures > 1:
-        summary += f"# {number_of_encoding_failures} {loc('summary_encoding_unsupported_plural')}\n"
-    elif number_of_encoding_failures == 1:
-        summary += f"# {number_of_encoding_failures} {loc('summary_encoding_unsupported_singular')}\n"
-
-    # Total number of files scanned
-    if number_of_files_scanned > 1:
-        summary += (f"# {number_of_files_scanned} "
-                    f"{loc('summary_files_scanned_plural')}\n")
-    elif number_of_files_scanned == 1:
-        summary += (f"# {number_of_files_scanned} "
-                    f"{loc('summary_files_scanned_singular')}\n")
-
-        # Number of issues (if any) that were generated
-    if not print_mode:
-        # Total number of issues generated
-        if number_of_issues > 1:
-            summary += (f"# {number_of_issues} "
-                        f"{loc('summary_issues_generated_plural')}\n")
-        elif number_of_issues == 1:
-            summary += (f"# {number_of_issues} "
-                        f"{loc('summary_issues_generated_singular')}\n")
-        else:
-            summary += (f"# "
-                        f"{loc('summary_issues_generated_none')}\n")
-
-        # Total number of duplicate issues avoided
-        if number_of_duplicate_issues_avoided > 1:
-            summary += (f"# {number_of_duplicate_issues_avoided} "
-                        f"{loc('summary_duplicate_issues_avoided_plural')}\n")
-        elif number_of_duplicate_issues_avoided == 1:
-            summary += (f"# {number_of_duplicate_issues_avoided} "
-                        f"{loc('summary_duplicate_issues_avoided_singular')}\n")
-
-        # Total number of duplicate closed issues
-        if number_of_closed_issues > 1:
-            summary += (f"# {number_of_closed_issues} "
-                        f"{loc('summary_duplicate_closed_issues_plural')}\n")
-        elif number_of_closed_issues == 1:
-            summary += (f"# {number_of_closed_issues} "
-                        f"{loc('summary_duplicate_closed_issues_singular')}\n")
-
-    summary += "##########################\n\n"
-
-    # Overall results of the run
-    if number_of_hits > 0:
-        if silent:
-            summary += f"  * {loc('summary_found_issues_silent')}\n"
-        else:
-            summary += f"  * {loc('summary_fail_issues_no_silent')}\n"
-
-    if number_of_closed_issues > 0 and fail_closed_duplicates:
-        summary += f"  * {loc('summary_fail_duplicate_closed_issues')}\n"
-
-    # Total success
-    if number_of_hits == 0:
-        summary += f"  * {loc('summary_success')}\n"
+    summary = this_run.generate_summary_message()
 
     os.environ["TODOON_STATUS"] = "finished"
     os.environ["TODOON_PROGRESS"] = "100.0"
-    os.environ["TODOON_FILES_SCANNED"] = str(number_of_files_scanned)
-    os.environ["TODOON_TODOS_FOUND"] = str(number_of_todo)
-    os.environ["TODOON_FIXMES_FOUND"] = str(number_of_fixme)
-    os.environ["TODOON_ENCODING_ERRORS"] = str(number_of_encoding_failures)
-    os.environ["TODOON_ISSUES_GENERATED"] = str(number_of_issues)
+    os.environ["TODOON_FILES_SCANNED"] = str(this_run.number_of_files_scanned)
+    os.environ["TODOON_TODOS_FOUND"] = str(this_run.number_of_todo)
+    os.environ["TODOON_FIXMES_FOUND"] = str(this_run.number_of_fixme)
+    os.environ["TODOON_ENCODING_ERRORS"] = str(this_run.number_of_encoding_failures)
+    os.environ["TODOON_ISSUES_GENERATED"] = str(this_run.number_of_issues)
     os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] = str(
-        number_of_duplicate_issues_avoided
+        this_run.number_of_duplicate_issues_avoided
     )
     os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] = str(
-        number_of_closed_issues
+        this_run.number_of_closed_issues
     )
 
     if push_github_env_vars:
         os.system(f'echo TODOON_STATUS={"finished"} >> $GITHUB_ENV')
         os.system(f'echo TODOON_PROGRESS={"100.0"} >> $GITHUB_ENV')
-        os.system(f'echo TODOON_FILES_SCANNED={str(number_of_files_scanned)} >> $GITHUB_ENV')
-        os.system(f'echo TODOON_TODOS_FOUND={str(number_of_todo)} >> $GITHUB_ENV')
-        os.system(f'echo TODOON_FIXMES_FOUND={str(number_of_fixme)} >> $GITHUB_ENV')
-        os.system(f'echo TODOON_ENCODING_ERRORS={str(number_of_encoding_failures)} >> $GITHUB_ENV')
-        os.system(f'echo TODOON_ISSUES_GENERATED={str(number_of_issues)} >> $GITHUB_ENV')
-        os.system(f'echo TODOON_DUPLICATE_ISSUES_AVOIDED={str(number_of_duplicate_issues_avoided)} >> $GITHUB_ENV')
-        os.system(f'echo TODOON_DUPLICATE_CLOSED_ISSUES={str(number_of_closed_issues)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_FILES_SCANNED={str(this_run.number_of_files_scanned)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_TODOS_FOUND={str(this_run.number_of_todo)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_FIXMES_FOUND={str(this_run.number_of_fixme)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_ENCODING_ERRORS={str(this_run.number_of_encoding_failures)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_ISSUES_GENERATED={str(this_run.number_of_issues)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_DUPLICATE_ISSUES_AVOIDED={str(this_run.number_of_duplicate_issues_avoided)} >> $GITHUB_ENV')
+        os.system(f'echo TODOON_DUPLICATE_CLOSED_ISSUES={str(this_run.number_of_closed_issues)} >> $GITHUB_ENV')
 
     util.print_wrap(log_level=log_level, msg_level=util.LOG_LEVEL_SUMMARY_ONLY,
                     msg=summary, file=sys.stderr)
 
     # Fail if any hits were found and we are not in silent mode
-    if number_of_hits > 0 and not silent:
+    if this_run.number_of_hits > 0 and not silent:
         exit(1)
 
     # Fail if any closed duplicates were found and we are set to fail if so
-    if number_of_closed_issues > 0 and fail_closed_duplicates:
+    if this_run.number_of_closed_issues > 0 and fail_closed_duplicates:
         exit(1)
 
 
