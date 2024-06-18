@@ -31,8 +31,12 @@ class TestTodoon(unittest.TestCase):
         disable_debug: bool = False,
     ):
         # Preserve state
-        with open(".todo-ignore", "r") as _before:
-            self.todoignore_before = _before.read()
+        try:
+            with open(".todo-ignore", "r") as _before:
+                self.todoignore_before = _before.read()
+        except FileNotFoundError as e:
+            print(e, "\nTIP: Check working directory", file=sys.stderr)
+            sys.exit(1)
 
         safe_dir = (
             os.path.join("tests", "resources", resource_dir)
@@ -329,6 +333,18 @@ class TestTodoon(unittest.TestCase):
         self._environment_up("no_todos")
 
         td.todoon(verbose=True, print_mode=True, print_nothing=True)
+
+        self._environment_down()
+
+    def test_todoon_push_to_github_env_vars(self):
+        env = [("GITHUB_ENV", "github_environment.txt")]
+        self._environment_up("no_todos", env_variables=env)
+
+        td.todoon(push_github_env_vars=True)
+
+        assert os.path.isfile("github_environment.txt")
+
+        os.remove("github_environment.txt")
 
         self._environment_down()
 
