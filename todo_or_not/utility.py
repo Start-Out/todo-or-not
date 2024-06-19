@@ -98,4 +98,10 @@ def sha1_hash(hit_str: str):
 
 
 def loc(key: str):
-    return LOCALIZE[get_region()][key]
+    try:
+        localization = LOCALIZE[get_region()][key]
+    except KeyError:
+        localization = LOCALIZE["en_us"][key]
+
+    return localization
+
