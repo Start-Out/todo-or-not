@@ -622,6 +622,9 @@ def todo_ignore_util(
                                 output.append(line)
                 except FileNotFoundError:
                     print(loc("warning_file_does_not_exist"), _path, file=sys.stderr)
+                except IsADirectoryError:
+                    # TODO Localization "warning_is_a_directory" | "WARNING: Expected a file, got a directory" #localization
+                    print(loc("warning_is_a_directory"), _path, file=sys.stderr)
 
     try:
         with open(todoignore_path, access_mode) as target:
