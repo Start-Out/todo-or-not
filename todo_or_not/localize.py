@@ -33,6 +33,7 @@ LOCALIZE = {
         "error_exceeded_maximum_issues": "ERROR: Exceeded maximum number of issues for this run, exiting now",
         "warning_force_overrides_ignore": "WARNING: --force will ignore the contents of the .todo-ignore generated when you specified (.todo-ignore will still be changed, just not used)",
         "warning_file_does_not_exist": "WARNING: File doesn't exist",
+        "warning_is_a_directory": "WARNING: Expected a file, got a directory",
         "warning_run_with_empty_todo_ignore": "WARNING: .todo-ignore was empty (if the file isn't empty, check its encoding), running anyway. To cancel use ",
         "warning_run_without_todo_ignore": "WARNING: Running without a .todo-ignore, to cancel use ",
         "warning_encoding_not_supported": f"WARNING: File uses unsupported encoding, we will skip it but consider adding to .todo-ignore (Supported encodings: {SUPPORTED_ENCODINGS_TODO_CHECK})",

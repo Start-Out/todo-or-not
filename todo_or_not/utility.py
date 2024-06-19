@@ -91,7 +91,11 @@ def get_os(log_level=LOG_LEVEL_NORMAL):
     return _os
 
 
-def _hash(hit_str: str):
+def sha1_hash(hit_str: str):
     m = hashlib.sha1()
     m.update(bytes(hit_str, "utf-8"))
     return m.hexdigest()
+
+
+def loc(key: str):
+    return LOCALIZE[get_region()][key]

@@ -93,7 +93,7 @@ def test_unformatted_hits_not_formatted(
 
 class TestIssueHelperFunctions(unittest.TestCase):
     def test_hash(self):
-        output = todo_or_not.utility._hash("test")
+        output = todo_or_not.utility.sha1_hash("test")
         self.assertEqual(
             output, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
         )  # add assertion here
@@ -212,25 +212,6 @@ class TestLiveIssueFeatures(unittest.TestCase):
         assert response is True
 
         self._environment_down()
-
-    #######################################
-    # Removed from test suite because
-    # test environment sets these env vars
-    #
-    # def test_hit_with_no_env(self):
-    #     none_env = [
-    #         ("GITHUB_REPOSITORY", "$NONE"),
-    #         ("GITHUB_REF_NAME", "$NONE"),
-    #         ("GITHUB_TRIGGERING_ACTOR", "$NONE")
-    #     ]
-    #     self._environment_up(".", env_variables=none_env)
-    #
-    #     test_hit = todo_or_not.todo_check.Hit('source.txt', 6, ['todo'], ["todo"], 0)
-    #     issue_outcome = test_hit.generate_issue()
-    #
-    #     assert issue_outcome is False
-    #
-    #     self._environment_down()
 
 
 def test_debug_submit_test_issue(example_hit_todo):

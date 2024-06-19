@@ -74,4 +74,6 @@ version_date = datetime.date.fromisoformat(iso_string)
             last_line = init_file.tell()
             line = init_file.readline()
 
-    print(f'New info:\n{semver_string}\n{today_string}\n\nUpdated pyproject.toml and __init__.py')
+    print(
+        f"New info:\n{semver_string}\n{today_string}\n\nUpdated pyproject.toml and __init__.py"
+    )

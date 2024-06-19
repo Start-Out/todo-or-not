@@ -204,3 +204,23 @@ class TestTodoignoreUtil(unittest.TestCase):
             td.todo_ignore_util(["do not write"], create_mode=True, source_is_text=True)
 
         os.chdir(old_dir)
+
+    def test_todoignore_util_with_directory_target(self):
+        # Set up
+        safe_dir = os.path.join("tests", "resources", "todoignore_util_dir")
+        old_dir = os.getcwd()
+        os.chdir(safe_dir)
+
+        with open(".todo-ignore", "r") as _old:
+            old_todoignore = _old.read()
+
+        os.remove(".todo-ignore")
+
+        # Run util
+        td.todo_ignore_util(["res"], source_is_text=False)
+
+        # Tear down
+        with open(".todo-ignore", "w") as _new:
+            _new.write(old_todoignore)
+
+        os.chdir(old_dir)
