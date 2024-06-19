@@ -213,25 +213,6 @@ class TestLiveIssueFeatures(unittest.TestCase):
 
         self._environment_down()
 
-    #######################################
-    # Removed from test suite because
-    # test environment sets these env vars
-    #
-    # def test_hit_with_no_env(self):
-    #     none_env = [
-    #         ("GITHUB_REPOSITORY", "$NONE"),
-    #         ("GITHUB_REF_NAME", "$NONE"),
-    #         ("GITHUB_TRIGGERING_ACTOR", "$NONE")
-    #     ]
-    #     self._environment_up(".", env_variables=none_env)
-    #
-    #     test_hit = todo_or_not.todo_check.Hit('source.txt', 6, ['todo'], ["todo"], 0)
-    #     issue_outcome = test_hit.generate_issue()
-    #
-    #     assert issue_outcome is False
-    #
-    #     self._environment_down()
-
 
 def test_debug_submit_test_issue(example_hit_todo):
     response = example_hit_todo.generate_issue(_test=True)
