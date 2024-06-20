@@ -33,6 +33,7 @@ LOCALIZE = {
         "error_exceeded_maximum_issues": "ERROR: Exceeded maximum number of issues for this run, exiting now",
         "warning_force_overrides_ignore": "WARNING: --force will ignore the contents of the .todo-ignore generated when you specified (.todo-ignore will still be changed, just not used)",
         "warning_file_does_not_exist": "WARNING: File doesn't exist",
+        "warning_is_a_directory": "WARNING: Expected a file, got a directory",
         "warning_run_with_empty_todo_ignore": "WARNING: .todo-ignore was empty (if the file isn't empty, check its encoding), running anyway. To cancel use ",
         "warning_run_without_todo_ignore": "WARNING: Running without a .todo-ignore, to cancel use ",
         "warning_encoding_not_supported": f"WARNING: File uses unsupported encoding, we will skip it but consider adding to .todo-ignore (Supported encodings: {SUPPORTED_ENCODINGS_TODO_CHECK})",
@@ -41,7 +42,7 @@ LOCALIZE = {
         "warning_duplicate_closed_issue": f"WARNING: Found an issue that has already been closed",
         "warning_nonissue_mode_closed_duplicate_used": "WARNING: Specified option '--closed-duplicates-fail/-c' will not have any effect when not in '--issue/-i' mode",
         "progress_bar_run_unit": "file",
-        "progress_bar_run_desc": "scanning files"
+        "progress_bar_run_desc": "scanning files",
     },
     "ko_kr": {
         "general_done": "끝났습니다!",
@@ -82,7 +83,7 @@ LOCALIZE = {
         "warning_duplicate_closed_issue": f"경고: 이미 닫힌 깃허브 이슈를 찾았습니다",
         "warning_nonissue_mode_closed_duplicate_used": "경고: 설정한 옵션 '--closed-duplicates-fail/-c'은 '--issue/-i' 모드가 아니라면 아무런 영향을 끼치지 못합니다",
         "progress_bar_run_unit": "파일",
-        "progress_bar_run_desc": "파일들을 스캔하고 있음"
+        "progress_bar_run_desc": "파일들을 스캔하고 있음",
     },
     "bu_mm": {
         "general_done": "ပြီးပါပြီ။",
@@ -115,6 +116,7 @@ LOCALIZE = {
         "error_exceeded_maximum_issues": "အမှား- ဤလုပ်ဆောင်မှုအတွက် ပြဿနာအများဆုံးအရေအတွက်ကို ကျော်သွားသည်၊ ယခုထွက်နေပါသည်",
         "warning_force_overrides_ignore": "သတိပေးချက်- --force သည် သင်သတ်မှတ်လိုက်သောအခါတွင် ထုတ်ပေးသည့် .todo-ignore ၏ အကြောင်းအရာများကို လျစ်လျူရှုလိမ့်မည် (.todo-ignore သည် ပြောင်းလဲနေသေးသည်၊ အသုံးသာမပြုဘဲ)",
         "warning_file_does_not_exist": "သတိပေးချက်- ဖိုင်မရှိပါ။",
+        "warning_is_a_directory": "သတိပေးချက်- ဖိုင်တစ်ခု မျှော်လင့်ထားပြီး ဖိုင်တွဲတစ်ခု ရခဲ့သည်။",
         "warning_run_with_empty_todo_ignore": "သတိပေးချက်- .todo-ignore သည် ဗလာဖြစ်သည် (ဖိုင်ဗလာမဟုတ်ပါက ၎င်း၏ကုဒ်နံပါတ်ကို စစ်ဆေးပါ) မည်သို့ပင်ဖြစ်စေ လုပ်ဆောင်နေပါသည်။ အသုံးပြုမှုကို ပယ်ဖျက်ရန် -",
         "warning_run_without_todo_ignore": "သတိပေးချက်- .todo-ignore မပါဘဲ လုပ်ဆောင်နေသည်။ အသုံးပြုမှုကို ပယ်ဖျက်ရန် -",
         "warning_encoding_not_supported": f"သတိပေးချက်- ဖိုင်သည် ပံ့ပိုးမထားသော ကုဒ်နံပါတ်ကို အသုံးပြုသည်၊ ၎င်းကို ကျော်သွားပါမည်၊ သို့သော် .todo-ignore တွင် ထည့်ရန်စဉ်းစားသည် (ပံ့ပိုးပေးထားသော ကုဒ်နံပါတ်များ- {SUPPORTED_ENCODINGS_TODO_CHECK})",
@@ -124,7 +126,6 @@ LOCALIZE = {
         "warning_nonissue_mode_closed_duplicate_used": "သတိပေးချက်- သတ်မှတ်ထားသော ရွေးချယ်မှု '--closed-duplicates-fail/-c' သည် '--issue/-i' မုဒ်တွင် မရှိ၍ အကျိုးသက်ရောက်မှုမှ မရှိပါ",
         "progress_bar_run_unit": "ဖိုင်",
         "progress_bar_run_desc": "ဖိုင်များကိုစကင်န် ဖတ်နေပါသည်",
-
     },
     "default": {"shell_sigint": "CTRL + C"},
     "windows_nt": {"shell_sigint": "CTRL + C"},

@@ -2,6 +2,7 @@
 # Example usage of # todoon
 ##########################
 
+
 def an_unfinished_function():
     # TODO Finish documenting todo-or-not
     print("Hello, I'm not quite done, there's more to do!")
@@ -16,9 +17,7 @@ def a_broken_function():
     #  from the line that triggered the issue.
     # The search for pertinent lines will stop when it hits a line break or the
     #  maximum number of lines, set by PERTINENT_LINE_LIMIT
-    a = [
-        1, 1, 2, 3
-    ]
+    a = [1, 1, 2, 3]
     b = sum(a)
     c = b * len(a)
     return c / 0  # FIXME I just don't know why this doesn't work!
@@ -39,5 +38,7 @@ def a_very_pretty_example():
 
 def a_closed_example():
     # TODO Closed Issues are helpful! | This issue is closed, but the TODO string is still in the codebase!
-    print("This should be a red flag, because if the issue is still in the code then something isn't done yet")
+    print(
+        "This should be a red flag, because if the issue is still in the code then something isn't done yet"
+    )
     print("(Though it may simply be that the comment hasn't been removed)")
