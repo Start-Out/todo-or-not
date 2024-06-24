@@ -23,7 +23,7 @@ def version_callback(log_level=LOG_LEVEL_NORMAL):
         log_level=log_level,
         msg=f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})",  # todoon
     )
-    exit(0)
+    sys.exit(0)
 
 
 def get_todo_ignore_path():  # todoon
