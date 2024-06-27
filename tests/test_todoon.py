@@ -337,14 +337,47 @@ class TestTodoon(unittest.TestCase):
         self._environment_down()
 
     def test_todoon_push_to_github_env_vars(self):
-        env = [("GITHUB_ENV", "github_environment.txt")]
+        gh_env = "github_environment.txt"
+        env = [("GITHUB_ENV", gh_env)]
         self._environment_up("no_todos", env_variables=env)
 
         td.todoon(push_github_env_vars=True)
 
-        assert os.path.isfile("github_environment.txt")
+        expanded_file_exists = os.path.isfile(gh_env)
 
-        os.remove("github_environment.txt")
+        if expanded_file_exists:
+            with open(gh_env, "r") as f:
+                contents = f.read()
+
+                assert contents == '''TODOON_STATUS=finished 
+TODOON_PROGRESS=100.0 
+TODOON_FILES_SCANNED=0 
+TODOON_TODOS_FOUND=0 
+TODOON_FIXMES_FOUND=0 
+TODOON_ENCODING_ERRORS=0 
+TODOON_ISSUES_GENERATED=0 
+TODOON_DUPLICATE_ISSUES_AVOIDED=0 
+TODOON_DUPLICATE_CLOSED_ISSUES=0 
+'''
+
+            os.remove(gh_env)
+        else:
+            with open("$GITHUB_ENV", "r") as f:
+                contents = f.read()
+
+                assert contents == '''TODOON_STATUS=finished 
+TODOON_PROGRESS=100.0 
+TODOON_FILES_SCANNED=0 
+TODOON_TODOS_FOUND=0 
+TODOON_FIXMES_FOUND=0 
+TODOON_ENCODING_ERRORS=0 
+TODOON_ISSUES_GENERATED=0 
+TODOON_DUPLICATE_ISSUES_AVOIDED=0 
+TODOON_DUPLICATE_CLOSED_ISSUES=0 
+'''
+
+            os.remove("$GITHUB_ENV")
+
 
         self._environment_down()
 
