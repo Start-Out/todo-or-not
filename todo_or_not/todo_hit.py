@@ -128,6 +128,9 @@ class Hit:
         if not (util.get_is_debug() or _test):
             repo_uri = f"https://github.com/{os.environ.get('GITHUB_REPOSITORY')}"
 
+            github_base_ref = os.environ.get("GITHUB_BASE_REF", "$NONE")
+            github_head_ref = os.environ.get("GITHUB_HEAD_REF", "$NONE")
+            ##???
             github_ref = os.environ.get("GITHUB_REF_NAME", "$NONE")
             triggered_by = os.environ.get("GITHUB_TRIGGERING_ACTOR", "$NONE")
             owner, repo = os.environ.get("GITHUB_REPOSITORY", "$NONE/$NONE").split("/")
