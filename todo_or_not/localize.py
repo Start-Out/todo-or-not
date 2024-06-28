@@ -75,6 +75,7 @@ LOCALIZE = {
         "error_exceeded_maximum_issues": "오류: 한 번에 생성할 수 있는 최대 깃허브 이슈 생성 횟수를 초과하였으므로 해당 실행을 중단합니다",
         "warning_force_overrides_ignore": "경고: --force 옵션을 지정한다면 해당 실행에서는 .todo-ignore 가 생성한 내용들을 무시할 것입니다 (.todo-ignore 은 여전히 변경되긴 하지만, 그저 사용되지 않을 뿐입니다)",
         "warning_file_does_not_exist": "경고: 파일이 존재하지 않습니다",
+        "warning_is_a_directory": "경고: 파일 대신 폴더를 찾았습니다",
         "warning_run_with_empty_todo_ignore": "경고: .todo-ignore 이 비어있는 상태로 실행합니다 (만약 파일이 비어있지 않다면, 해당 파일의 인코딩을 확인하십시오), 해당 실행을 취소하고 싶다면 다음을 사용하세요 - ",
         "warning_run_without_todo_ignore": "경고: .todo-ignore 을 제외하고 실행합니다, 해당 실행을 취소하고 싶다면 다음을 사용하세요 -  ",
         "warning_encoding_not_supported": f"경고: 파일이 지원되지 않는 인코딩(문자)을 사용하고 있습니다, .todo-ignore 에 이 파일이 있다고 가정하고 해당 파일을 건너 뛸 것입니다 (지원되는 인코딩: {SUPPORTED_ENCODINGS_TODOIGNORE})",
