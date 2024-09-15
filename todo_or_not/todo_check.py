@@ -338,7 +338,7 @@ def todoon(
                                 msg=loc("error_todo_ignore_not_supported"),
                                 file=sys.stderr
                                 )
-                exit(1)
+                sys.exit(1)
 
             # ... actually do the reading of the .todo-ignore # todoon
             with open(
@@ -535,7 +535,7 @@ def todoon(
                                             msg=loc("error_exceeded_maximum_issues"),
                                             file=sys.stderr,
                                             )
-                            exit(1)
+                            sys.exit(1)
                     # If this title exists AND is closed, potentially fail the check
                     elif existing_issues_hashed[_this_hit_hashed] == "closed":
                         util.print_wrap(log_level=log_level,
@@ -571,11 +571,11 @@ def todoon(
 
     # Fail if any hits were found and we are not in silent mode
     if this_run.number_of_hits > 0 and not silent:
-        exit(1)
+        sys.exit(1)
 
     # Fail if any closed duplicates were found and we are set to fail if so
     if this_run.number_of_closed_issues > 0 and fail_closed_duplicates:
-        exit(1)
+        sys.exit(1)
 
 
 # fmt: off
@@ -639,7 +639,7 @@ def todo_ignore_util(
         print(
             loc("error_file_already_exists"), todoignore_path, file=sys.stderr
         )
-        exit(1)
+        sys.exit(1)
 
     print(loc("general_done"))
 
