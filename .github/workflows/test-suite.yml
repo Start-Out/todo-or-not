@@ -17,6 +17,9 @@ on:
       - reopened
     branches:
       - dev/staging
+    paths:
+      - todo_or_not
+      - tests
   push:
     branches:
       - dev/staging
