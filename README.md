@@ -21,7 +21,7 @@
 <!-- TOC --><a name="quick-start"></a>
 ## Quick Start
 
-[Use todoon in your workflows!](https://github.com/marketplace/actions/todo-or-not)
+Install [the app on GitHub](https://github.com/apps/todo-or-not), and [use todoon in your workflows!](https://github.com/marketplace/actions/todo-or-not)
 
 ```yaml
   - name: TODO-Or-Not
