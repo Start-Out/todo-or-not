@@ -24,6 +24,7 @@ poetry.lock
 LICENSE
 *.coverage
 *.lcov
+action.yml
 
 todo_or_not/__pycache__/
 todo_or_not/__init__.py/
