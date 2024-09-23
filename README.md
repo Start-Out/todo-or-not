@@ -25,7 +25,7 @@ Install [the app on GitHub](https://github.com/apps/todo-or-not), and [use todoo
 
 ```yaml
   - name: TODO-Or-Not
-    uses: Start-Out/actions@v1
+    uses: Start-Out/todo-or-not@v0.14.0
 ```
 
 [Try it out locally! (see on PyPi)](https://pypi.org/project/todo-or-not/)  
