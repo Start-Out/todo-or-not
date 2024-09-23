@@ -31,8 +31,8 @@ def get_todo_ignore_path():  # todoon
 
 
 def get_is_debug():
-    _debug = os.environ.get("DEBUG", "False")
-    if _debug == "True":
+    _debug = os.environ.get("DEBUG", "False").lower()
+    if _debug == "true" or _debug == "yes"  or _debug == "y" or _debug == "1":
         return True
     else:
         return False
