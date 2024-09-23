@@ -1,5 +1,5 @@
 # action.yml
-name: "TODO-Or-Not"
+name: "todoon"
 description: "Integrates the TODOs in your codebase with your GitHub issues"
 branding:
   icon: 'list'
