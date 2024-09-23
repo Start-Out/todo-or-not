@@ -61,7 +61,7 @@ runs:
       shell: bash
       run: |
         # URL of the API endpoint
-        URL="https://ec2-18-217-188-254.us-east-2.compute.amazonaws.com/token"
+        URL="http://ec2-18-217-188-254.us-east-2.compute.amazonaws.com/token"
         # JSON payload
         PAYLOAD='{"app_id": "853479"}'
         # Make the POST request and capture the response
