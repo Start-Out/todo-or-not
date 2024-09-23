@@ -54,7 +54,7 @@ jobs:
           DEBUG: True
         run: |
           source .venv/bin/activate
-          pytest --cov-report lcov:cov.lcov --cov=todo_or_not
+          pytest --cov-report lcov:cov.lcov --cov=todo_or_not -v
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.2.3
         with:
