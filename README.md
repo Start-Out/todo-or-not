@@ -21,7 +21,9 @@
 <!-- TOC --><a name="quick-start"></a>
 ## Quick Start
 
-Install [the app on GitHub](https://github.com/apps/todo-or-not), and [use todoon in your workflows!](https://github.com/marketplace/actions/todo-or-not)
+Install [the app on GitHub](https://github.com/apps/todo-or-not) and [use todoon in your workflows!](https://github.com/marketplace/actions/todo-or-not)
+
+[<img src="https://github.com/user-attachments/assets/3d079ede-6bfd-40d4-9bf2-bd72193e8ac8" alt="Install TODO-Or-Not on GitHub" width="45%"/>](https://github.com/apps/todo-or-not/installations/new)
 
 ```yaml
   - name: run-todoon
