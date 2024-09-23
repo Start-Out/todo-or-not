@@ -12,6 +12,7 @@
 - [Quick Start](#quick-start)
 - [Overview](#overview)
 - [Example](#example)
+- [Workflow Inputs](#workflow-inputs)
 - [Contributing](#contributing)
 - [Help](#help)
 - [Fun Promo Video](#fun-promo-video)
@@ -27,7 +28,7 @@ Install [the app on GitHub](https://github.com/apps/todo-or-not) and [use todoon
 
 ```yaml
   - name: run-todoon
-    uses: Start-Out/todo-or-not@v0.14.3           
+    uses: Start-Out/todo-or-not@v0.14.4           
 ```
 
 [Try it out locally! (see on PyPi)](https://pypi.org/project/todo-or-not/)  
@@ -98,6 +99,22 @@ def a_very_pretty_example():
     print("Check this out!")
 
 ```
+
+<!-- TOC --><a name="workflow-inputs"></a>
+## Workflow Inputs
+
+- `region` [default: "en_us"] Give an ISO code for todoon to report in your language (limited language support, [see the wiki](https://github.com/Start-Out/todo-or-not/wiki/Settings#region))
+- `issues` [default: true] If true, will generate issues from TODO/FIXMEs found. Otherwise, TODO/FIXMEs will just be printed to workflow logs
+- `max_issues` [default: 10] Maximum number of issues todoon may generate, if any more are attempted then the run will fail
+- `closed_issue_check` [default: 0] todoon will fail if any more than the specified number of closed issues are found (set to -1 to allow any number of closed issues)
+- `silent` [default: true] If true, todoon will NOT exit nonzero if any TODO/FIXMEs are found (good for generating issues when expected)
+- `verbosity` [default: 2]
+  0. --very-quiet (none) 
+  1. --quiet (summary) 
+  2. (default) 
+  3. --verbose (all)
+- `python_version` [default: "3.11.7"] Version of Python to use (defaults to 3.11.7)
+- `todoon_version` [default: ""] Version of todoon to use ("" for the latest)
 
 <!-- TOC --><a name="contributing"></a>
 ## Contributing
