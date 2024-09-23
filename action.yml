@@ -25,10 +25,10 @@ inputs:
     required: false
     default: 0
     type: number
-  allow_fail:
-    description: 'If true, todoon will exit nonzero if any TODO/FIXMEs are found'
+  silent:
+    description: 'If true, todoon will NOT exit nonzero if any TODO/FIXMEs are found (good for generating issues when expected)'
     required: false
-    default: true
+    default: false
     type: boolean
   verbosity:
     description: '0: --very-quiet (none) | 1: --quiet (summary) | 2: (default) | 3: --verbose (all)'
@@ -119,7 +119,7 @@ runs:
       shell: bash
       run: |
         echo "ENABLE_ISSUES=${{ inputs.issues }}" >> $GITHUB_ENV
-        echo "ENABLE_SILENT=${{ inputs.allow_fail }}" >> $GITHUB_ENV
+        echo "ENABLE_SILENT=${{ inputs.silent }}" >> $GITHUB_ENV
         if [ "${{ inputs.closed_issue_check }}" -eq -1 ]; then
           echo "ENABLE_CLOSED_ISSUE_CHECK=false" >> $GITHUB_ENV
         else
