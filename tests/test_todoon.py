@@ -279,7 +279,7 @@ class TestTodoon(unittest.TestCase):
             ("GITHUB_REF_NAME", "branch"),
             ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
-        self._environment_up("singular", env_variables=env)
+        self._environment_up("singular", env_variables=env, disable_debug=True)
 
         td.todoon(print_mode=False, silent=True)
 
