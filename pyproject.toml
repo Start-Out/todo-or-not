@@ -12,7 +12,7 @@ documentation = "https://github.com/Start-Out/todo-or-not/wiki"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-typer = "^0.12.3"
+typer = ">=0.12.3,<0.14.0"
 typing-extensions = "^4.10.0"
 tqdm = "^4.66.4"
 ply = "^3.11"
