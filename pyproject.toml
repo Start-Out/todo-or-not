@@ -24,7 +24,7 @@ pytest = "^8.1.1"
 
 
 [tool.poetry.group.dev.dependencies]
-black = "^24.3.0"
+black = ">=24.3,<26.0"
 
 [build-system]
 requires = ["poetry-core"]
