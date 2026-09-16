@@ -10,7 +10,7 @@ from typer.testing import CliRunner
 class TestTodoon(unittest.TestCase):
 
     def test_cli_builds_with_current_typer_and_click(self):
-        result = CliRunner().invoke(td.todoon_app, ["todoon", "--help"])
+        result = CliRunner().invoke(td.todoon_app, ["todoon", "--help"], color=False)
 
         self.assertEqual(result.exit_code, 0, result.stdout)
         self.assertIn("--github-env", result.stdout)

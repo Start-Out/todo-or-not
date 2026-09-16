@@ -1,5 +1,7 @@
 import os
+import subprocess
 import unittest
+from unittest.mock import patch
 
 import pytest
 
@@ -115,7 +117,12 @@ class TestDebugIssueFeatures(unittest.TestCase):
         )
 
     def test_unable_to_collect_issues(self):
-        result = todo_or_not.todo_check.get_bot_submitted_issues()
+        with patch.dict(os.environ, {"DEBUG": "False"}, clear=False), patch(
+            "todo_or_not.todo_check.subprocess.check_output",
+            side_effect=subprocess.CalledProcessError(1, "gh"),
+        ):
+            result = todo_or_not.todo_check.get_bot_submitted_issues()
+
         assert result is False
 
     def test_bot_submitted_issues_collected(self):
@@ -130,7 +137,20 @@ class TestLiveIssueFeatures(unittest.TestCase):
             ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
 
-        self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues()
+        with patch.dict(
+            os.environ,
+            {
+                "DEBUG": "False",
+                "GITHUB_REPOSITORY": "github/gitignore",
+            },
+            clear=False,
+        ), patch(
+            "todo_or_not.todo_check.subprocess.check_output",
+            side_effect=subprocess.CalledProcessError(1, "gh"),
+        ):
+            self.bot_submitted_issues = (
+                todo_or_not.todo_check.get_bot_submitted_issues()
+            )
 
         self.example_hit_todo = todo_or_not.todo_check.Hit(
             "tests\\resources\\example.txt",
