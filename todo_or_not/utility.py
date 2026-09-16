@@ -23,7 +23,7 @@ def version_callback(log_level=LOG_LEVEL_NORMAL):
         log_level=log_level,
         msg=f"TODO-Or-Not v{todo_or_not.__version__} ({todo_or_not.version_date})",  # todoon
     )
-    exit(0)
+    sys.exit(0)
 
 
 def get_todo_ignore_path():  # todoon
@@ -31,8 +31,8 @@ def get_todo_ignore_path():  # todoon
 
 
 def get_is_debug():
-    _debug = os.environ.get("DEBUG", "False")
-    if _debug == "True":
+    _debug = os.environ.get("DEBUG", "False").lower()
+    if _debug == "true" or _debug == "yes"  or _debug == "y" or _debug == "1":
         return True
     else:
         return False
@@ -91,7 +91,17 @@ def get_os(log_level=LOG_LEVEL_NORMAL):
     return _os
 
 
-def _hash(hit_str: str):
-    m = hashlib.sha1()
+def str_hash(hit_str: str):
+    m = hashlib.sha1(usedforsecurity=False)
     m.update(bytes(hit_str, "utf-8"))
     return m.hexdigest()
+
+
+def loc(key: str):
+    try:
+        localization = LOCALIZE[get_region()][key]
+    except KeyError:
+        localization = LOCALIZE["en_us"][key]
+
+    return localization
+

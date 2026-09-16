@@ -1,12 +1,22 @@
 import os
+import re
 import sys
 import unittest
 
 import todo_or_not.todo_check as td
 import todo_or_not.utility
+from typer.testing import CliRunner
 
 
 class TestTodoon(unittest.TestCase):
+
+    def test_cli_builds_with_current_typer_and_click(self):
+        result = CliRunner().invoke(td.todoon_app, ["todoon", "--help"], color=False)
+
+        self.assertEqual(result.exit_code, 0, result.stdout)
+        help_text = re.sub(r"\x1b\[[0-9;]*m", "", result.stdout)
+        self.assertIn("--github-env", help_text)
+        self.assertIn("--silent", help_text)
 
     def setUp(self):
         os.environ["DEBUG"] = "True"
@@ -31,8 +41,12 @@ class TestTodoon(unittest.TestCase):
         disable_debug: bool = False,
     ):
         # Preserve state
-        with open(".todo-ignore", "r") as _before:
-            self.todoignore_before = _before.read()
+        try:
+            with open(".todo-ignore", "r") as _before:
+                self.todoignore_before = _before.read()
+        except FileNotFoundError as e:
+            print(e, "\nTIP: Check working directory", file=sys.stderr)
+            sys.exit(1)
 
         safe_dir = (
             os.path.join("tests", "resources", resource_dir)
@@ -178,7 +192,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("GITHUB_TRIGGERING_ACTOR", "trentonyo"),
             ("MAXIMUM_ISSUES_GENERATED", "1"),
         ]
         self._environment_up("no_todos", env_variables=env)
@@ -192,7 +206,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "github/gitignore"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("GITHUB_TRIGGERING_ACTOR", "trentonyo"),
         ]
         self._environment_up("specific_files", env_variables=env, disable_debug=True)
 
@@ -207,7 +221,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("GITHUB_TRIGGERING_ACTOR", "trentonyo"),
             ("MAXIMUM_ISSUES_GENERATED", "1"),
         ]
         self._environment_up("specific_files", env_variables=env)
@@ -221,7 +235,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("GITHUB_TRIGGERING_ACTOR", "trentonyo"),
         ]
         self._environment_up("closed_issue", env_variables=env, disable_debug=True)
 
@@ -234,7 +248,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("GITHUB_TRIGGERING_ACTOR", "trentonyo"),
         ]
         self._environment_up("no_todos", env_variables=env, disable_debug=True)
 
@@ -246,7 +260,7 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("GITHUB_TRIGGERING_ACTOR", "trentonyo"),
         ]
         self._environment_up("closed_issue", env_variables=env, disable_debug=True)
 
@@ -273,18 +287,19 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("GITHUB_TRIGGERING_ACTOR", "trentonyo"),
         ]
-        self._environment_up("singular", env_variables=env, disable_debug=True)
+        # Debug is enabled so that additional issues are not created
+        self._environment_up("singular", env_variables=env, disable_debug=False)
 
-        td.todoon(print_mode=False, silent=True)
+        td.todoon(print_mode=False, silent=True, verbose=True)
 
         # number of issues
-        assert os.environ["TODOON_ISSUES_GENERATED"] == "0"
+        assert os.environ["TODOON_ISSUES_GENERATED"] == "2"
         # number of duplicate issues
         assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "0"
         # number of closed issues
-        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "1"
+        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "0"
 
         self._environment_down()
 
@@ -292,23 +307,24 @@ class TestTodoon(unittest.TestCase):
         env = [
             ("GITHUB_REPOSITORY", "Start-Out/todo-or-not"),
             ("GITHUB_REF_NAME", "branch"),
-            ("GITHUB_TRIGGERING_ACTOR", "pytest"),
+            ("GITHUB_TRIGGERING_ACTOR", "trentonyo"),
         ]
-        self._environment_up("plural", env_variables=env, disable_debug=True)
+        # Debug remains enabled so that issues are not accidentally created
+        self._environment_up("plural", env_variables=env, disable_debug=False)
 
         td.todoon(print_mode=False, silent=True)
 
-        # number of issues
-        assert os.environ["TODOON_ISSUES_GENERATED"] == "0"
+        # number of issues should be 4 (though not actual created)
+        assert os.environ["TODOON_ISSUES_GENERATED"] == "4"
         # number of duplicate issues
-        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "3"
+        assert os.environ["TODOON_DUPLICATE_ISSUES_AVOIDED"] == "0"
         # number of closed issues
-        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "1"
+        assert os.environ["TODOON_DUPLICATE_CLOSED_ISSUES"] == "0"
 
         self._environment_down()
 
     def test_todoon_version_print(self):
-        with self.assertRaises(SystemExit) as context:
+        with self.assertRaises(SystemExit) as _:
             td.todoon(silent=True, version=True)
 
     def test_todoon_progress_bar(self):
@@ -329,6 +345,30 @@ class TestTodoon(unittest.TestCase):
         self._environment_up("no_todos")
 
         td.todoon(verbose=True, print_mode=True, print_nothing=True)
+
+        self._environment_down()
+
+    def test_todoon_push_to_github_env_vars(self):
+        env = [("GITHUB_ENV", "github_environment.txt")]
+        self._environment_up("no_todos", env_variables=env)
+
+        td.todoon(push_github_env_vars=True)
+
+        output_file_name = "github_environment.txt" if os.name == 'posix' else "$GITHUB_ENV"
+
+        assert os.path.isfile(output_file_name)
+        os.remove(output_file_name)
+
+        self._environment_down()
+
+    def test_todoon_with_multiple_languages(self):
+        self._environment_up("multilanguage")
+
+        with self.assertRaises(SystemExit) as _:
+            td.todoon()
+
+        assert os.environ["TODOON_TODOS_FOUND"] == "3"
+        assert os.environ["TODOON_FIXMES_FOUND"] == "1"
 
         self._environment_down()
 

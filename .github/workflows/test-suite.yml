@@ -17,6 +17,9 @@ on:
       - reopened
     branches:
       - dev/staging
+    paths:
+      - todo_or_not
+      - tests
   push:
     branches:
       - dev/staging
@@ -44,14 +47,14 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
       - name: Install dependencies
-        run: poetry install --no-interaction --with testing
+        run: poetry install --no-interaction --with=testing
       - name: Run PyTest with coverage
         env:
           GH_TOKEN: ${{ steps.generate-token.outputs.token }}
           DEBUG: True
         run: |
           source .venv/bin/activate
-          pytest --cov-report lcov:cov.lcov --cov=todo_or_not
+          pytest --cov-report lcov:cov.lcov --cov=todo_or_not -v
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@v2.2.3
         with:

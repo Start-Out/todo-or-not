@@ -25,9 +25,7 @@ class TestFindLines(unittest.TestCase):
     ):
         parsers = {}
 
-        hits, _ = todo_or_not.todo_check.find_hits(
-            self.hit_tests, False, "# todoon", parsers
-        )
+        hits, _ = todo_or_not.todo_check.find_hits(self.hit_tests, "# todoon", parsers)
 
         hits_by_name = {}
         for hit in hits:
@@ -124,7 +122,7 @@ class TestFindLines(unittest.TestCase):
         parsers = {}
 
         _, _ = todo_or_not.todo_check.find_hits(
-            self.unsupported_encoding_test, False, "# todoon", parsers
+            self.unsupported_encoding_test, "# todoon", parsers
         )
 
         self.assertEqual(stderr.getvalue(), "")
@@ -134,7 +132,7 @@ class TestFindLines(unittest.TestCase):
         parsers = {}
 
         _, _ = todo_or_not.todo_check.find_hits(
-            self.unsupported_encoding_test, True, "# todoon", parsers
+            self.unsupported_encoding_test, "# todoon", parsers
         )
 
         expected_value = "WARNING: File uses unsupported encoding, we will skip it but consider adding to .todo-ignore (Supported encodings: ['utf-8', 'utf-16']) \n *  tests\\resources\\logo.png"
@@ -149,14 +147,14 @@ class TestFindLines(unittest.TestCase):
         parsers = {}
 
         _, _ = todo_or_not.todo_check.find_hits(
-            self.unsupported_encoding_test, False, "# todoon", parsers
+            self.unsupported_encoding_test, "# todoon", parsers
         )
 
     def test_broken_file_appears_utf(self):
         parsers = {}
 
         hits, encoding = todo_or_not.todo_check.find_hits(
-            self.broken_encoding_test, False, "# todoon", parsers
+            self.broken_encoding_test, "# todoon", parsers
         )
 
         assert len(hits) == 0
@@ -164,7 +162,7 @@ class TestFindLines(unittest.TestCase):
         parsers = {}
 
         hits, encoding = todo_or_not.todo_check.find_hits(
-            self.really_broken_encoding_test, False, "# todoon", parsers
+            self.really_broken_encoding_test, "# todoon", parsers
         )
 
         assert len(hits) == 0

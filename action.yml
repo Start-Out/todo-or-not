@@ -1,0 +1,163 @@
+# action.yml
+name: "Run todoon"
+description: "Integrates the TODOs in your codebase with your GitHub issues"
+branding:
+  icon: 'list'
+  color: 'gray-dark'
+inputs:
+  region:
+    description: 'Give an ISO code for todoon to report in your language (limited language support, see wiki > Settings > REGION)'
+    required: false
+    default: "en_us"
+    type: string
+  issues:
+    description: 'If true, will generate issues from TODO/FIXMEs found. Otherwise, TODO/FIXMEs will just be printed to workflow logs'
+    required: false
+    default: true
+    type: boolean
+  max_issues:
+    description: 'Maximum number of issues todoon may generate, if any more are attempted then the run will fail'
+    required: false
+    default: 10
+    type: number
+  closed_issue_check:
+    description: 'If true, todoon will fail if any more than a specified number of closed issues are found (set to -1 to allow any closed issues)'
+    required: false
+    default: 0
+    type: number
+  silent:
+    description: 'If true, todoon will NOT exit nonzero if any TODO/FIXMEs are found (good for generating issues when expected)'
+    required: false
+    default: false
+    type: boolean
+  verbosity:
+    description: '0: --very-quiet (none) | 1: --quiet (summary) | 2: (default) | 3: --verbose (all)'
+    required: false
+    default: 2
+    type: number
+  python_version:
+    description: 'Version of Python to use (defaults to 3.11.7)'
+    required: false
+    default: "3.11.7"
+    type: string
+  todoon_version:
+    description: 'Version of todoon to use (defaults to "" for the latest)'
+    required: false
+    default: ""
+    type: string
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python ${{ inputs.python_version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ inputs.python_version }}
+
+    # Insert the steps from your reusable workflow (todoon.yml) here
+    - name: Get TODO-Or-Not JWT
+      shell: bash
+      run: |
+        # URL of the API endpoint
+        URL="http://todoon-auth.trentonyo.com/token"
+        # JSON payload
+        PAYLOAD='{"app_id": "853479"}'
+        # Make the POST request and capture the response
+        RESPONSE=$(curl -s -X POST $URL -H "Content-Type: application/json" -d "$PAYLOAD")
+        # Extract the token using sed
+        JWT_TOKEN=$(echo $RESPONSE | sed -n 's/.*"token":"\([^"]*\)".*/\1/p')
+        echo "JWT_TOKEN=$JWT_TOKEN" >> $GITHUB_ENV
+
+    - name: Get Installation ID
+      shell: bash
+      run: |
+        INSTALLATION_ID=$(curl -s -X GET \
+          -H "Authorization: Bearer ${{ env.JWT_TOKEN }}" \
+          -H "Accept: application/vnd.github.v3+json" \
+          https://api.github.com/app/installations \
+          | jq -r '.[] | select(.account.login == "${{ github.repository_owner }}").id')
+        echo "INSTALLATION_ID=$INSTALLATION_ID" >> $GITHUB_ENV
+      env:
+        JWT_TOKEN: ${{ env.JWT_TOKEN }}
+
+    - name: Generate Installation Token
+      shell: bash
+      id: generate_installation_token
+      run: |
+        echo "Generating Installation Token"
+        if [ -z "$INSTALLATION_ID" ] || [ "$INSTALLATION_ID" == "null" ]; then
+          echo "Installation ID not found, exiting."
+          exit 1
+        fi
+        TOKEN_RESPONSE=$(curl -s -H "Authorization: Bearer ${{ env.JWT_TOKEN }}" \
+                                  -H "Accept: application/vnd.github.v3+json" \
+                                  -X POST \
+                                  https://api.github.com/app/installations/$INSTALLATION_ID/access_tokens)
+        INSTALL_ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .token)
+        if [ -z "$INSTALL_ACCESS_TOKEN" ] || [ "$INSTALL_ACCESS_TOKEN" == "null" ]; then
+          echo "Installation Access Token not found, exiting."
+          exit 1
+        fi
+        echo "INSTALL_ACCESS_TOKEN=$INSTALL_ACCESS_TOKEN" >> $GITHUB_ENV
+      env:
+        JWT_TOKEN: ${{ env.JWT_TOKEN }}
+
+    - name: Parse TODO-or-not version and install
+      shell: bash
+      run: |
+        python -m pip install --upgrade pip
+        TODOON_VERSION="${{ inputs.todoon_version }}"
+        CMD="python -m pip install todo-or-not"
+        if [ -n "$TODOON_VERSION" ]; then
+          CMD="$CMD==$TODOON_VERSION"
+        fi
+        $CMD
+
+    - name: Parse todoon options
+      shell: bash
+      run: |
+        echo "ENABLE_ISSUES=${{ inputs.issues }}" >> $GITHUB_ENV
+        echo "ENABLE_SILENT=${{ inputs.silent }}" >> $GITHUB_ENV
+        if [ "${{ inputs.closed_issue_check }}" -eq -1 ]; then
+          echo "ENABLE_CLOSED_ISSUE_CHECK=false" >> $GITHUB_ENV
+        else
+          echo "ENABLE_CLOSED_ISSUE_CHECK=true" >> $GITHUB_ENV
+        fi
+        VERBOSITY=""
+        case "${{ inputs.verbosity }}" in
+          "0") VERBOSITY="--very-quiet" ;;
+          "1") VERBOSITY="--quiet" ;;
+          "3") VERBOSITY="--verbose" ;;
+        esac
+        echo "ENABLE_VERBOSITY=$VERBOSITY" >> $GITHUB_ENV
+
+    - name: Construct todoon command
+      shell: bash
+      run: |
+        CMD="todoon --github-env $ENABLE_VERBOSITY"
+        if [ "${ENABLE_ISSUES}" = "true" ]; then
+          CMD="$CMD --issue"
+        fi
+        if [ "${ENABLE_SILENT}" = "true" ]; then
+          CMD="$CMD --silent"
+        fi
+        echo "COMMAND=$CMD" >> $GITHUB_ENV
+
+    - name: Run TODO-or-not
+      shell: bash
+      env:
+        GH_TOKEN: ${{ env.INSTALL_ACCESS_TOKEN }}
+        MAXIMUM_ISSUES_GENERATED: ${{ inputs.max_issues }}
+        REGION: ${{ inputs.region }}
+      run: |
+        $COMMAND
+
+    - name: Check duplicate closed issues (if applicable)
+      shell: bash
+      run: |
+        if [[ "$ENABLE_CLOSED_ISSUE_CHECK" = "true" && "${{ env.TODOON_DUPLICATE_CLOSED_ISSUES }}" -gt "${{ inputs.closed_issue_check }}" ]]; then
+          echo "Detected ${{ env.TODOON_DUPLICATE_CLOSED_ISSUES }} duplicate closed issues where we expected ${{ inputs.closed_issue_check }}, failing this workflow!"
+          exit 1
+        fi

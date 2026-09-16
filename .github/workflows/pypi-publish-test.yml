@@ -9,13 +9,16 @@
 name: Publish to PyPi (Test)
 
 on:
-  pull_request:
+  workflow_dispatch:
+  pull_request: 
     types:
       - opened
       - edited
       - reopened
     branches:
       - dev/staging
+    paths:
+      - todo_or_not
 
 permissions:
   contents: read

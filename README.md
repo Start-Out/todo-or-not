@@ -9,14 +9,39 @@
 
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
+- [Quick Start](#quick-start)
 - [Overview](#overview)
 - [Example](#example)
+- [Workflow Inputs](#workflow-inputs)
 - [Contributing](#contributing)
 - [Help](#help)
 - [Fun Promo Video](#fun-promo-video)
 
 <!-- TOC end -->
 
+<!-- TOC --><a name="quick-start"></a>
+## Quick Start
+
+Install [the app on GitHub](https://github.com/apps/todo-or-not) and [use todoon in your workflows!](https://github.com/marketplace/actions/todo-or-not)
+
+[<img src="https://github.com/user-attachments/assets/3db70b41-f7af-4dcf-aae1-44d44e3d4340" alt="Install TODO-Or-Not on GitHub" width="45%"/>](https://github.com/apps/todo-or-not/installations/new)
+
+```yaml
+  - name: run-todoon
+    uses: Start-Out/todo-or-not@v0.14.7           
+```
+
+[Try it out locally! (see on PyPi)](https://pypi.org/project/todo-or-not/)  
+Or, if you are using Arch Linux, there is an [AUR Package](https://aur.archlinux.org/packages/python-todo-or-not) maintained by @mward25.
+
+```bash
+pip install --upgrade todo-or-not
+todoignore-util -pc .gitignore 
+todoignore-util -ut .git
+todoon
+```
+
+<!-- TOC --><a name="overview"></a>
 ## Overview
 
 > TODO or not to do, that is the question
@@ -27,16 +52,8 @@ You can also integrate this tool into your GitHub workflow via actions, and auto
 FIXMEs. These generated issues will include a link to the file in GitHub as well as the surrounding lines. [Check out the wiki](https://github.com/Start-Out/todo-or-not/wiki/Commands-%E2%80%90-todoignore%E2%80%90util) for 
 more details on the GitHub Issues integration!
 
-[Try it out! (see on PyPi)](https://pypi.org/project/todo-or-not/)  
-Or, if you are using Arch Linux, there is an [AUR Package](https://aur.archlinux.org/packages/python-todo-or-not) maintained by @mward25.
 
-```bash
-pip install --upgrade todo-or-not
-todoignore-util -pc .gitignore 
-todoignore-util -ut .git
-todoon
-```
-
+<!-- TOC --><a name="example"></a>
 ## Example
 
 Check out [this example code](blob/dev/staging/example.py) and
@@ -83,14 +100,33 @@ def a_very_pretty_example():
 
 ```
 
+<!-- TOC --><a name="workflow-inputs"></a>
+## Workflow Inputs
+
+- `region` [default: "en_us"] Give an ISO code for todoon to report in your language (limited language support, [see the wiki](https://github.com/Start-Out/todo-or-not/wiki/Settings#region))
+- `issues` [default: true] If true, will generate issues from TODO/FIXMEs found. Otherwise, TODO/FIXMEs will just be printed to workflow logs
+- `max_issues` [default: 10] Maximum number of issues todoon may generate, if any more are attempted then the run will fail
+- `closed_issue_check` [default: 0] todoon will fail if any more than the specified number of closed issues are found (set to -1 to allow any number of closed issues)
+- `silent` [default: true] If true, todoon will NOT exit nonzero if any TODO/FIXMEs are found (good for generating issues when expected)
+- `verbosity` [default: 2]
+  0. --very-quiet (none) 
+  1. --quiet (summary) 
+  2. (default) 
+  3. --verbose (all)
+- `python_version` [default: "3.11.7"] Version of Python to use (defaults to 3.11.7)
+- `todoon_version` [default: ""] Version of todoon to use ("" for the latest)
+
+<!-- TOC --><a name="contributing"></a>
 ## Contributing
 
 Please target `dev/contribute` with your fork, and please use the appropriate PR template! 
 
+<!-- TOC --><a name="help"></a>
 ## Help
 
 [See the wiki!](https://github.com/Start-Out/todo-or-not/wiki)
 
+<!-- TOC --><a name="fun-promo-video"></a>
 ## Fun Promo Video
 
 https://github.com/Start-Out/todo-or-not/assets/10158233/d2c860f6-efd8-4ca4-b5d6-fcabe0bae6ce

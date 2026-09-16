@@ -145,7 +145,7 @@ class TestTodoGrammarPython(unittest.TestCase):
         result = self.grammar.safe_parse(code)
         assert expected_hit == result
 
-    def test_complex_comment_with_labels(self):  # TODO that
+    def test_complex_comment_with_labels(self):
         code = "123 # a todo z #bug"
         expected_hit = Hit("file", 1, ["todo"], [code], 0)
         expected_hit.structured_labels = ["bug"]

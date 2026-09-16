@@ -1,5 +1,7 @@
 import os
+import subprocess
 import unittest
+from unittest.mock import patch
 
 import pytest
 
@@ -93,7 +95,7 @@ def test_unformatted_hits_not_formatted(
 
 class TestIssueHelperFunctions(unittest.TestCase):
     def test_hash(self):
-        output = todo_or_not.utility._hash("test")
+        output = todo_or_not.utility.str_hash("test")
         self.assertEqual(
             output, "a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
         )  # add assertion here
@@ -115,11 +117,16 @@ class TestDebugIssueFeatures(unittest.TestCase):
         )
 
     def test_unable_to_collect_issues(self):
-        result = todo_or_not.todo_check.get_bot_submitted_issues()
+        with patch.dict(os.environ, {"DEBUG": "False"}, clear=False), patch(
+            "todo_or_not.todo_check.subprocess.check_output",
+            side_effect=subprocess.CalledProcessError(1, "gh"),
+        ):
+            result = todo_or_not.todo_check.get_bot_submitted_issues()
+
         assert result is False
 
     def test_bot_submitted_issues_collected(self):
-        assert self.bot_submitted_issues is False
+        assert self.bot_submitted_issues == []
 
 
 class TestLiveIssueFeatures(unittest.TestCase):
@@ -130,7 +137,20 @@ class TestLiveIssueFeatures(unittest.TestCase):
             ("GITHUB_TRIGGERING_ACTOR", "pytest"),
         ]
 
-        self.bot_submitted_issues = todo_or_not.todo_check.get_bot_submitted_issues()
+        with patch.dict(
+            os.environ,
+            {
+                "DEBUG": "False",
+                "GITHUB_REPOSITORY": "github/gitignore",
+            },
+            clear=False,
+        ), patch(
+            "todo_or_not.todo_check.subprocess.check_output",
+            side_effect=subprocess.CalledProcessError(1, "gh"),
+        ):
+            self.bot_submitted_issues = (
+                todo_or_not.todo_check.get_bot_submitted_issues()
+            )
 
         self.example_hit_todo = todo_or_not.todo_check.Hit(
             "tests\\resources\\example.txt",
@@ -212,25 +232,6 @@ class TestLiveIssueFeatures(unittest.TestCase):
         assert response is True
 
         self._environment_down()
-
-    #######################################
-    # Removed from test suite because
-    # test environment sets these env vars
-    #
-    # def test_hit_with_no_env(self):
-    #     none_env = [
-    #         ("GITHUB_REPOSITORY", "$NONE"),
-    #         ("GITHUB_REF_NAME", "$NONE"),
-    #         ("GITHUB_TRIGGERING_ACTOR", "$NONE")
-    #     ]
-    #     self._environment_up(".", env_variables=none_env)
-    #
-    #     test_hit = todo_or_not.todo_check.Hit('source.txt', 6, ['todo'], ["todo"], 0)
-    #     issue_outcome = test_hit.generate_issue()
-    #
-    #     assert issue_outcome is False
-    #
-    #     self._environment_down()
 
 
 def test_debug_submit_test_issue(example_hit_todo):
