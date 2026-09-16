@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import unittest
 
@@ -13,8 +14,9 @@ class TestTodoon(unittest.TestCase):
         result = CliRunner().invoke(td.todoon_app, ["todoon", "--help"], color=False)
 
         self.assertEqual(result.exit_code, 0, result.stdout)
-        self.assertIn("--github-env", result.stdout)
-        self.assertIn("--silent", result.stdout)
+        help_text = re.sub(r"\x1b\[[0-9;]*m", "", result.stdout)
+        self.assertIn("--github-env", help_text)
+        self.assertIn("--silent", help_text)
 
     def setUp(self):
         os.environ["DEBUG"] = "True"
