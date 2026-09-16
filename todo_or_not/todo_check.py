@@ -240,44 +240,44 @@ def todoon(
                               " generating GitHub issues")] = True,
         silent: Annotated[
             bool,
-            typer.Option("--silent/", "-s/",
+            typer.Option("--silent", "-s",
                          help="(No fail) If specified, todoon will not exit with an error code even "
                               "when TODOs and/or FIXMEs are detected")] = False,
         fail_closed_duplicates: Annotated[
             bool,
-            typer.Option("--closed-duplicates-fail/", "-c/",
+            typer.Option("--closed-duplicates-fail", "-c",
                          help="If specified, todoon will exit with error code if duplicate GitHub issues "
                               "are found in a 'closed' state, will do so even if --silent/-s is specified")] = False,
         push_github_env_vars: Annotated[
             bool,
-            typer.Option("--github-env/",
+            typer.Option("--github-env",
                          help="If specified, todoon will push environment variables to the special $GITHUB_ENV "
                               "file. This allows the variables to persist across steps in a workflow.")] = False,
         force: Annotated[
             bool,
-            typer.Option("--force/", "-f/",
+            typer.Option("--force", "-f",
                          help="(NOT RECOMMENDED) If specified, no .todo-ignore file will be used")] = False,
         verbose: Annotated[
             bool,
-            typer.Option("--verbose/", "-V/",
+            typer.Option("--verbose", "-V",
                          help="If specified, todoon will not to print lengthy or numerous messages "
                               "(like each encoding failure)")] = False,
         print_summary_only: Annotated[
             bool,
-            typer.Option("--quiet/", "-q/",
+            typer.Option("--quiet", "-q",
                          help="If specified, todoon will only print the summary")] = False,
         print_nothing: Annotated[
             bool,
-            typer.Option("--very-quiet/", "-Q/",
+            typer.Option("--very-quiet", "-Q",
                          help="If specified, todoon will not print anything at all")] = False,
         show_progress_bar: Annotated[
             bool,
-            typer.Option("--progress-bar/", "-P/",
+            typer.Option("--progress-bar", "-P",
                          help="If specified, todoon will display a progress bar while scanning files. "
                               "NOTE: This adds a small amount of overhead (will take a little longer)")] = False,
         version: Annotated[
             bool,
-            typer.Option("--version/", "-v/",
+            typer.Option("--version", "-v",
                          help="Show the application version and exit.")] = False
 ):
     # fmt: on

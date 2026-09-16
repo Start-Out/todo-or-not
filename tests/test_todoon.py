@@ -4,9 +4,17 @@ import unittest
 
 import todo_or_not.todo_check as td
 import todo_or_not.utility
+from typer.testing import CliRunner
 
 
 class TestTodoon(unittest.TestCase):
+
+    def test_cli_builds_with_current_typer_and_click(self):
+        result = CliRunner().invoke(td.todoon_app, ["todoon", "--help"])
+
+        self.assertEqual(result.exit_code, 0, result.stdout)
+        self.assertIn("--github-env", result.stdout)
+        self.assertIn("--silent", result.stdout)
 
     def setUp(self):
         os.environ["DEBUG"] = "True"
