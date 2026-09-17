@@ -26,10 +26,19 @@ Install [the app on GitHub](https://github.com/apps/todo-or-not) and [use todoon
 
 [<img src="https://github.com/user-attachments/assets/3db70b41-f7af-4dcf-aae1-44d44e3d4340" alt="Install TODO-Or-Not on GitHub" width="45%"/>](https://github.com/apps/todo-or-not/installations/new)
 
+Check out your repository before running the action. If your job already has a checkout
+step, reuse it: TODO-or-not operates on the existing workspace. Replace
+`<release-tag>` below with a release that includes this checkout behavior.
+
 ```yaml
+  - uses: actions/checkout@v3
   - name: run-todoon
-    uses: Start-Out/todo-or-not@v0.14.7           
+    uses: Start-Out/todo-or-not@<release-tag>
 ```
+
+When upgrading from a version that checked out the repository internally, add the
+checkout step above if your workflow does not already have one. Configure any custom
+checkout options in your workflow; the action no longer performs its own checkout.
 
 [Try it out locally! (see on PyPi)](https://pypi.org/project/todo-or-not/)  
 Or, if you are using Arch Linux, there is an [AUR Package](https://aur.archlinux.org/packages/python-todo-or-not) maintained by @mward25.
